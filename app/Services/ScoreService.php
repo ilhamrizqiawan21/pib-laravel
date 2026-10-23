@@ -56,6 +56,18 @@ class ScoreService
             $extras,
             $checkConflict
         ) {
+            // Pastikan pasangan siswa dan materi berada pada periode yang sama.
+            $student = Student::query()
+                ->with('schoolClass')
+                ->where('is_active', true)
+                ->whereHas('schoolClass', fn ($query) => $query->where('is_active', true))
+                ->findOrFail($studentId);
+            Assessment::query()
+                ->where('is_active', true)
+                ->whereHas('subchapter.chapter.curriculumTemplate', fn ($query) => $query
+                    ->where('academic_year_id', $student->schoolClass->academic_year_id))
+                ->findOrFail($assessmentId);
+
             // 1. Idempotensi via sync_operations
             $existingOp = SyncOperation::query()->where('id', $opId)->first();
             if ($existingOp && $existingOp->status === SyncStatus::Synced) {
@@ -65,11 +77,7 @@ class ScoreService
                     ->first();
             }
 
-            // 2. Pastikan Student dan Assessment ada (fail fast 404 jika tidak ditemukan)
-            Student::findOrFail($studentId);
-            Assessment::findOrFail($assessmentId);
-
-            // 3. Ambil data nilai terkini
+            // 2. Ambil data nilai terkini
             $currentScore = Score::query()
                 ->where('student_id', $studentId)
                 ->where('assessment_id', $assessmentId)

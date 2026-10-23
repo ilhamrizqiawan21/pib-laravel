@@ -2,10 +2,15 @@
 
 use App\Enums\SyncStatus;
 use App\Exceptions\ScoreConflictException;
+use App\Models\AcademicYear;
 use App\Models\Assessment;
 use App\Models\AuditLog;
+use App\Models\Chapter;
+use App\Models\CurriculumTemplate;
+use App\Models\SchoolClass;
 use App\Models\Score;
 use App\Models\Student;
+use App\Models\Subchapter;
 use App\Models\SyncOperation;
 use App\Models\User;
 use App\Services\ScoreService;
@@ -14,8 +19,13 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 beforeEach(function () {
     $this->service = app(ScoreService::class);
     $this->user = User::factory()->create();
-    $this->student = Student::factory()->create();
-    $this->assessment = Assessment::factory()->create();
+    $year = AcademicYear::factory()->create();
+    $class = SchoolClass::factory()->create(['academic_year_id' => $year->id]);
+    $template = CurriculumTemplate::factory()->create(['academic_year_id' => $year->id]);
+    $chapter = Chapter::factory()->create(['curriculum_template_id' => $template->id]);
+    $subchapter = Subchapter::factory()->create(['chapter_id' => $chapter->id]);
+    $this->student = Student::factory()->create(['school_class_id' => $class->id]);
+    $this->assessment = Assessment::factory()->create(['subchapter_id' => $subchapter->id]);
 });
 
 test('merekam nilai baru menghitung score dan menaikkan versi menjadi 1', function () {
@@ -218,4 +228,20 @@ test('menolak siswa atau materi yang tidak ada', function () {
         opId: 'op-notfound',
         deviceId: 'device-1'
     ))->toThrow(ModelNotFoundException::class);
+});
+
+test('menolak pasangan siswa dan materi dari tahun ajaran berbeda', function () {
+    $otherAssessment = Assessment::factory()->create();
+
+    expect(fn () => $this->service->record(
+        user: $this->user,
+        studentId: $this->student->id,
+        assessmentId: $otherAssessment->id,
+        mistakes: 1,
+        baseVersion: null,
+        opId: 'op-other-year',
+        deviceId: 'device-1'
+    ))->toThrow(ModelNotFoundException::class);
+
+    expect(Score::query()->count())->toBe(0);
 });

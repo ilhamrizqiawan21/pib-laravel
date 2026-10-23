@@ -47,8 +47,14 @@ final class StudentImporter
             ]);
         }
 
-        /** @var array<string, int> $classesMap */
-        $classesMap = SchoolClass::query()->pluck('id', 'name')->all();
+        /** @var array<string, array<int, array{id: int, active_year: bool}>> $classesMap */
+        $classesMap = [];
+        foreach (SchoolClass::query()->with('academicYear')->where('is_active', true)->get() as $class) {
+            $classesMap[$class->name][] = [
+                'id' => $class->id,
+                'active_year' => $class->academicYear->is_active,
+            ];
+        }
 
         $existingNis = Student::query()
             ->whereNotNull('nis')
@@ -106,6 +112,20 @@ final class StudentImporter
                 continue;
             }
 
+            $classOptions = $classesMap[$className];
+            $activeClass = array_find($classOptions, fn (array $option): bool => $option['active_year']);
+            if (count($classOptions) > 1 && $activeClass === null) {
+                $failed[] = [
+                    'row' => $rowNumber,
+                    'error' => "Kelas '{$className}' ada pada beberapa tahun ajaran. Aktifkan tahun ajaran tujuan sebelum mengimpor.",
+                    'data' => ['name' => $name, 'class' => $className],
+                ];
+
+                continue;
+            }
+
+            $classId = $activeClass['id'] ?? $classOptions[0]['id'];
+
             if ($normalizedNis !== null) {
                 if (isset($seenNisInImport[$normalizedNis])) {
                     $failed[] = [
@@ -142,7 +162,7 @@ final class StudentImporter
             }
 
             $validStudents[] = [
-                'school_class_id' => $classesMap[$className],
+                'school_class_id' => $classId,
                 'name' => $name,
                 'nis' => $normalizedNis,
                 'nisn' => mb_substr($nisn, 0, 30),

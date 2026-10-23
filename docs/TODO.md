@@ -158,6 +158,8 @@ Legenda prioritas mengikuti PRD (P0 wajib 1.0).
 - [x] **T-904 A11y & responsif** — selesai 2026-10-23. Bukti: browser 360×800 dan 1366×768 pada login + 13 halaman internal (HTTP 200, tanpa luapan horizontal); keyboard drawer, menu, dialog, `/` + Enter Setoran; `LaporanTest` menguji relasi kelas tanpa lazy loading; `npm run build` dan `composer check` hijau (236 tes, Larastan 0 error). Tabel menjadi kartu pada ponsel, kecuali matriks rekap yang dapat digeser.
 - [ ] **T-905 Rilis 1.0** — semua KP PRD §8 centang; tag `v1.0.0`; catatan rilis.
 
+  Audit backend lanjutan 2026-10-24: restore, sinkronisasi nilai lintas periode, impor kelas bernama sama, hitungan beranda, dan aturan password diperbaiki; `composer check` lokal hijau (248 tes, Larastan 0 error). Backup dan restore diuji pada MySQL 8.4.10 sementara. Verifikasi CI dan pengujian pada server target masih diperlukan sebelum rilis.
+
 ---
 
 ## Parkiran (P2, jangan dikerjakan tanpa persetujuan)

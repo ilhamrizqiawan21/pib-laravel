@@ -65,7 +65,7 @@ docs/
 
 Aturan `POST /penilaian/sync` (port dari `app/api/sync` & `scores` lama):
 1. Validasi (Form Request): `id` 8–100, `mistakes` int 0–90 atau null, `base_version` int|null (`null` = editor tidak melihat baris; **absen** = klien lama → tanpa cek konflik).
-2. Dalam satu transaksi: cek `sync_operations.id` — bila `SYNCED` kembalikan hasil tersimpan. Cek siswa & materi ada (404).
+2. Dalam satu transaksi: pastikan siswa/kelas dan materi aktif serta materi berada pada tahun ajaran kelas siswa (404); cek `sync_operations.id` — bila `SYNCED` kembalikan hasil tersimpan.
 3. Bila `base_version` diberikan dan ≠ versi baris saat ini (`null` jika tak ada baris) → **409** + nilai terkini.
 4. Tulis: `score = ScoreCalculator::score(mistakes)`, `version = (lama ?? 0) + 1`, `assessed_at = payload ?? now()` (null bila dikosongkan), `assessor_id = auth id`;
    mengosongkan = update ke NULL (jangan hapus baris) bila baris ada, no-op bila tidak.
@@ -104,7 +104,7 @@ Di sisi klien (`draft-store.js`): kunci `pib-score-edit:{studentId}:{assessmentI
   `Permissions-Policy: camera=(), microphone=(), geolocation=()`, `Content-Security-Policy` (self + Vite dev), HSTS di produksi.
 - Mass assignment: model memakai `#[Fillable]`; jangan `unguarded`. Input selalu lewat validated().
 - Unggahan (impor siswa, restore): batasi ukuran & MIME, simpan di `storage/app/private`, jangan eksekusi, hapus setelah diproses.
-- Restore: hanya admin, konfirmasi ketik ulang, `Artisan::call('down')`, snapshot pra-restore, audit, `up` di `finally`.
+- Restore: hanya admin, konfirmasi ketik ulang, validasi semua tabel dan admin aktif sebelum menghapus data, snapshot pra-restore, `down`, migrasi, audit dalam transaksi, `up` di `finally`.
 - Produksi: `APP_DEBUG=false`, `APP_ENV=production`, `php artisan config:cache route:cache view:cache`, `.env` di luar webroot publik, `storage/` tidak publik.
 - Dependensi: `composer audit` di CI; tidak ada paket tak terpakai.
 
@@ -118,10 +118,10 @@ Di sisi klien (`draft-store.js`): kunci `pib-score-edit:{studentId}:{assessmentI
 
 ## Backup
 
-- `spatie/laravel-backup`: `config/backup.php` — sumber: file SQLite + `storage/app` penting (tanpa `vendor`); disk tujuan dikonfigurasi (`local`, S3/Drive).
-  Jadwal di `routes/console.php`: `backup:run --only-db` tiap `PIB_BACKUP_INTERVAL_HOURS` **hanya bila DB berubah** (bandingkan mtime/`updated_at` maks), `backup:clean` harian, `backup:monitor`.
-- MySQL: dump lewat `mysqldump` (butuh biner di server).
-- Restore: `BackupService::restore(path)` → validasi → `down` → snapshot → ganti → `migrate --force` → `up`.
+- `BackupService` membuat snapshot SQLite konsisten dengan `VACUUM INTO`; pada MySQL membuat cadangan JSON seluruh tabel aplikasi. Berkas terjadwal disimpan di `PIB_BACKUP_DIR`, dengan retensi `PIB_BACKUP_KEEP`.
+- Snapshot pra-restore mengikuti format database yang dipakai (`.sqlite` atau `.json`). Cadangan JSON berisi semua tabel aplikasi, dan impor restore menolak tabel yang hilang atau cadangan tanpa admin aktif.
+- Restore: validasi → snapshot → `down` → `migrate --force` → penggantian data dan audit dalam satu transaksi → `up`.
+- Jalur MySQL diuji dengan database sementara MySQL 8.4.10: migrasi, backup JSON, snapshot pra-restore JSON, dan pemulihan siswa berhasil. Uji ulang pada host produksi tetap diperlukan.
 
 ## Pengujian
 

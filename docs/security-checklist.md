@@ -64,3 +64,11 @@ Tanggal audit: 2026-10-23. Acuan: `docs/AI_RULES.md` §5, `docs/ARCHITECTURE.md`
 
 Audit ini memeriksa kode, daftar middleware rute, dan tes otomatis. Pengujian manual browser, aksesibilitas, dan ukuran layar dikerjakan pada T-904.
 Konfigurasi TLS/reverse proxy dan izin OS diperiksa saat pemasangan host sesuai catatan T-901.
+
+## Audit backend lanjutan (2026-10-24)
+
+- Restore menolak cadangan tanpa seluruh tabel aplikasi atau tanpa admin aktif sebelum data dihapus. Audit keberhasilan berada dalam transaksi pemulihan; kegagalan tidak membocorkan pesan exception database ke respons.
+- `ScoreService` menolak pasangan siswa dan materi dari periode berbeda serta siswa, kelas, atau materi nonaktif dengan 404.
+- Impor siswa memilih kelas pada tahun ajaran aktif bila nama kelas berulang, dan melaporkan baris ambigu bila tidak ada periode aktif.
+- Backup MySQL memakai JSON lengkap, termasuk snapshot pra-restore; migrasi, backup, dan restore berhasil diuji pada database MySQL 8.4.10 sementara. Restore juga menolak melanjutkan bila mode pemeliharaan gagal aktif.
+- Gerbang lokal: `composer check` lulus (Pint, Larastan 0 error, Pest 248 tes). Hasil CI perlu diverifikasi setelah perubahan ini di-push.
