@@ -47,14 +47,14 @@ class Pengguna extends Component
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
             'role' => ['required', Rule::in(['teacher', 'admin'])],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'password' => ['required', 'string', 'min:10', 'confirmed'],
         ], [
             'name.required' => 'Nama pengguna wajib diisi.',
             'email.required' => 'Alamat email wajib diisi.',
             'email.email' => 'Format email tidak valid.',
             'email.unique' => 'Email ini sudah terdaftar.',
             'password.required' => 'Password wajib diisi.',
-            'password.min' => 'Password minimal 8 karakter.',
+            'password.min' => 'Password minimal 10 karakter.',
             'password.confirmed' => 'Konfirmasi password tidak cocok.',
         ]);
 
@@ -161,10 +161,10 @@ class Pengguna extends Component
     {
         $this->validate([
             'resetUserId' => ['required', 'exists:users,id'],
-            'newPassword' => ['required', 'string', 'min:8', 'confirmed'],
+            'newPassword' => ['required', 'string', 'min:10', 'confirmed'],
         ], [
             'newPassword.required' => 'Password baru wajib diisi.',
-            'newPassword.min' => 'Password baru minimal 8 karakter.',
+            'newPassword.min' => 'Password baru minimal 10 karakter.',
             'newPassword.confirmed' => 'Konfirmasi password baru tidak cocok.',
         ]);
 

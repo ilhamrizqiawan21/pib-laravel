@@ -12,7 +12,13 @@ use Illuminate\Support\Facades\File;
 
 class BackupService
 {
-    private const FILE_PATTERN = '/^pib-\d{8}-\d{6}\.sqlite$/';
+    private const FILE_PATTERN = '/^pib-\d{8}-\d{6}\.(sqlite|json)$/';
+
+    private const TABLES = [
+        'users', 'academic_years', 'school_classes', 'students',
+        'curriculum_templates', 'chapters', 'subchapters', 'assessments',
+        'scores', 'settings', 'audit_logs', 'sync_operations',
+    ];
 
     public function __construct(
         private readonly AuditLogger $auditLogger,
@@ -153,8 +159,10 @@ class BackupService
             }
         }
 
+        $connection = DB::connection();
+        $isSqlite = $connection->getDriverName() === 'sqlite';
         $stamp = $now->format('Ymd-His');
-        $targetFile = $dir."/pib-{$stamp}.sqlite";
+        $targetFile = $dir.'/pib-'.$stamp.($isSqlite ? '.sqlite' : '.json');
 
         if (File::exists($targetFile)) {
             return $force ? $targetFile : null;
@@ -165,24 +173,17 @@ class BackupService
             File::delete($tmpFile);
         }
 
-        $connection = DB::connection();
-        if ($connection->getDriverName() === 'sqlite') {
+        if ($isSqlite) {
             $dbPath = $connection->getDatabaseName();
             if ($dbPath === ':memory:') {
                 // Untuk testing sqlite in-memory
                 file_put_contents($tmpFile, 'SQLite format 3');
             } else {
-                try {
-                    $escapedTmp = str_replace("'", "''", $tmpFile);
-                    DB::statement("VACUUM INTO '{$escapedTmp}'");
-                } catch (\Throwable) {
-                    // Fallback jika VACUUM INTO tidak didukung
-                    File::copy($dbPath, $tmpFile);
-                }
+                $escapedTmp = str_replace("'", "''", $tmpFile);
+                DB::statement("VACUUM INTO '{$escapedTmp}'");
             }
         } else {
-            // Jika database selain SQLite, buat salinan snapshot
-            file_put_contents($tmpFile, '-- backup '.$stamp);
+            File::put($tmpFile, json_encode($this->backupPayload(), JSON_THROW_ON_ERROR));
         }
 
         File::move($tmpFile, $targetFile);
@@ -243,40 +244,32 @@ class BackupService
      */
     public function exportJson(): array
     {
-        $tables = [
-            'users',
-            'academic_years',
-            'school_classes',
-            'students',
-            'curriculum_templates',
-            'chapters',
-            'subchapters',
-            'assessments',
-            'scores',
-            'settings',
-            'audit_logs',
-            'sync_operations',
-        ];
-
-        $data = [];
-        foreach ($tables as $table) {
-            try {
-                $rows = DB::table($table)->get()->map(fn ($row) => (array) $row)->all();
-                $data[$table] = $rows;
-            } catch (\Throwable) {
-                $data[$table] = [];
-            }
-        }
+        $payload = $this->backupPayload();
 
         $this->auditLogger->record('backup', 'local', 'DOWNLOAD', 'Backup lengkap dibuat');
 
-        return [
-            'app' => 'pib-penilaian',
-            'version' => 3,
-            'schemaVersion' => 1,
-            'createdAt' => now()->toISOString(),
-            'data' => $data,
-        ];
+        return $payload;
+    }
+
+    /**
+     * @return array{app: string, version: int, schemaVersion: int, createdAt: string, data: array<string, array<int, array<string, mixed>>>}
+     */
+    private function backupPayload(): array
+    {
+        return DB::transaction(function (): array {
+            $data = [];
+            foreach (self::TABLES as $table) {
+                $data[$table] = DB::table($table)->get()->map(fn ($row) => (array) $row)->all();
+            }
+
+            return [
+                'app' => 'pib-penilaian',
+                'version' => 3,
+                'schemaVersion' => 1,
+                'createdAt' => now()->toISOString(),
+                'data' => $data,
+            ];
+        });
     }
 
     public function createPreRestoreSnapshot(): string
@@ -285,23 +278,20 @@ class BackupService
         File::ensureDirectoryExists($dir);
 
         $stamp = now()->format('Ymd-His');
-        $targetFile = $dir."/pre-restore-{$stamp}.sqlite";
-
         $connection = DB::connection();
-        if ($connection->getDriverName() === 'sqlite') {
+        $isSqlite = $connection->getDriverName() === 'sqlite';
+        $targetFile = $dir.'/pre-restore-'.$stamp.($isSqlite ? '.sqlite' : '.json');
+
+        if ($isSqlite) {
             $dbPath = $connection->getDatabaseName();
             if ($dbPath === ':memory:') {
                 file_put_contents($targetFile, 'SQLite format 3 snapshot');
             } else {
-                try {
-                    $escaped = str_replace("'", "''", $targetFile);
-                    DB::statement("VACUUM INTO '{$escaped}'");
-                } catch (\Throwable) {
-                    File::copy($dbPath, $targetFile);
-                }
+                $escaped = str_replace("'", "''", $targetFile);
+                DB::statement("VACUUM INTO '{$escaped}'");
             }
         } else {
-            file_put_contents($targetFile, '-- pre-restore snapshot '.$stamp);
+            File::put($targetFile, json_encode($this->backupPayload(), JSON_THROW_ON_ERROR));
         }
 
         return $targetFile;
@@ -322,44 +312,58 @@ class BackupService
             throw new RestoreException('Struktur berkas cadangan tidak memiliki bagian data.');
         }
 
-        $tablesOrder = [
-            'users',
-            'academic_years',
-            'school_classes',
-            'students',
-            'curriculum_templates',
-            'chapters',
-            'subchapters',
-            'assessments',
-            'scores',
-            'settings',
-            'audit_logs',
-            'sync_operations',
-        ];
+        foreach (self::TABLES as $table) {
+            if (! array_key_exists($table, $payload['data']) || ! is_array($payload['data'][$table])) {
+                $this->auditLogger->record('restore', 'local', 'FAILED', 'Struktur tabel cadangan tidak lengkap', null, $actor?->id);
+                throw new RestoreException('Berkas cadangan tidak lengkap atau rusak.');
+            }
+
+            foreach ($payload['data'][$table] as $row) {
+                if (! is_array($row) || $row === []) {
+                    $this->auditLogger->record('restore', 'local', 'FAILED', 'Baris cadangan tidak valid', null, $actor?->id);
+                    throw new RestoreException('Berkas cadangan tidak lengkap atau rusak.');
+                }
+            }
+        }
+
+        if ($payload['data']['users'] === []) {
+            $this->auditLogger->record('restore', 'local', 'FAILED', 'Cadangan tidak memiliki pengguna', null, $actor?->id);
+            throw new RestoreException('Berkas cadangan tidak memiliki akun pengguna.');
+        }
+
+        $hasActiveAdmin = false;
+        $actorInBackup = false;
+        foreach ($payload['data']['users'] as $user) {
+            $hasActiveAdmin = $hasActiveAdmin || (($user['role'] ?? null) === 'admin' && (bool) ($user['is_active'] ?? false));
+            $actorInBackup = $actorInBackup || ($actor !== null && (int) ($user['id'] ?? 0) === $actor->id);
+        }
+
+        if (! $hasActiveAdmin) {
+            $this->auditLogger->record('restore', 'local', 'FAILED', 'Cadangan tidak memiliki admin aktif', null, $actor?->id);
+            throw new RestoreException('Berkas cadangan tidak memiliki administrator aktif.');
+        }
+
+        $tablesOrder = self::TABLES;
 
         // 1. Buat snapshot pra-restore
         $this->createPreRestoreSnapshot();
 
         // 2. Aktifkan maintenance mode
-        try {
-            Artisan::call('down');
-        } catch (\Throwable) {
-            // Abaikan jika command down tidak tersedia di env test
+        Artisan::call('down');
+        if (! app()->maintenanceMode()->active()) {
+            $this->auditLogger->record('restore', 'local', 'FAILED', 'Mode pemeliharaan gagal diaktifkan', null, $actor?->id);
+            throw new RestoreException('Mode pemeliharaan gagal diaktifkan. Data belum diubah.');
         }
 
         try {
-            $restoredCount = DB::transaction(function () use ($payload, $tablesOrder) {
+            Artisan::call('migrate', ['--force' => true]);
+
+            $restoredCount = DB::transaction(function () use ($payload, $tablesOrder, $actor, $actorInBackup) {
                 $data = $payload['data'];
 
                 // Hapus data lama dengan urutan terbalik
                 foreach (array_reverse($tablesOrder) as $table) {
-                    if (isset($data[$table]) || $table !== 'users') {
-                        try {
-                            DB::table($table)->delete();
-                        } catch (\Throwable) {
-                            // Abaikan jika tabel belum ada
-                        }
-                    }
+                    DB::table($table)->delete();
                 }
 
                 $totalRows = 0;
@@ -379,22 +383,23 @@ class BackupService
                     }
                 }
 
+                $this->auditLogger->record(
+                    'restore',
+                    'local',
+                    'RESTORE',
+                    "Pemulihan data berhasil ({$totalRows} baris)",
+                    null,
+                    $actorInBackup ? $actor?->id : null,
+                    asSystem: ! $actorInBackup
+                );
+
                 return $totalRows;
             });
 
-            // Jalankan migrasi jika skema baru
-            try {
-                Artisan::call('migrate', ['--force' => true]);
-            } catch (\Throwable) {
-                // Abaikan
-            }
-
-            $this->auditLogger->record('restore', 'local', 'RESTORE', "Pemulihan data berhasil ({$restoredCount} baris)", null, $actor?->id);
-
             return $restoredCount;
         } catch (\Throwable $e) {
-            $this->auditLogger->record('restore', 'local', 'FAILED', 'Pemulihan data gagal: '.$e->getMessage(), null, $actor?->id);
-            throw new RestoreException('Gagal memulihkan data: '.$e->getMessage(), (int) $e->getCode(), $e);
+            $this->auditLogger->record('restore', 'local', 'FAILED', 'Pemulihan data gagal', null, $actor?->id);
+            throw new RestoreException('Gagal memulihkan data. Periksa log server dan snapshot pra-restore.', 0, $e);
         } finally {
             try {
                 Artisan::call('up');

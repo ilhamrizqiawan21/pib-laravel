@@ -12,6 +12,7 @@ use App\Models\User;
 use App\Repositories\SettingsRepository;
 use App\Services\AuditLogger;
 use App\Services\DashboardService;
+use Illuminate\Support\Facades\DB;
 
 beforeEach(function () {
     $this->service = app(DashboardService::class);
@@ -93,4 +94,34 @@ test('service mengambil 5 aktivitas audit log terbaru', function () {
     $activities = $this->service->getRecentActivities(5);
     expect($activities)->not->toBeEmpty();
     expect($activities[0]->summary)->toBe('Menilai materi Shalat Subuh');
+});
+
+test('progres kelas mengabaikan nilai materi periode lain tanpa query per kelas', function () {
+    $year = AcademicYear::factory()->active()->create();
+    $otherYear = AcademicYear::factory()->create();
+    $template = CurriculumTemplate::factory()->create(['academic_year_id' => $year->id]);
+    $chapter = Chapter::factory()->create(['curriculum_template_id' => $template->id]);
+    $subchapter = Subchapter::factory()->create(['chapter_id' => $chapter->id]);
+    Assessment::factory()->create(['subchapter_id' => $subchapter->id]);
+    $otherTemplate = CurriculumTemplate::factory()->create(['academic_year_id' => $otherYear->id]);
+    $otherChapter = Chapter::factory()->create(['curriculum_template_id' => $otherTemplate->id]);
+    $otherSubchapter = Subchapter::factory()->create(['chapter_id' => $otherChapter->id]);
+    $otherAssessment = Assessment::factory()->create(['subchapter_id' => $otherSubchapter->id]);
+
+    foreach (range(1, 5) as $index) {
+        $class = SchoolClass::factory()->create(['academic_year_id' => $year->id, 'name' => 'VII '.$index]);
+        $student = Student::factory()->create(['school_class_id' => $class->id]);
+        Score::factory()->create(['student_id' => $student->id, 'assessment_id' => $otherAssessment->id]);
+    }
+
+    $queries = 0;
+    DB::listen(function () use (&$queries): void {
+        $queries++;
+    });
+
+    $rows = $this->service->getClassProgress($year->id);
+
+    expect($rows)->toHaveCount(5);
+    expect(array_sum(array_column($rows, 'assessed_count')))->toBe(0);
+    expect($queries)->toBeLessThanOrEqual(5);
 });

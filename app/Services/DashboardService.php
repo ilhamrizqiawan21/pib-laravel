@@ -11,6 +11,7 @@ use App\Models\Score;
 use App\Models\Student;
 use App\Repositories\SettingsRepository;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\DB;
 
 class DashboardService
 {
@@ -125,26 +126,51 @@ class DashboardService
             ->orderBy('name')
             ->get();
 
+        if ($classes->isEmpty()) {
+            return [];
+        }
+
+        $classIds = $classes->pluck('id')->all();
+        $yearIds = $classes->pluck('academic_year_id')->unique()->all();
+        $studentCounts = DB::table('students')
+            ->select('school_class_id')
+            ->selectRaw('COUNT(*) as total')
+            ->whereIn('school_class_id', $classIds)
+            ->where('is_active', true)
+            ->groupBy('school_class_id')
+            ->pluck('total', 'school_class_id');
+        $materialCounts = DB::table('assessments')
+            ->join('subchapters', 'subchapters.id', '=', 'assessments.subchapter_id')
+            ->join('chapters', 'chapters.id', '=', 'subchapters.chapter_id')
+            ->join('curriculum_templates', 'curriculum_templates.id', '=', 'chapters.curriculum_template_id')
+            ->select('curriculum_templates.academic_year_id')
+            ->selectRaw('COUNT(*) as total')
+            ->whereIn('curriculum_templates.academic_year_id', $yearIds)
+            ->where('assessments.is_active', true)
+            ->groupBy('curriculum_templates.academic_year_id')
+            ->pluck('total', 'curriculum_templates.academic_year_id');
+        $assessedCounts = DB::table('scores')
+            ->join('students', 'students.id', '=', 'scores.student_id')
+            ->join('school_classes', 'school_classes.id', '=', 'students.school_class_id')
+            ->join('assessments', 'assessments.id', '=', 'scores.assessment_id')
+            ->join('subchapters', 'subchapters.id', '=', 'assessments.subchapter_id')
+            ->join('chapters', 'chapters.id', '=', 'subchapters.chapter_id')
+            ->join('curriculum_templates', 'curriculum_templates.id', '=', 'chapters.curriculum_template_id')
+            ->select('students.school_class_id')
+            ->selectRaw('COUNT(*) as total')
+            ->whereIn('students.school_class_id', $classIds)
+            ->whereColumn('curriculum_templates.academic_year_id', 'school_classes.academic_year_id')
+            ->where('students.is_active', true)
+            ->where('assessments.is_active', true)
+            ->whereNotNull('scores.score')
+            ->groupBy('students.school_class_id')
+            ->pluck('total', 'students.school_class_id');
+
         $rows = [];
         foreach ($classes as $c) {
-            $studentsCount = Student::query()
-                ->where('school_class_id', $c->id)
-                ->where('is_active', true)
-                ->count();
-
-            $materialsCount = Assessment::query()
-                ->where('is_active', true)
-                ->whereHas('subchapter.chapter.curriculumTemplate', function ($q) use ($c) {
-                    $q->where('academic_year_id', $c->academic_year_id);
-                })
-                ->count();
-
-            $assessedCount = Score::query()
-                ->join('students', 'students.id', '=', 'scores.student_id')
-                ->where('students.school_class_id', $c->id)
-                ->where('students.is_active', true)
-                ->whereNotNull('scores.score')
-                ->count();
+            $studentsCount = (int) ($studentCounts[$c->id] ?? 0);
+            $materialsCount = (int) ($materialCounts[$c->academic_year_id] ?? 0);
+            $assessedCount = (int) ($assessedCounts[$c->id] ?? 0);
 
             $expectedCount = $studentsCount * $materialsCount;
             $progress = new Progress($expectedCount, $assessedCount);

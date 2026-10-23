@@ -6,6 +6,7 @@ use App\Models\SchoolClass;
 use App\Models\Student;
 use App\Models\User;
 use App\Services\BackupService;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
 
 beforeEach(function () {
@@ -69,4 +70,53 @@ test('restoreFromJson menolak file tidak valid dan mencatat audit log FAILED', f
     // Audit log FAILED tercatat
     $lastAudit = AuditLog::query()->where('action', 'FAILED')->latest('id')->first();
     expect($lastAudit)->not->toBeNull();
+});
+
+test('restore menolak cadangan parsial sebelum menghapus data', function () {
+    expect(fn () => $this->service->restoreFromJson([
+        'app' => 'pib-penilaian',
+        'data' => [],
+    ], $this->admin))->toThrow(RestoreException::class);
+
+    expect(Student::whereKey($this->student->id)->exists())->toBeTrue();
+    expect(SchoolClass::whereKey($this->class->id)->exists())->toBeTrue();
+});
+
+test('restore menolak cadangan tanpa admin aktif dan mempertahankan data', function () {
+    $backup = $this->service->exportJson();
+    foreach ($backup['data']['users'] as &$user) {
+        $user['role'] = 'teacher';
+    }
+    unset($user);
+
+    expect(fn () => $this->service->restoreFromJson($backup, $this->admin))
+        ->toThrow(RestoreException::class);
+
+    expect(Student::whereKey($this->student->id)->exists())->toBeTrue();
+});
+
+test('restore tetap mencatat audit bila admin pemulih tidak ada dalam cadangan', function () {
+    $backup = $this->service->exportJson();
+    $backup['data']['users'] = array_values(array_filter(
+        $backup['data']['users'],
+        fn (array $user): bool => $user['id'] !== $this->admin->id
+    ));
+    $backup['data']['users'][0]['role'] = 'admin';
+    $backup['data']['users'][0]['is_active'] = true;
+
+    $this->service->restoreFromJson($backup, $this->admin);
+
+    $audit = AuditLog::where('action', 'RESTORE')->latest('id')->first();
+    expect($audit)->not->toBeNull();
+    expect($audit->user_id)->toBeNull();
+});
+
+test('restore tidak mengubah data bila mode pemeliharaan gagal aktif', function () {
+    $backup = $this->service->exportJson();
+    Artisan::shouldReceive('call')->once()->with('down')->andReturn(0);
+
+    expect(fn () => $this->service->restoreFromJson($backup, $this->admin))
+        ->toThrow(RestoreException::class);
+
+    expect(Student::whereKey($this->student->id)->exists())->toBeTrue();
 });

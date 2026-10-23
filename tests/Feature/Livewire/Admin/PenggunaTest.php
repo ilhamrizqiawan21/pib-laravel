@@ -62,6 +62,25 @@ test('admin dapat membuat pengguna baru dengan validasi dan audit log', function
     expect($audit)->not->toBeNull();
 });
 
+test('admin tidak dapat membuat akun atau mereset password kurang dari sepuluh karakter', function () {
+    Livewire::actingAs($this->admin)
+        ->test(Pengguna::class)
+        ->set('name', 'Guru Baru')
+        ->set('email', 'baru@sekolah.sch.id')
+        ->set('password', '123456789')
+        ->set('password_confirmation', '123456789')
+        ->call('createUser')
+        ->assertHasErrors(['password']);
+
+    Livewire::actingAs($this->admin)
+        ->test(Pengguna::class)
+        ->set('resetUserId', $this->teacher->id)
+        ->set('newPassword', '123456789')
+        ->set('newPassword_confirmation', '123456789')
+        ->call('resetPassword')
+        ->assertHasErrors(['newPassword']);
+});
+
 test('admin dapat menonaktifkan dan mengaktifkan kembali pengguna guru', function () {
     Livewire::actingAs($this->admin)
         ->test(Pengguna::class)

@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\AcademicYear;
 use App\Models\AuditLog;
 use App\Models\SchoolClass;
 use App\Models\Student;
@@ -52,4 +53,31 @@ test('unduhan template siswa tersedia dan memiliki header yang tepat', function 
     $response->assertOk();
     $response->assertHeader('content-disposition');
     expect($response->streamedContent())->toContain('nama,kelas,nis,nisn,jenis_kelamin');
+});
+
+test('impor memilih kelas pada tahun ajaran aktif ketika nama kelas berulang', function () {
+    $activeYear = AcademicYear::factory()->active()->create();
+    $otherYear = AcademicYear::factory()->create();
+    $activeClass = SchoolClass::factory()->create(['academic_year_id' => $activeYear->id, 'name' => 'VII A']);
+    SchoolClass::factory()->create(['academic_year_id' => $otherYear->id, 'name' => 'VII A']);
+
+    $file = UploadedFile::fake()->createWithContent('siswa.csv', "nama,kelas,nis\nSiswa Baru,VII A,991122\n");
+    $result = app(StudentImporter::class)->import($file);
+
+    expect($result->importedCount)->toBe(1);
+    expect(Student::where('nis', '991122')->value('school_class_id'))->toBe($activeClass->id);
+});
+
+test('impor menolak nama kelas ambigu bila tidak ada tahun ajaran aktif', function () {
+    $firstYear = AcademicYear::factory()->create();
+    $secondYear = AcademicYear::factory()->create();
+    SchoolClass::factory()->create(['academic_year_id' => $firstYear->id, 'name' => 'VII A']);
+    SchoolClass::factory()->create(['academic_year_id' => $secondYear->id, 'name' => 'VII A']);
+    $file = UploadedFile::fake()->createWithContent('siswa.csv', "nama,kelas,nis\nSiswa Baru,VII A,991122\n");
+
+    $result = app(StudentImporter::class)->import($file);
+
+    expect($result->importedCount)->toBe(0);
+    expect($result->failed)->toHaveCount(1);
+    expect($result->failed[0]['error'])->toContain('Aktifkan tahun ajaran');
 });

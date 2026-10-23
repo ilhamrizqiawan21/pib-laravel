@@ -3,7 +3,7 @@
 Target: satu server Linux (VPS/on-prem). Asumsi default di DECISIONS Q1–Q5. Dokumen ini diuji pada checkout bersih untuk TODO T-901.
 
 ## Prasyarat
-PHP 8.3+ (dikembangkan di 8.5) dengan ekstensi: `bcmath ctype curl dom fileinfo gd intl mbstring openssl pdo_sqlite pdo_mysql tokenizer xml zip` · Composer 2 · Node 22+ (hanya untuk build aset; boleh dibuild di CI/laptop) · nginx atau Caddy · `sqlite3`/`mysqldump` untuk backup.
+PHP 8.3+ (dikembangkan di 8.5) dengan ekstensi: `bcmath ctype curl dom fileinfo gd intl mbstring openssl pdo_sqlite pdo_mysql tokenizer xml zip` · Composer 2 · Node 22+ (hanya untuk build aset; boleh dibuild di CI/laptop) · nginx atau Caddy.
 
 ## Langkah (SQLite)
 ```bash
@@ -21,7 +21,7 @@ chown -R www-data:www-data storage bootstrap/cache database
 ## Web server
 - Root = `public/`. Hanya `index.php` yang dieksekusi. Tolak akses ke `.env`, `storage`, `database`, dotfile.
 - HTTPS wajib (Caddy otomatis, atau nginx + certbot). Teruskan `Host`, `X-Forwarded-Proto/For`; set `TrustProxies` untuk IP proxy.
-- `client_max_body_size 12m` (restore/impor). PHP: `upload_max_filesize=12M`, `post_max_size=12M`, `memory_limit=512M`, OPcache aktif. Laporan PDF seluruh kelas memakai sekitar 394 MiB pada audit performa; gunakan setidaknya 512M untuk merender kelas penuh.
+- `client_max_body_size 52m` (restore maksimal 50 MB; impor maksimal 2 MB). PHP: `upload_max_filesize=50M`, `post_max_size=52M`, `memory_limit=512M`, OPcache aktif. Laporan PDF seluruh kelas memakai sekitar 394 MiB pada audit performa; gunakan setidaknya 512M untuk merender kelas penuh.
 
 ## Penjadwal & backup
 Cron (satu baris): `* * * * * www-data cd /var/www/pib && php artisan schedule:run >> /dev/null 2>&1`
@@ -38,6 +38,7 @@ Rollback: `php artisan down`, pulihkan snapshot DB, checkout rilis sebelumnya, `
 
 ## MySQL (opsional)
 Buat DB `utf8mb4_unicode_ci`, set `DB_CONNECTION=mysql` + kredensial (pengguna khusus, hak minimal), `php artisan migrate --force`, lalu impor data.
+Backup terjadwal dan snapshot pra-restore pada MySQL berformat JSON, bukan berkas SQLite. Jalankan uji backup lalu restore pada server MySQL target sebelum mengandalkannya untuk produksi.
 
 ## Pemeriksaan pasca-deploy
 `/up` → 200 · login admin · buat data uji · unduh Excel/PDF · jalankan backup manual · cek `storage/logs` kosong dari error · `composer audit`.

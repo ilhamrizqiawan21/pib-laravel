@@ -11,10 +11,10 @@ final class AuditLogger
     /**
      * @param  array<string, mixed>|null  $meta  jangan isi data sensitif (password, token)
      */
-    public function record(string $entity, string|int $entityId, string $action, string $summary, ?array $meta = null, ?int $userId = null): AuditLog
+    public function record(string $entity, string|int $entityId, string $action, string $summary, ?array $meta = null, ?int $userId = null, bool $asSystem = false): AuditLog
     {
         return AuditLog::create([
-            'user_id' => $userId ?? Auth::id(),
+            'user_id' => $asSystem ? null : ($userId ?? Auth::id()),
             'entity' => $entity,
             'entity_id' => (string) $entityId,
             'action' => $action,
