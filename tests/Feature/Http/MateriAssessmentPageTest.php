@@ -29,6 +29,7 @@ test('pengguna dapat membuka halaman penilaian per materi', function () {
         ->get('/penilaian/materi')
         ->assertOk()
         ->assertSee('Penilaian per Materi')
+        ->assertSee('PENILAIAN • PER MATERI', escape: false)
         ->assertSee('8B')
         ->assertSee('Per siswa')
         ->assertSee('Per materi');

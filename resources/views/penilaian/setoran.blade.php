@@ -11,7 +11,7 @@
     >
     <!-- Header Halaman -->
     <x-page-header
-        eyebrow="PENILAIAN &bull; PER SISWA"
+        eyebrow="PENILAIAN • PER SISWA"
         title="Setoran"
         description="Pilih siswa yang maju, ketik jumlah kesalahan, lalu tekan Enter. Nilai langsung tersimpan dan kursor pindah ke materi berikutnya."
     >

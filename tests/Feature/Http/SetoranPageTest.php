@@ -43,6 +43,7 @@ test('pengguna dapat membuka halaman setoran dan melihat dropdown kelas serta as
         ->get('/penilaian/setoran')
         ->assertOk()
         ->assertSee('Setoran')
+        ->assertSee('PENILAIAN • PER SISWA', escape: false)
         ->assertSee('7A')
         ->assertSee('Per siswa')
         ->assertSee('Per materi');

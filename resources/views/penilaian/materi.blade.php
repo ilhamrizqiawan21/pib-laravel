@@ -11,7 +11,7 @@
     >
         <!-- Header Halaman -->
         <x-page-header
-            eyebrow="PENILAIAN &bull; PER MATERI"
+            eyebrow="PENILAIAN • PER MATERI"
             title="Penilaian per Materi"
             description="Pilih kelas dan materi, lalu nilai seluruh siswa dalam satu kelas secara berurutan."
         >
