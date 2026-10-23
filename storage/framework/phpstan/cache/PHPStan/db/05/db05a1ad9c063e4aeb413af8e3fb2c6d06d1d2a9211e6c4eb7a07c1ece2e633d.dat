@@ -1,0 +1,70 @@
+O:23:"PHPStan\Cache\CacheItem":2:{s:11:"variableKey";s:83:"v3-6.73.0.6-8.5.12-619b64d258e65521d08c31888f302c033175bc4e70502d857b870c1a115129b2";s:4:"data";a:22:{s:13:"locatedSource";a:2:{s:5:"class";s:60:"PHPStan\BetterReflection\SourceLocator\Located\LocatedSource";s:4:"data";a:2:{s:4:"name";s:25:"App\Services\RecapService";s:8:"filename";s:71:"/home/ilhamrizqiawan/Projects/pib-laravel/app/Services/RecapService.php";}}s:9:"namespace";s:12:"App\Services";s:4:"name";s:25:"App\Services\RecapService";s:9:"shortName";s:12:"RecapService";s:11:"isInterface";b:0;s:7:"isTrait";b:0;s:6:"isEnum";b:0;s:12:"isBackedEnum";b:0;s:9:"modifiers";i:0;s:10:"docComment";N;s:10:"attributes";a:0:{}s:9:"startLine";i:10;s:7:"endLine";i:368;s:11:"startColumn";i:1;s:9:"endColumn";i:1;s:15:"parentClassName";N;s:20:"implementsClassNames";a:0:{}s:15:"traitClassNames";a:0:{}s:18:"immediateConstants";a:0:{}s:19:"immediateProperties";a:0:{}s:16:"immediateMethods";a:6:{s:7:"getRows";a:20:{s:4:"name";s:7:"getRows";s:10:"parameters";a:2:{s:6:"filter";a:13:{s:4:"name";s:6:"filter";s:7:"default";N;s:4:"type";a:2:{s:5:"class";s:55:"PHPStan\BetterReflection\Reflection\ReflectionNamedType";s:4:"data";a:2:{s:4:"name";s:19:"App\DTO\RecapFilter";s:12:"isIdentifier";b:0;}}s:10:"isVariadic";b:0;s:5:"byRef";b:0;s:10:"isPromoted";b:0;s:10:"attributes";a:0:{}s:9:"startLine";i:41;s:7:"endLine";i:41;s:11:"startColumn";i:29;s:9:"endColumn";i:47;s:14:"parameterIndex";i:0;s:10:"isOptional";b:0;}s:9:"studentId";a:13:{s:4:"name";s:9:"studentId";s:7:"default";a:2:{s:4:"code";s:4:"null";s:10:"attributes";a:6:{s:9:"startLine";i:41;s:7:"endLine";i:41;s:13:"startTokenPos";i:53;s:12:"startFilePos";i:1138;s:11:"endTokenPos";i:53;s:10:"endFilePos";i:1141;}}s:4:"type";a:2:{s:5:"class";s:55:"PHPStan\BetterReflection\Reflection\ReflectionUnionType";s:4:"data";a:1:{s:5:"types";a:2:{i:0;a:2:{s:5:"class";s:55:"PHPStan\BetterReflection\Reflection\ReflectionNamedType";s:4:"data";a:2:{s:4:"name";s:3:"int";s:12:"isIdentifier";b:1;}}i:1;a:2:{s:5:"class";s:55:"PHPStan\BetterReflection\Reflection\ReflectionNamedType";s:4:"data";a:2:{s:4:"name";s:4:"null";s:12:"isIdentifier";b:1;}}}}}s:10:"isVariadic";b:0;s:5:"byRef";b:0;s:10:"isPromoted";b:0;s:10:"attributes";a:0:{}s:9:"startLine";i:41;s:7:"endLine";i:41;s:11:"startColumn";i:50;s:9:"endColumn";i:71;s:14:"parameterIndex";i:1;s:10:"isOptional";b:1;}}s:16:"returnsReference";b:0;s:10:"returnType";a:2:{s:5:"class";s:55:"PHPStan\BetterReflection\Reflection\ReflectionNamedType";s:4:"data";a:2:{s:4:"name";s:5:"array";s:12:"isIdentifier";b:1;}}s:10:"attributes";a:0:{}s:10:"docComment";s:777:"/**
+ * Ambil baris data gabungan rekap per siswa x materi berdasarkan filter.
+ * Menggunakan ANSI SQL JOIN tanpa N+1 query.
+ *
+ * @return array<int, array{
+ *     student_id: int,
+ *     class_id: int,
+ *     name: string,
+ *     nis: string|null,
+ *     gender: string|null,
+ *     class_name: string,
+ *     academic_year_id: int,
+ *     academic_year_name: string,
+ *     semester: string,
+ *     assessment_id: int|null,
+ *     chapter_id: int|null,
+ *     subchapter_id: int|null,
+ *     chapter: string|null,
+ *     subchapter: string|null,
+ *     assessment: string|null,
+ *     weight: float|null,
+ *     score: int|null,
+ *     mistakes: int|null,
+ *     assessed_at: string|null,
+ *     initials: string|null,
+ *     note: string|null,
+ *     status: string
+ * }>
+ */";s:9:"startLine";i:41;s:7:"endLine";i:155;s:11:"startColumn";i:5;s:9:"endColumn";i:5;s:10:"couldThrow";b:0;s:9:"isClosure";b:0;s:11:"isGenerator";b:0;s:10:"isVariadic";b:0;s:9:"modifiers";i:1;s:9:"namespace";s:12:"App\Services";s:18:"declaringClassName";s:25:"App\Services\RecapService";s:21:"implementingClassName";s:25:"App\Services\RecapService";s:16:"currentClassName";s:25:"App\Services\RecapService";s:9:"aliasName";N;}s:19:"calculateScoreStats";a:20:{s:4:"name";s:19:"calculateScoreStats";s:10:"parameters";a:1:{s:4:"rows";a:13:{s:4:"name";s:4:"rows";s:7:"default";N;s:4:"type";a:2:{s:5:"class";s:55:"PHPStan\BetterReflection\Reflection\ReflectionNamedType";s:4:"data";a:2:{s:4:"name";s:5:"array";s:12:"isIdentifier";b:1;}}s:10:"isVariadic";b:0;s:5:"byRef";b:0;s:10:"isPromoted";b:0;s:10:"attributes";a:0:{}s:9:"startLine";i:170;s:7:"endLine";i:170;s:11:"startColumn";i:41;s:9:"endColumn";i:51;s:14:"parameterIndex";i:0;s:10:"isOptional";b:0;}}s:16:"returnsReference";b:0;s:10:"returnType";a:2:{s:5:"class";s:55:"PHPStan\BetterReflection\Reflection\ReflectionNamedType";s:4:"data";a:2:{s:4:"name";s:5:"array";s:12:"isIdentifier";b:1;}}s:10:"attributes";a:0:{}s:10:"docComment";s:313:"/**
+ * Hitung ringkasan statistik (expected, assessed, total, average, percent, status).
+ *
+ * @param  array<int, array<string, mixed>>  $rows
+ * @return array{
+ *     expected: int,
+ *     assessed: int,
+ *     total: int,
+ *     average: float|null,
+ *     percent: int,
+ *     status: CompletionStatus
+ * }
+ */";s:9:"startLine";i:170;s:7:"endLine";i:193;s:11:"startColumn";i:5;s:9:"endColumn";i:5;s:10:"couldThrow";b:0;s:9:"isClosure";b:0;s:11:"isGenerator";b:0;s:10:"isVariadic";b:0;s:9:"modifiers";i:1;s:9:"namespace";s:12:"App\Services";s:18:"declaringClassName";s:25:"App\Services\RecapService";s:21:"implementingClassName";s:25:"App\Services\RecapService";s:16:"currentClassName";s:25:"App\Services\RecapService";s:9:"aliasName";N;}s:9:"summarize";a:20:{s:4:"name";s:9:"summarize";s:10:"parameters";a:1:{s:4:"rows";a:13:{s:4:"name";s:4:"rows";s:7:"default";N;s:4:"type";a:2:{s:5:"class";s:55:"PHPStan\BetterReflection\Reflection\ReflectionNamedType";s:4:"data";a:2:{s:4:"name";s:5:"array";s:12:"isIdentifier";b:1;}}s:10:"isVariadic";b:0;s:5:"byRef";b:0;s:10:"isPromoted";b:0;s:10:"attributes";a:0:{}s:9:"startLine";i:205;s:7:"endLine";i:205;s:11:"startColumn";i:31;s:9:"endColumn";i:41;s:14:"parameterIndex";i:0;s:10:"isOptional";b:0;}}s:16:"returnsReference";b:0;s:10:"returnType";a:2:{s:5:"class";s:55:"PHPStan\BetterReflection\Reflection\ReflectionNamedType";s:4:"data";a:2:{s:4:"name";s:5:"array";s:12:"isIdentifier";b:1;}}s:10:"attributes";a:0:{}s:10:"docComment";s:310:"/**
+ * Ringkas baris-baris rekap menjadi kelompok Siswa, Kelas, dan Subbab.
+ *
+ * @param  array<int, array<string, mixed>>  $rows
+ * @return array{
+ *     students: array<int, array<string, mixed>>,
+ *     classes: array<int, array<string, mixed>>,
+ *     subchapters: array<int, array<string, mixed>>
+ * }
+ */";s:9:"startLine";i:205;s:7:"endLine";i:284;s:11:"startColumn";i:5;s:9:"endColumn";i:5;s:10:"couldThrow";b:0;s:9:"isClosure";b:0;s:11:"isGenerator";b:0;s:10:"isVariadic";b:0;s:9:"modifiers";i:1;s:9:"namespace";s:12:"App\Services";s:18:"declaringClassName";s:25:"App\Services\RecapService";s:21:"implementingClassName";s:25:"App\Services\RecapService";s:16:"currentClassName";s:25:"App\Services\RecapService";s:9:"aliasName";N;}s:8:"getRecap";a:20:{s:4:"name";s:8:"getRecap";s:10:"parameters";a:1:{s:6:"filter";a:13:{s:4:"name";s:6:"filter";s:7:"default";N;s:4:"type";a:2:{s:5:"class";s:55:"PHPStan\BetterReflection\Reflection\ReflectionNamedType";s:4:"data";a:2:{s:4:"name";s:19:"App\DTO\RecapFilter";s:12:"isIdentifier";b:0;}}s:10:"isVariadic";b:0;s:5:"byRef";b:0;s:10:"isPromoted";b:0;s:10:"attributes";a:0:{}s:9:"startLine";i:295;s:7:"endLine";i:295;s:11:"startColumn";i:30;s:9:"endColumn";i:48;s:14:"parameterIndex";i:0;s:10:"isOptional";b:0;}}s:16:"returnsReference";b:0;s:10:"returnType";a:2:{s:5:"class";s:55:"PHPStan\BetterReflection\Reflection\ReflectionNamedType";s:4:"data";a:2:{s:4:"name";s:5:"array";s:12:"isIdentifier";b:1;}}s:10:"attributes";a:0:{}s:10:"docComment";s:228:"/**
+ * Dapatkan rekap lengkap sesuai filter.
+ *
+ * @return array{
+ *     students: array<int, array<string, mixed>>,
+ *     classes: array<int, array<string, mixed>>,
+ *     subchapters: array<int, array<string, mixed>>
+ * }
+ */";s:9:"startLine";i:295;s:7:"endLine";i:300;s:11:"startColumn";i:5;s:9:"endColumn";i:5;s:10:"couldThrow";b:0;s:9:"isClosure";b:0;s:11:"isGenerator";b:0;s:10:"isVariadic";b:0;s:9:"modifiers";i:1;s:9:"namespace";s:12:"App\Services";s:18:"declaringClassName";s:25:"App\Services\RecapService";s:21:"implementingClassName";s:25:"App\Services\RecapService";s:16:"currentClassName";s:25:"App\Services\RecapService";s:9:"aliasName";N;}s:17:"getStudentDetails";a:20:{s:4:"name";s:17:"getStudentDetails";s:10:"parameters";a:2:{s:9:"studentId";a:13:{s:4:"name";s:9:"studentId";s:7:"default";N;s:4:"type";a:2:{s:5:"class";s:55:"PHPStan\BetterReflection\Reflection\ReflectionNamedType";s:4:"data";a:2:{s:4:"name";s:3:"int";s:12:"isIdentifier";b:1;}}s:10:"isVariadic";b:0;s:5:"byRef";b:0;s:10:"isPromoted";b:0;s:10:"attributes";a:0:{}s:9:"startLine";i:307;s:7:"endLine";i:307;s:11:"startColumn";i:39;s:9:"endColumn";i:52;s:14:"parameterIndex";i:0;s:10:"isOptional";b:0;}s:6:"filter";a:13:{s:4:"name";s:6:"filter";s:7:"default";N;s:4:"type";a:2:{s:5:"class";s:55:"PHPStan\BetterReflection\Reflection\ReflectionNamedType";s:4:"data";a:2:{s:4:"name";s:19:"App\DTO\RecapFilter";s:12:"isIdentifier";b:0;}}s:10:"isVariadic";b:0;s:5:"byRef";b:0;s:10:"isPromoted";b:0;s:10:"attributes";a:0:{}s:9:"startLine";i:307;s:7:"endLine";i:307;s:11:"startColumn";i:55;s:9:"endColumn";i:73;s:14:"parameterIndex";i:1;s:10:"isOptional";b:0;}}s:16:"returnsReference";b:0;s:10:"returnType";a:2:{s:5:"class";s:55:"PHPStan\BetterReflection\Reflection\ReflectionNamedType";s:4:"data";a:2:{s:4:"name";s:5:"array";s:12:"isIdentifier";b:1;}}s:10:"attributes";a:0:{}s:10:"docComment";s:114:"/**
+ * Dapatkan rincian detail per materi untuk siswa tertentu.
+ *
+ * @return array<int, array<string, mixed>>
+ */";s:9:"startLine";i:307;s:7:"endLine";i:310;s:11:"startColumn";i:5;s:9:"endColumn";i:5;s:10:"couldThrow";b:0;s:9:"isClosure";b:0;s:11:"isGenerator";b:0;s:10:"isVariadic";b:0;s:9:"modifiers";i:1;s:9:"namespace";s:12:"App\Services";s:18:"declaringClassName";s:25:"App\Services\RecapService";s:21:"implementingClassName";s:25:"App\Services\RecapService";s:16:"currentClassName";s:25:"App\Services\RecapService";s:9:"aliasName";N;}s:9:"getMatrix";a:20:{s:4:"name";s:9:"getMatrix";s:10:"parameters";a:1:{s:7:"classId";a:13:{s:4:"name";s:7:"classId";s:7:"default";N;s:4:"type";a:2:{s:5:"class";s:55:"PHPStan\BetterReflection\Reflection\ReflectionNamedType";s:4:"data";a:2:{s:4:"name";s:3:"int";s:12:"isIdentifier";b:1;}}s:10:"isVariadic";b:0;s:5:"byRef";b:0;s:10:"isPromoted";b:0;s:10:"attributes";a:0:{}s:9:"startLine";i:321;s:7:"endLine";i:321;s:11:"startColumn";i:31;s:9:"endColumn";i:42;s:14:"parameterIndex";i:0;s:10:"isOptional";b:0;}}s:16:"returnsReference";b:0;s:10:"returnType";a:2:{s:5:"class";s:55:"PHPStan\BetterReflection\Reflection\ReflectionNamedType";s:4:"data";a:2:{s:4:"name";s:5:"array";s:12:"isIdentifier";b:1;}}s:10:"attributes";a:0:{}s:10:"docComment";s:406:"/**
+ * Bangun matriks 2 dimensi (Siswa x Materi) untuk kelas tertentu (FR-R2).
+ *
+ * @return array{
+ *     students: array<int, array{id: int, name: string, nis: string|null}>,
+ *     materials: array<int, array{id: int, title: string, chapter: string, subchapter: string, weight: float}>,
+ *     cells: array<string, array{score: int|null, mistakes: int|null, weight: float|null, status: string}>
+ * }
+ */";s:9:"startLine";i:321;s:7:"endLine";i:367;s:11:"startColumn";i:5;s:9:"endColumn";i:5;s:10:"couldThrow";b:0;s:9:"isClosure";b:0;s:11:"isGenerator";b:0;s:10:"isVariadic";b:0;s:9:"modifiers";i:1;s:9:"namespace";s:12:"App\Services";s:18:"declaringClassName";s:25:"App\Services\RecapService";s:21:"implementingClassName";s:25:"App\Services\RecapService";s:16:"currentClassName";s:25:"App\Services\RecapService";s:9:"aliasName";N;}}s:10:"traitsData";a:4:{s:7:"aliases";a:0:{}s:9:"modifiers";a:0:{}s:11:"precedences";a:0:{}s:6:"hashes";a:0:{}}}}
