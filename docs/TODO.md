@@ -152,7 +152,7 @@ Legenda prioritas mengikuti PRD (P0 wajib 1.0).
 
 ## Fase 9 — Pengerasan & rilis
 
-- [ ] **T-901 Dokumen deploy teruji** — jalankan DEPLOYMENT.md pada server bersih/container; perbaiki dokumen.
+- [x] **T-901 Dokumen deploy teruji** — selesai 2026-10-23. Bukti: instalasi SQLite di container PHP 8.5.12 berhasil; migrasi, admin, cache, route:list, npm ci/build, `/up` 200, `/login` 200; `composer check` ✔ (226 tes, Larastan 0 error).
 - [ ] **T-902 Audit keamanan** — jalankan checklist AI_RULES §5 untuk setiap rute (tabel hasil di `docs/security-checklist.md`); pastikan tak ada rute tanpa auth selain `/login`, `/up`.
 - [ ] **T-903 Audit performa** — seed 40 siswa × 100 materi × 5 kelas; ukur rekap/Excel/PDF/payload Setoran; catat di `docs/performance.md`; perbaiki bila melampaui PRD §7.
 - [ ] **T-904 A11y & responsif** — uji 360×800 dan keyboard di semua layar; perbaiki.

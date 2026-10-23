@@ -75,4 +75,3 @@ test('pib:import-legacy berhasil mengimpor seluruh data dari fixture lama dengan
     expect($legacyUser)->not->toBeNull();
     expect($legacyUser->is_active)->toBeFalse();
 });
-

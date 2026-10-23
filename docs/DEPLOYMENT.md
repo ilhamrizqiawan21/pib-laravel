@@ -1,6 +1,6 @@
 # DEPLOYMENT
 
-Target: satu server Linux (VPS/on-prem). Asumsi default di DECISIONS Q1–Q5. Dokumen ini dilengkapi/diuji pada TODO T-901.
+Target: satu server Linux (VPS/on-prem). Asumsi default di DECISIONS Q1–Q5. Dokumen ini diuji pada checkout bersih untuk TODO T-901.
 
 ## Prasyarat
 PHP 8.3+ (dikembangkan di 8.5) dengan ekstensi: `bcmath ctype curl dom fileinfo gd intl mbstring openssl pdo_sqlite pdo_mysql tokenizer xml zip` · Composer 2 · Node 22+ (hanya untuk build aset; boleh dibuild di CI/laptop) · nginx atau Caddy · `sqlite3`/`mysqldump` untuk backup.
@@ -41,3 +41,13 @@ Buat DB `utf8mb4_unicode_ci`, set `DB_CONNECTION=mysql` + kredensial (pengguna k
 
 ## Pemeriksaan pasca-deploy
 `/up` → 200 · login admin · buat data uji · unduh Excel/PDF · jalankan backup manual · cek `storage/logs` kosong dari error · `composer audit`.
+
+## Catatan verifikasi T-901
+Pada 2026-10-23, langkah SQLite dijalankan pada checkout bersih dalam container PHP 8.5.12 (Composer 2.10.3, Alpine Linux).
+Ekstensi deploy dipasang, lalu `composer install --no-dev --optimize-autoloader`, pembuatan `.env` dan app key, migrasi,
+pembuatan admin non-interaktif, cache config/route/view/event, serta `php artisan route:list` berhasil. Pada checkout bersih
+terpisah, `npm ci` dan `npm run build` berhasil dengan Node 22.23.1; server Artisan mengembalikan `/up` HTTP 200 dan
+`/login` HTTP 200. Gerbang `composer check` juga lulus: Pint, Larastan 0 error, Pest 226 tes.
+
+Pengujian container ini memverifikasi langkah instalasi dan bootstrap aplikasi. Konfigurasi nginx/Caddy, HTTPS, izin pengguna
+`www-data`, serta alur login interaktif melalui browser tetap perlu diperiksa pada host target.
