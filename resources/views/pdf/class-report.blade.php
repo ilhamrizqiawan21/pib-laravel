@@ -65,12 +65,13 @@
         }
         table.data-table {
             width: 100%;
+            table-layout: fixed;
             border-collapse: collapse;
             margin-bottom: 12px;
             page-break-inside: auto;
         }
         table.data-table tr {
-            page-break-inside: avoid;
+            page-break-inside: auto;
             page-break-after: auto;
         }
         .chapter-band {

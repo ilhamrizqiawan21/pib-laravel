@@ -50,6 +50,17 @@ test('filter tidak valid mengembalikan 422 dengan pesan jelas', function () {
 });
 
 test('guru dapat mengunduh excel dengan struktur sheet dan data yang sesuai', function () {
+    $secondStudent = Student::factory()->create([
+        'school_class_id' => $this->class->id,
+        'name' => 'Zainab',
+    ]);
+    Score::factory()->create([
+        'student_id' => $secondStudent->id,
+        'assessment_id' => $this->assessment->id,
+        'score' => 80,
+        'mistakes' => 10,
+    ]);
+
     $response = $this->actingAs($this->user)
         ->get('/laporan/excel?academic_year_id='.$this->year->id.'&class_id='.$this->class->id);
 
@@ -76,6 +87,12 @@ test('guru dapat mengunduh excel dengan struktur sheet dan data yang sesuai', fu
     expect($detail)->not->toBeNull();
     expect($detail->getCell('B5')->getValue())->toBe('Ahmad');
     expect($detail->getCell('I5')->getValue())->toBe(85);
+    expect($detail->getCell('B6')->getValue())->toBe('Zainab');
+    expect($detail->getConditionalStyles('A6'))->not->toBeEmpty();
+
+    $materialSheet = $spreadsheet->getSheetByName('Laporan per Materi');
+    expect($materialSheet)->not->toBeNull();
+    expect($materialSheet->getConditionalStyles('A9'))->not->toBeEmpty();
 
     // Cek sheet Rekap Siswa
     $recapSheet = $spreadsheet->getSheetByName('Rekap Siswa');

@@ -63,24 +63,33 @@ class ReportGrouper
                 $studentRows = [];
                 foreach ($students as $studentItems) {
                     $first = $studentItems[0];
-                    $available = array_values(array_filter($studentItems, fn ($r) => $r['assessment_id'] !== null));
-                    $scored = array_values(array_filter($available, fn ($r) => $r['score'] !== null));
-
                     $total = 0.0;
                     $weight = 0.0;
                     $rawTotal = 0;
-                    foreach ($scored as $s) {
-                        $score = (int) $s['score'];
-                        $w = (float) ($s['weight'] ?? 1.0);
+                    $availableCount = 0;
+                    $scoredCount = 0;
+                    foreach ($studentItems as $item) {
+                        if ($item['assessment_id'] === null) {
+                            continue;
+                        }
+
+                        $availableCount++;
+                        if ($item['score'] === null) {
+                            continue;
+                        }
+
+                        $scoredCount++;
+                        $score = (int) $item['score'];
+                        $w = (float) ($item['weight'] ?? 1.0);
                         $total += $score * $w;
                         $weight += $w;
                         $rawTotal += $score;
                     }
 
                     $status = match (true) {
-                        count($available) === 0 => 'Materi belum tersedia',
-                        count($scored) === 0 => 'Belum dinilai',
-                        count($scored) === count($available) => 'Dinilai',
+                        $availableCount === 0 => 'Materi belum tersedia',
+                        $scoredCount === 0 => 'Belum dinilai',
+                        $scoredCount === $availableCount => 'Dinilai',
                         default => 'Sebagian dinilai',
                     };
 
@@ -94,8 +103,8 @@ class ReportGrouper
                         'weightedTotal' => $total,
                         'scoredWeight' => $weight,
                         'rawTotal' => $rawTotal,
-                        'assessed' => count($scored),
-                        'totalItems' => count($available),
+                        'assessed' => $scoredCount,
+                        'totalItems' => $availableCount,
                         'status' => $status,
                     ];
                 }

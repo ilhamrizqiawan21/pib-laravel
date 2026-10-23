@@ -21,7 +21,7 @@ chown -R www-data:www-data storage bootstrap/cache database
 ## Web server
 - Root = `public/`. Hanya `index.php` yang dieksekusi. Tolak akses ke `.env`, `storage`, `database`, dotfile.
 - HTTPS wajib (Caddy otomatis, atau nginx + certbot). Teruskan `Host`, `X-Forwarded-Proto/For`; set `TrustProxies` untuk IP proxy.
-- `client_max_body_size 12m` (restore/impor). PHP: `upload_max_filesize=12M`, `post_max_size=12M`, `memory_limit=256M`, OPcache aktif.
+- `client_max_body_size 12m` (restore/impor). PHP: `upload_max_filesize=12M`, `post_max_size=12M`, `memory_limit=512M`, OPcache aktif. Laporan PDF seluruh kelas memakai sekitar 394 MiB pada audit performa; gunakan setidaknya 512M untuk merender kelas penuh.
 
 ## Penjadwal & backup
 Cron (satu baris): `* * * * * www-data cd /var/www/pib && php artisan schedule:run >> /dev/null 2>&1`

@@ -154,7 +154,7 @@ Legenda prioritas mengikuti PRD (P0 wajib 1.0).
 
 - [x] **T-901 Dokumen deploy teruji** — selesai 2026-10-23. Bukti: instalasi SQLite di container PHP 8.5.12 berhasil; migrasi, admin, cache, route:list, npm ci/build, `/up` 200, `/login` 200; `composer check` ✔ (226 tes, Larastan 0 error).
 - [x] **T-902 Audit keamanan** — selesai 2026-10-23. Bukti: `docs/security-checklist.md`, `tests/Feature/Security/RouteAccessAuditTest.php` (7 tes); route inventory, auth/admin/CSRF, signed upload, validation, rate limit; `composer check` ✔ (235 tes, Larastan 0 error).
-- [ ] **T-903 Audit performa** — seed 40 siswa × 100 materi × 5 kelas; ukur rekap/Excel/PDF/payload Setoran; catat di `docs/performance.md`; perbaiki bila melampaui PRD §7.
+- [x] **T-903 Audit performa** — selesai 2026-10-23. Bukti: `scripts/performance-audit.php`, `docs/performance.md`; fixture 5 kelas × 40 siswa × 100 materi; rekap 27 ms (<500 ms), Excel 2,13 dtk dan PDF median 9,91 dtk (<10 dtk), payload Setoran 3 query; composer check ✔ (235 tes, Larastan 0 error). PDF mendekati batas (maks 10,27 dtk; 394 MiB), `DEPLOYMENT.md` kini menyarankan memory_limit 512M.
 - [ ] **T-904 A11y & responsif** — uji 360×800 dan keyboard di semua layar; perbaiki.
 - [ ] **T-905 Rilis 1.0** — semua KP PRD §8 centang; tag `v1.0.0`; catatan rilis.
 

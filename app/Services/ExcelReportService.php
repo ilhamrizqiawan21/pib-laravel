@@ -8,6 +8,7 @@ use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\Conditional;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
@@ -229,25 +230,20 @@ class ExcelReportService
                 $this->styleTableHeader($sheet, $currentRow, 5);
                 $currentRow++;
 
+                $studentRowsStart = $currentRow;
                 foreach ($classGroup['rows'] as $index => $row) {
-                    $sheet->setCellValue("A{$currentRow}", $index + 1);
-                    $sheet->setCellValue("B{$currentRow}", $row['name']);
-                    $sheet->setCellValue("C{$currentRow}", $row['gender'] ?: '-');
-                    $sheet->setCellValue("D{$currentRow}", $row['average'] ?? '');
-                    $sheet->setCellValue("E{$currentRow}", $row['status']);
-
-                    $sheet->getRowDimension($currentRow)->setRowHeight(20);
-                    $sheet->getStyle("A{$currentRow}:E{$currentRow}")->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
-                    $sheet->getStyle("A{$currentRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-                    $sheet->getStyle("C{$currentRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-                    $sheet->getStyle("D{$currentRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
-
-                    if ($index % 2 === 1) {
-                        $sheet->getStyle("A{$currentRow}:E{$currentRow}")->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB(self::COLOR_STRIPE);
-                    }
+                    $sheet->fromArray([
+                        $index + 1,
+                        $row['name'],
+                        $row['gender'] ?: '-',
+                        $row['average'] ?? '',
+                        $row['status'],
+                    ], null, "A{$currentRow}");
 
                     $currentRow++;
                 }
+
+                $this->styleStudentRows($sheet, $studentRowsStart, $currentRow - 1, 'E', ['A', 'C'], ['D']);
 
                 $classStats = $this->reportGrouper->averageStats($classGroup['rows']);
                 $sheet->setCellValue("B{$currentRow}", 'Ringkasan kelas');
@@ -436,35 +432,29 @@ class ExcelReportService
         $this->styleTableHeader($sheet, 4, 14);
 
         $currentRow = 5;
+        $studentRowsStart = $currentRow;
         foreach ($rows as $index => $row) {
-            $sheet->setCellValue("A{$currentRow}", $row['nis'] ?? '');
-            $sheet->setCellValue("B{$currentRow}", $row['name']);
-            $sheet->setCellValue("C{$currentRow}", $row['gender'] ?: '-');
-            $sheet->setCellValue("D{$currentRow}", $row['class_name']);
-            $sheet->setCellValue("E{$currentRow}", $row['chapter'] ?? '');
-            $sheet->setCellValue("F{$currentRow}", $row['subchapter'] ?? '');
-            $sheet->setCellValue("G{$currentRow}", $row['assessment'] ?? '');
-            $sheet->setCellValue("H{$currentRow}", $row['weight'] ?? '');
-            $sheet->setCellValue("I{$currentRow}", $row['score'] ?? '');
-            $sheet->setCellValue("J{$currentRow}", $row['mistakes'] ?? '');
-            $sheet->setCellValue("K{$currentRow}", $row['status']);
-            $sheet->setCellValue("L{$currentRow}", $row['assessed_at'] ?? '');
-            $sheet->setCellValue("M{$currentRow}", $row['initials'] ?? '');
-            $sheet->setCellValue("N{$currentRow}", $row['note'] ?? '');
-
-            $sheet->getRowDimension($currentRow)->setRowHeight(20);
-            $sheet->getStyle("A{$currentRow}:N{$currentRow}")->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
-            $sheet->getStyle("C{$currentRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-            $sheet->getStyle("H{$currentRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
-            $sheet->getStyle("I{$currentRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
-            $sheet->getStyle("J{$currentRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
-
-            if ($index % 2 === 1) {
-                $sheet->getStyle("A{$currentRow}:N{$currentRow}")->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB(self::COLOR_STRIPE);
-            }
+            $sheet->fromArray([
+                $row['nis'] ?? '',
+                $row['name'],
+                $row['gender'] ?: '-',
+                $row['class_name'],
+                $row['chapter'] ?? '',
+                $row['subchapter'] ?? '',
+                $row['assessment'] ?? '',
+                $row['weight'] ?? '',
+                $row['score'] ?? '',
+                $row['mistakes'] ?? '',
+                $row['status'],
+                $row['assessed_at'] ?? '',
+                $row['initials'] ?? '',
+                $row['note'] ?? '',
+            ], null, "A{$currentRow}");
 
             $currentRow++;
         }
+
+        $this->styleStudentRows($sheet, $studentRowsStart, $currentRow - 1, 'N', ['C'], ['H', 'I', 'J']);
 
         $sheet->setAutoFilter('A4:N'.max(4, $currentRow - 1));
 
@@ -473,5 +463,45 @@ class ExcelReportService
             $col = Coordinate::stringFromColumnIndex($idx + 1);
             $sheet->getColumnDimension($col)->setWidth($width);
         }
+    }
+
+    /**
+     * @param  array<int, string>  $centerColumns
+     * @param  array<int, string>  $rightColumns
+     */
+    private function styleStudentRows(
+        Worksheet $sheet,
+        int $firstRow,
+        int $lastRow,
+        string $lastColumn,
+        array $centerColumns,
+        array $rightColumns,
+    ): void {
+        if ($lastRow < $firstRow) {
+            return;
+        }
+
+        $range = "A{$firstRow}:{$lastColumn}{$lastRow}";
+        $sheet->getStyle($range)->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+
+        foreach ($centerColumns as $column) {
+            $sheet->getStyle("{$column}{$firstRow}:{$column}{$lastRow}")
+                ->getAlignment()
+                ->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        }
+
+        foreach ($rightColumns as $column) {
+            $sheet->getStyle("{$column}{$firstRow}:{$column}{$lastRow}")
+                ->getAlignment()
+                ->setHorizontal(Alignment::HORIZONTAL_RIGHT);
+        }
+
+        $stripe = new Conditional;
+        $stripe->setConditionType(Conditional::CONDITION_EXPRESSION);
+        $stripe->addCondition("MOD(ROW()-{$firstRow},2)=1");
+        $stripe->getStyle()->getFill()->setFillType(Fill::FILL_SOLID)
+            ->getStartColor()->setRGB(self::COLOR_STRIPE);
+
+        $sheet->getStyle($range)->setConditionalStyles([$stripe]);
     }
 }
