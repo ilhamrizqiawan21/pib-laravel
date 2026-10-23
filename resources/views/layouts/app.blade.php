@@ -6,6 +6,8 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>{{ isset($title) ? $title . ' — ' . config('app.name', 'PIB Penilaian') : config('app.name', 'PIB Penilaian') }}</title>
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
+    <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
 
     <script>
         if (localStorage.getItem('pib-sidebar-collapsed') === 'true') {

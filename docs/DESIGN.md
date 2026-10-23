@@ -25,6 +25,7 @@ Tujuan: **modern, bersih, konsisten, cepat dipakai di kelas**, bukan "CRUD klasi
 - Gelap: **tidak** untuk 1.0 (P2). Token disusun agar mudah ditambah (`:root[data-theme=dark]`).
 - Kontras teks ≥ WCAG AA. Jangan membawa informasi hanya dengan warna — pasangkan ikon/teks (mis. status).
 - Ikon: **Lucide** (SVG inline via Blade component `<x-icon name="…">`), stroke 1.7, ukuran 20.
+- Favicon: monogram **P** putih pada latar `--brand-strong`; sumber SVG dan ICO kompatibilitas ada di `public/favicon.svg` dan `public/favicon.ico`.
 
 ## 2. Layout aplikasi
 
