@@ -17,7 +17,7 @@ class AdminRestoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'file' => ['required', 'file', 'max:51200'],
+            'file' => ['required', 'file', 'mimes:json', 'extensions:json', 'max:51200'],
             'confirmation' => ['required', 'string', 'in:PULIHKAN'],
         ];
     }

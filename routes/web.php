@@ -28,12 +28,11 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::post('/logout', [LoginController::class, 'destroy'])
-    ->middleware('auth')
+    ->middleware(['auth', EnsureActiveUser::class])
     ->name('logout');
 
-Route::get('/', fn () => redirect()->route('dashboard'));
-
 Route::middleware(['auth', EnsureActiveUser::class])->group(function () {
+    Route::get('/', fn () => redirect()->route('dashboard'));
     Route::get('/dashboard', Dashboard::class)->name('dashboard');
     Route::get('/akun', Akun::class)->name('akun');
     Route::get('/sekolah', Sekolah::class)->name('sekolah');
@@ -64,12 +63,16 @@ Route::middleware(['auth', EnsureActiveUser::class])->group(function () {
     // Backup & Status
     Route::get('/backup/status', [BackupController::class, 'status'])->name('backup.status');
     Route::get('/backup/unduh', [BackupController::class, 'download'])->name('backup.download');
-    Route::post('/backup/manual', [BackupController::class, 'createManual'])->name('backup.manual');
+    Route::post('/backup/manual', [BackupController::class, 'createManual'])
+        ->middleware('throttle:5,1')
+        ->name('backup.manual');
 
     // Area Admin (Khusus Admin)
     Route::middleware('can:admin')->prefix('admin')->name('admin.')->group(function () {
         Route::get('/pengguna', Pengguna::class)->name('pengguna');
         Route::get('/audit', Audit::class)->name('audit');
-        Route::post('/restore', [RestoreController::class, 'restore'])->name('restore');
+        Route::post('/restore', [RestoreController::class, 'restore'])
+            ->middleware('throttle:5,1')
+            ->name('restore');
     });
 });

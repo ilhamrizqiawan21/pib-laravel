@@ -31,3 +31,13 @@ test('pengguna dapat mengakses halaman impor siswa dan mengunggah berkas', funct
 
     expect(Student::query()->where('name', 'Bilal bin Rabah')->exists())->toBeTrue();
 });
+
+test('impor siswa menolak berkas dengan ekstensi yang tidak diizinkan', function () {
+    $file = UploadedFile::fake()->createWithContent('payload.php', '<?php echo "payload";');
+
+    Livewire::actingAs(User::factory()->create())
+        ->test(SiswaImpor::class)
+        ->set('file', $file)
+        ->call('import')
+        ->assertHasErrors(['file']);
+});

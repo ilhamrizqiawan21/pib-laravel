@@ -48,3 +48,15 @@ test('admin dapat memulihkan data dengan file backup dan konfirmasi PULIHKAN', f
     $response->assertOk()
         ->assertJsonStructure(['restored', 'message']);
 });
+
+test('restore menolak berkas yang bukan JSON', function () {
+    $file = UploadedFile::fake()->createWithContent('payload.txt', json_encode($this->validBackup));
+
+    $this->actingAs($this->admin)
+        ->postJson('/admin/restore', [
+            'file' => $file,
+            'confirmation' => 'PULIHKAN',
+        ])
+        ->assertUnprocessable()
+        ->assertJsonValidationErrors(['file']);
+});

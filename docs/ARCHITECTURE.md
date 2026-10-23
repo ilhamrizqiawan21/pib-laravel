@@ -95,7 +95,8 @@ Di sisi klien (`draft-store.js`): kunci `pib-score-edit:{studentId}:{assessmentI
 
 ## Keamanan (lihat juga AI_RULES.md §Keamanan)
 
-- Rute: grup `auth` + `EnsureActiveUser`; admin via `Gate::authorize('admin')`/middleware `can:admin`. Tidak ada rute tulis dengan GET.
+- Rute aplikasi: grup `auth` + `EnsureActiveUser`; admin via `Gate::authorize('admin')`/middleware `can:admin`. Root ikut auth. Tidak ada rute tulis dengan GET.
+- Livewire membawa `auth`, `Authorize`, dan `EnsureActiveUser` dari halaman asal ke setiap update; endpoint update dibatasi 120/menit. Upload sementara harus bertanda tangan dan dibatasi 60/menit. Disk `local` tidak memiliki route serving publik.
 - CSRF aktif (Livewire & fetch dengan header). Cookie sesi: `http_only`, `same_site=lax`, `secure` otomatis di HTTPS (`SESSION_SECURE_COOKIE=true` produksi).
 - Login: `RateLimiter` 5/menit per email+IP; catat `LOGIN_FAILED` ke audit; pesan error generik; regenerasi sesi setelah login.
 - Password: min 10; `Hash::make` default; ubah password butuh password lama; `Auth::logoutOtherDevices` opsional.

@@ -32,7 +32,7 @@ class SiswaImpor extends Component
     public function import(StudentImporter $importer): void
     {
         $this->validate([
-            'file' => ['required', 'file', 'max:2048'],
+            'file' => ['required', 'file', 'mimes:csv,xlsx', 'extensions:csv,xlsx', 'max:2048'],
         ]);
 
         if (! $this->file) {
