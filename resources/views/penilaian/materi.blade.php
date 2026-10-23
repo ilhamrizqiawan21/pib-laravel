@@ -21,7 +21,7 @@
                         <a href="{{ route('penilaian.setoran') }}" class="rounded-md px-3 py-1.5 text-ink-muted hover:text-ink">
                             Per siswa (Setoran)
                         </a>
-                        <a href="{{ route('penilaian.materi') }}" class="rounded-md bg-brand-light px-3 py-1.5 font-semibold text-brand shadow-xs">
+                        <a href="{{ route('penilaian.materi') }}" class="rounded-md bg-brand-light px-3 py-1.5 font-semibold text-brand-strong shadow-xs">
                             Per materi
                         </a>
                     </span>
@@ -104,7 +104,7 @@
                     <div class="w-64 space-y-1.5">
                         <div class="flex items-center justify-between text-xs font-medium text-ink">
                             <span>Progres Dinilai</span>
-                            <span class="font-bold text-brand" x-text="materialStats.assessedCount + ' / ' + materialStats.totalCount + ' Siswa (' + materialStats.percentage + '%)'"></span>
+                            <span class="font-bold text-brand-strong" x-text="materialStats.assessedCount + ' / ' + materialStats.totalCount + ' Siswa (' + materialStats.percentage + '%)'"></span>
                         </div>
                         <div class="w-full bg-line rounded-full h-2 overflow-hidden">
                             <div
@@ -242,6 +242,7 @@
                                             <button
                                                 type="button"
                                                 @click="step(st, -1)"
+                                                :aria-label="'Kurangi kesalahan ' + st.name"
                                                 :disabled="getRowMeta(st).isSaving"
                                                 class="px-2.5 py-1 text-ink-muted hover:text-ink hover:bg-surface-alt border-r border-line disabled:opacity-40"
                                                 title="Kurangi kesalahan"
@@ -251,6 +252,7 @@
                                             <input
                                                 type="text"
                                                 inputmode="numeric"
+                                                :aria-label="'Jumlah kesalahan ' + st.name"
                                                 :data-student-row="idx"
                                                 :value="getRawMistakes(st.id)"
                                                 @input="onInputMistakes(st, $event.target.value)"
@@ -265,6 +267,7 @@
                                             <button
                                                 type="button"
                                                 @click="step(st, 1)"
+                                                :aria-label="'Tambah kesalahan ' + st.name"
                                                 :disabled="getRowMeta(st).isSaving"
                                                 class="px-2.5 py-1 text-ink-muted hover:text-ink hover:bg-surface-alt border-l border-line disabled:opacity-40"
                                                 title="Tambah kesalahan"
@@ -282,6 +285,7 @@
                                             <button
                                                 type="button"
                                                 @click="setPerfect90(st, idx)"
+                                                :aria-label="'Nilai 90 untuk ' + st.name"
                                                 :disabled="getRowMeta(st).isSaving"
                                                 title="Lancar: 0 kesalahan (nilai 90), langsung simpan dan lanjut"
                                                 class="px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-300 hover:bg-emerald-100 font-bold text-xs tracking-wider shadow-2xs disabled:opacity-50"
@@ -294,6 +298,7 @@
                                                 <button
                                                     type="button"
                                                     @click="discard(st)"
+                                                    :aria-label="'Batalkan perubahan ' + st.name"
                                                     class="p-1.5 text-ink-muted hover:text-danger rounded hover:bg-danger-light"
                                                     title="Batalkan perubahan lokal"
                                                 >

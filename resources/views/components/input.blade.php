@@ -10,6 +10,7 @@
 
 <input
     type="{{ $type }}"
+    @if ($hasError) aria-invalid="true" @endif
     {{ $attributes->merge(['class' => "$baseClasses $borderClasses"]) }}
 />
 

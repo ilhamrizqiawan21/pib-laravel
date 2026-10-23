@@ -170,7 +170,7 @@
 
             <div class="pt-1">
                 <label class="flex items-center gap-2 cursor-pointer select-none text-xs text-ink">
-                    <input type="checkbox" wire:model="new_year_is_active" class="rounded border-line text-brand focus:ring-focus">
+                    <input type="checkbox" wire:model="new_year_is_active" class="rounded border-line text-brand-strong focus:ring-focus">
                     <span class="font-medium">Jadikan sebagai periode aktif saat ini</span>
                 </label>
             </div>

@@ -12,6 +12,7 @@
             {{ $label }}
             @if ($required)
                 <span class="text-danger" aria-hidden="true">*</span>
+                <span class="sr-only">(wajib)</span>
             @endif
         </label>
     @endif
@@ -19,7 +20,7 @@
     {{ $slot }}
 
     @if ($error)
-        <p class="text-xs text-danger font-medium flex items-center gap-1">
+        <p id="{{ $id }}-error" role="alert" class="text-xs text-danger font-medium flex items-center gap-1">
             <x-icon name="alert-circle" size="14" />
             <span>{{ $error }}</span>
         </p>

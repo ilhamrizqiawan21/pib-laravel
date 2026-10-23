@@ -9,6 +9,7 @@ export function setoranComponent({ classes = [], initialClassId = null, initialS
         classId: initialClassId ? String(initialClassId) : '',
         studentId: initialStudentId ? Number(initialStudentId) : null,
         query: '',
+        searchIndex: 0,
 
         data: null, // { classId, className, materials: [], students: [], scores: [] }
         scores: {}, // key: "studentId:assessmentId" => score object
@@ -140,6 +141,23 @@ export function setoranComponent({ classes = [], initialClassId = null, initialS
             this.studentId = id;
             this.saveLastState();
             this.autoExpandAndFocus();
+        },
+
+        moveSearch(direction) {
+            const results = [...this.filteredStudents.today, ...this.filteredStudents.others];
+            if (!results.length) return;
+            this.searchIndex = (this.searchIndex + direction + results.length) % results.length;
+        },
+
+        selectSearchResult() {
+            const results = [...this.filteredStudents.today, ...this.filteredStudents.others];
+            const student = results[this.searchIndex];
+            if (student) this.selectStudent(student.id);
+        },
+
+        isSearchHighlight(id) {
+            const results = [...this.filteredStudents.today, ...this.filteredStudents.others];
+            return results[this.searchIndex]?.id === id;
         },
 
         saveLastState() {

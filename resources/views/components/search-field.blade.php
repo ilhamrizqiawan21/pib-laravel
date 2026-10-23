@@ -11,7 +11,7 @@
     <input
         type="search"
         placeholder="{{ $placeholder }}"
-        {{ $attributes->except('class')->merge(['class' => 'w-full rounded-lg border border-line bg-surface pl-9 pr-10 py-2 text-sm text-ink placeholder:text-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:border-brand']) }}
+        {{ $attributes->except('class')->merge(['aria-label' => $placeholder, 'class' => 'w-full rounded-lg border border-line bg-surface pl-9 pr-10 py-2 text-sm text-ink placeholder:text-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:border-brand']) }}
     />
 
     @if ($shortcut)

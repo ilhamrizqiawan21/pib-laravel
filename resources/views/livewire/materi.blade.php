@@ -48,8 +48,9 @@
     <div class="mb-6 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 bg-surface p-4 rounded-xl border border-line">
         <div class="flex flex-wrap items-center gap-4">
             <div class="w-full md:w-64">
-                <label class="block text-xs font-medium text-ink-muted mb-1">Tahun Ajaran</label>
+                <label for="materi-tahun" class="block text-xs font-medium text-ink-muted mb-1">Tahun Ajaran</label>
                 <select
+                    id="materi-tahun"
                     wire:model.live="selected_academic_year_id"
                     class="w-full rounded-lg border border-line bg-surface px-3 py-2 text-sm text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:border-brand"
                 >
@@ -62,8 +63,9 @@
             </div>
 
             <div class="w-full md:w-72">
-                <label class="block text-xs font-medium text-ink-muted mb-1">Template Kurikulum</label>
+                <label for="materi-template" class="block text-xs font-medium text-ink-muted mb-1">Template Kurikulum</label>
                 <select
+                    id="materi-template"
                     wire:model.live="selected_template_id"
                     class="w-full rounded-lg border border-line bg-surface px-3 py-2 text-sm text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:border-brand"
                     @if ($templates->isEmpty()) disabled @endif
@@ -138,7 +140,7 @@
                         <!-- Chapter Header -->
                         <div class="bg-surface-alt px-5 py-3 border-b border-line flex flex-wrap items-center justify-between gap-3">
                             <div class="flex items-center gap-3">
-                                <span class="flex h-7 w-7 items-center justify-center rounded-lg bg-brand-light text-xs font-bold text-brand">
+                                <span class="flex h-7 w-7 items-center justify-center rounded-lg bg-brand-light text-xs font-bold text-brand-strong">
                                     {{ $chapter->display_order }}
                                 </span>
                                 <h3 class="text-base font-semibold text-ink">{{ $chapter->title }}</h3>

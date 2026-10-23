@@ -9,6 +9,7 @@
         <x-slot:actions>
             <div class="w-full sm:w-64">
                 <select
+                    aria-label="Pilih periode ringkasan"
                     wire:model.live="selected_academic_year_id"
                     class="w-full rounded-lg border border-line bg-surface px-3 py-1.5 text-xs text-ink font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:border-brand"
                 >
@@ -27,7 +28,7 @@
     @if (! $setup['isComplete'])
         <div class="mb-8 rounded-xl border border-brand/30 bg-brand-light/30 p-5 shadow-xs">
             <div class="mb-4">
-                <h3 class="text-sm font-bold text-brand uppercase tracking-wider">Langkah Penyiapan Awal</h3>
+                <h3 class="text-sm font-bold text-brand-strong uppercase tracking-wider">Langkah Penyiapan Awal</h3>
                 <p class="text-xs text-ink-muted mt-0.5">Selesaikan urutan persiapan berikut agar proses penilaian berjalan lancar.</p>
             </div>
 
@@ -56,7 +57,7 @@
                                     Lihat &rarr;
                                 </a>
                             @else
-                                <a href="{{ $step['href'] }}" class="inline-flex items-center gap-1 text-[11px] font-bold text-brand hover:text-brand-strong">
+                                <a href="{{ $step['href'] }}" class="inline-flex items-center gap-1 text-[11px] font-bold text-brand-strong hover:text-brand-strong">
                                     <span>{{ $step['action'] }}</span>
                                     <span>&rarr;</span>
                                 </a>
@@ -77,13 +78,13 @@
                     <div class="text-xs font-semibold text-ink-muted uppercase tracking-wider">Siswa Aktif</div>
                     <div class="text-3xl font-black text-ink mt-1.5">{{ $summary['total_students'] }}</div>
                     <div class="mt-2">
-                        <a href="{{ route('siswa') }}" class="text-xs font-semibold text-brand hover:underline inline-flex items-center gap-1">
+                        <a href="{{ route('siswa') }}" class="text-xs font-semibold text-brand-strong hover:underline inline-flex items-center gap-1">
                             <span>Kelola Siswa</span>
                             <span>&rarr;</span>
                         </a>
                     </div>
                 </div>
-                <div class="w-12 h-12 rounded-xl bg-brand-light text-brand flex items-center justify-center">
+                <div class="w-12 h-12 rounded-xl bg-brand-light text-brand-strong flex items-center justify-center">
                     <x-icon name="users" size="24" />
                 </div>
             </div>
@@ -96,13 +97,13 @@
                     <div class="text-xs font-semibold text-ink-muted uppercase tracking-wider">Kelas Aktif</div>
                     <div class="text-3xl font-black text-ink mt-1.5">{{ $summary['total_classes'] }}</div>
                     <div class="mt-2">
-                        <a href="{{ route('kelas') }}" class="text-xs font-semibold text-brand hover:underline inline-flex items-center gap-1">
+                        <a href="{{ route('kelas') }}" class="text-xs font-semibold text-brand-strong hover:underline inline-flex items-center gap-1">
                             <span>Lihat Kelas</span>
                             <span>&rarr;</span>
                         </a>
                     </div>
                 </div>
-                <div class="w-12 h-12 rounded-xl bg-brand-light text-brand flex items-center justify-center">
+                <div class="w-12 h-12 rounded-xl bg-brand-light text-brand-strong flex items-center justify-center">
                     <x-icon name="graduation-cap" size="24" />
                 </div>
             </div>
@@ -114,7 +115,7 @@
                 <div class="w-full">
                     <div class="flex items-center justify-between">
                         <div class="text-xs font-semibold text-ink-muted uppercase tracking-wider">Progres Penilaian</div>
-                        <span class="text-xs font-bold text-brand">{{ $summary['overall_percent'] }}%</span>
+                        <span class="text-xs font-bold text-brand-strong">{{ $summary['overall_percent'] }}%</span>
                     </div>
                     <div class="text-2xl font-black text-ink mt-1">
                         {{ $summary['total_assessed'] }} <span class="text-xs font-normal text-ink-muted">/ {{ $summary['total_expected'] }} nilai</span>
@@ -137,7 +138,7 @@
                         <h3 class="text-base font-bold text-ink">Prioritas Kelas</h3>
                         <p class="text-xs text-ink-muted mt-0.5">Kelas dengan progres penilaian terendah yang membutuhkan perhatian.</p>
                     </div>
-                    <a href="{{ route('rekap') }}" class="text-xs font-semibold text-brand hover:underline">
+                    <a href="{{ route('rekap') }}" class="text-xs font-semibold text-brand-strong hover:underline">
                         Lihat Rekap Lengkap &rarr;
                     </a>
                 </div>
@@ -167,10 +168,10 @@
                                 </div>
 
                                 <div class="flex items-center gap-3 shrink-0">
-                                    <span class="text-sm font-bold text-brand">{{ $cls['percent'] }}%</span>
+                                    <span class="text-sm font-bold text-brand-strong">{{ $cls['percent'] }}%</span>
                                     <a
                                         href="{{ route('penilaian.setoran', ['classId' => $cls['id']]) }}"
-                                        class="inline-flex items-center gap-1 rounded-lg bg-brand px-3 py-1.5 text-xs font-semibold text-white shadow-2xs hover:bg-brand-strong transition-colors"
+                                        class="inline-flex items-center gap-1 rounded-lg bg-brand-strong px-3 py-1.5 text-xs font-semibold text-white shadow-2xs hover:bg-brand-strong transition-colors"
                                     >
                                         <span>Lanjutkan</span>
                                         <span>&rarr;</span>

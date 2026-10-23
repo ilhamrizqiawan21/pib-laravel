@@ -13,7 +13,7 @@
     <div class="w-full max-w-sm">
         <!-- Logo & App Header -->
         <div class="text-center mb-8">
-            <div class="inline-flex w-12 h-12 rounded-2xl bg-brand text-white items-center justify-center shadow-md font-bold text-lg tracking-wider mb-3">
+            <div class="inline-flex w-12 h-12 rounded-2xl bg-brand-strong text-white items-center justify-center shadow-md font-bold text-lg tracking-wider mb-3">
                 PIB
             </div>
             <h1 class="text-2xl font-bold text-ink tracking-tight">PIB Penilaian</h1>
@@ -44,6 +44,7 @@
                         autofocus
                         placeholder="nama@sekolah.sch.id"
                         :has-error="$errors->has('email')"
+                        :aria-describedby="$errors->has('email') ? 'email-error' : null"
                     />
                 </x-field>
 
@@ -55,12 +56,13 @@
                         required
                         placeholder="••••••••••"
                         :has-error="$errors->has('password')"
+                        :aria-describedby="$errors->has('password') ? 'password-error' : null"
                     />
                 </x-field>
 
                 <div class="flex items-center justify-between text-xs text-muted pt-1">
                     <label class="flex items-center gap-2 cursor-pointer select-none">
-                        <input type="checkbox" name="remember" class="rounded border-line text-brand focus:ring-focus">
+                        <input type="checkbox" name="remember" class="rounded border-line text-brand-strong focus:ring-focus">
                         <span>Ingat saya</span>
                     </label>
                 </div>

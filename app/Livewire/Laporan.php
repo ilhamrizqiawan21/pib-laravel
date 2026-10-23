@@ -128,7 +128,7 @@ class Laporan extends Component
         $classes = $classesQuery->orderBy('name')->get();
 
         // Daftar siswa untuk pemilih rapor
-        $studentsQuery = Student::query()->where('is_active', true);
+        $studentsQuery = Student::query()->with('schoolClass')->where('is_active', true);
         if ($this->classId !== '') {
             $studentsQuery->where('school_class_id', $this->classId);
         } elseif ($this->academicYearId !== '') {

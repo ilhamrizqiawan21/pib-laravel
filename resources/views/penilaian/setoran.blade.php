@@ -18,7 +18,7 @@
         <x-slot:actions>
             <div class="flex items-center gap-2">
                 <span class="inline-flex rounded-lg border border-line bg-surface p-1 text-xs font-medium">
-                    <a href="{{ route('penilaian.setoran') }}" class="rounded-md bg-brand-light px-3 py-1.5 font-semibold text-brand shadow-xs">
+                    <a href="{{ route('penilaian.setoran') }}" class="rounded-md bg-brand-light px-3 py-1.5 font-semibold text-brand-strong shadow-xs">
                         Per siswa (Setoran)
                     </a>
                     <a href="{{ route('penilaian.materi') }}" class="rounded-md px-3 py-1.5 text-ink-muted hover:text-ink">
@@ -46,7 +46,7 @@
     <!-- Layout Dua Panel -->
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         <!-- Panel Kiri: Daftar Siswa (4 kolom desktop) -->
-        <aside class="lg:col-span-4 bg-surface rounded-xl border border-line shadow-xs overflow-hidden flex flex-col h-[calc(100vh-220px)] min-h-[500px]">
+        <aside class="lg:col-span-4 bg-surface rounded-xl border border-line shadow-xs overflow-hidden flex flex-col max-h-[42vh] lg:max-h-none lg:h-[calc(100vh-220px)] lg:min-h-[500px]">
             <!-- Pemilih Kelas -->
             <div class="p-4 border-b border-line space-y-3 bg-surface-alt/50">
                 <div>
@@ -73,7 +73,12 @@
                     <input
                         type="search"
                         id="search-siswa-input"
+                        aria-label="Cari siswa"
                         x-model="query"
+                        @input="searchIndex = 0"
+                        @keydown.arrow-down.prevent="moveSearch(1)"
+                        @keydown.arrow-up.prevent="moveSearch(-1)"
+                        @keydown.enter.prevent="selectSearchResult()"
                         placeholder="Cari siswa... (tekan /)"
                         class="w-full rounded-lg border border-line bg-surface pl-9 pr-8 py-1.5 text-xs text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:border-brand"
                     />
@@ -111,7 +116,7 @@
                         <!-- Grup: Dinilai Hari Ini -->
                         <template x-if="filteredStudents.today.length > 0">
                             <div>
-                                <div class="px-2 py-1 text-[11px] font-bold uppercase tracking-wider text-brand">
+                                <div class="px-2 py-1 text-[11px] font-bold uppercase tracking-wider text-brand-strong">
                                     Dinilai Hari Ini (<span x-text="filteredStudents.today.length"></span>)
                                 </div>
                                 <ul class="space-y-1 mt-1">
@@ -120,7 +125,8 @@
                                             <button
                                                 type="button"
                                                 @click="selectStudent(st.id)"
-                                                :class="st.id === studentId ? 'bg-brand-light border-brand text-brand font-semibold shadow-xs' : 'hover:bg-canvas text-ink border-transparent'"
+                                                :class="[st.id === studentId ? 'bg-brand-light border-brand text-brand-strong font-semibold shadow-xs' : 'hover:bg-canvas text-ink border-transparent', query && isSearchHighlight(st.id) ? 'ring-2 ring-brand-strong' : '']"
+                                                :aria-current="query && isSearchHighlight(st.id) ? 'true' : null"
                                                 class="w-full flex items-center justify-between px-3 py-2 rounded-lg border text-left text-xs transition-colors"
                                             >
                                                 <div class="flex items-center gap-2 overflow-hidden">
@@ -153,7 +159,8 @@
                                         <button
                                             type="button"
                                             @click="selectStudent(st.id)"
-                                            :class="st.id === studentId ? 'bg-brand-light border-brand text-brand font-semibold shadow-xs' : 'hover:bg-canvas text-ink border-transparent'"
+                                            :class="[st.id === studentId ? 'bg-brand-light border-brand text-brand-strong font-semibold shadow-xs' : 'hover:bg-canvas text-ink border-transparent', query && isSearchHighlight(st.id) ? 'ring-2 ring-brand-strong' : '']"
+                                            :aria-current="query && isSearchHighlight(st.id) ? 'true' : null"
                                             class="w-full flex items-center justify-between px-3 py-2 rounded-lg border text-left text-xs transition-colors"
                                         >
                                             <div class="flex items-center gap-2 overflow-hidden">
@@ -179,7 +186,7 @@
         </aside>
 
         <!-- Panel Kanan: Daftar Materi & Input Nilai (8 kolom desktop) -->
-        <main class="lg:col-span-8 bg-surface rounded-xl border border-line shadow-xs overflow-hidden flex flex-col min-h-[500px]">
+        <section aria-label="Daftar materi siswa" class="lg:col-span-8 bg-surface rounded-xl border border-line shadow-xs overflow-hidden flex flex-col min-h-[500px]">
             <!-- Header Siswa Terpilih -->
             <template x-if="selectedStudent">
                 <div class="p-5 border-b border-line bg-surface-alt/40 flex flex-wrap items-center justify-between gap-4">
@@ -194,7 +201,7 @@
                     <div class="w-48 text-right space-y-1">
                         <div class="flex items-center justify-between text-xs font-medium text-ink">
                             <span>Kemajuan</span>
-                            <span class="font-bold text-brand" x-text="position.assessed + ' / ' + position.total + ' Materi'"></span>
+                            <span class="font-bold text-brand-strong" x-text="position.assessed + ' / ' + position.total + ' Materi'"></span>
                         </div>
                         <div class="w-full bg-line rounded-full h-2 overflow-hidden">
                             <div
@@ -233,7 +240,7 @@
                         description="Tahun ajaran kelas ini belum memiliki materi kurikulum aktif."
                     >
                         <x-slot:action>
-                            <a href="{{ route('materi') }}" class="inline-flex items-center gap-1.5 rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-white shadow-xs hover:bg-brand-strong">
+                            <a href="{{ route('materi') }}" class="inline-flex items-center gap-1.5 rounded-lg bg-brand-strong px-4 py-2 text-sm font-semibold text-white shadow-xs hover:bg-brand-strong">
                                 <x-icon name="plus" size="16" />
                                 <span>Susun Materi Kurikulum</span>
                             </a>
@@ -256,7 +263,7 @@
                                 <div class="flex items-center gap-2">
                                     <span class="text-xs font-bold text-ink" x-text="group.chapter"></span>
                                     <span class="text-ink-muted text-xs">&rsaquo;</span>
-                                    <span class="text-xs font-semibold text-brand" x-text="group.subchapter"></span>
+                                    <span class="text-xs font-semibold text-brand-strong" x-text="group.subchapter"></span>
                                 </div>
                                 <div class="flex items-center gap-2">
                                     <span class="text-[11px] text-ink-muted" x-text="group.items.length + ' materi'"></span>
@@ -311,6 +318,7 @@
                                                 type="button"
                                                 @click="setPerfect90(item.material, item.index)"
                                                 :disabled="getRowMeta(item.material, item.index).isSaving"
+                                                :aria-label="'Nilai 90 untuk ' + item.material.title"
                                                 title="Lancar: 0 kesalahan (nilai 90), langsung simpan dan lanjut"
                                                 class="px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-300 hover:bg-emerald-100 font-bold text-xs tracking-wider shadow-2xs disabled:opacity-50"
                                             >
@@ -322,6 +330,7 @@
                                                 <button
                                                     type="button"
                                                     @click="step(item.material, -1)"
+                                                    :aria-label="'Kurangi kesalahan ' + item.material.title"
                                                     :disabled="getRowMeta(item.material, item.index).isSaving"
                                                     class="px-2 py-1 text-ink-muted hover:text-ink hover:bg-surface-alt border-r border-line disabled:opacity-40"
                                                     title="Kurangi kesalahan"
@@ -331,6 +340,7 @@
                                                 <input
                                                     type="text"
                                                     inputmode="numeric"
+                                                    :aria-label="'Jumlah kesalahan ' + item.material.title"
                                                     :data-material-id="item.material.id"
                                                     :value="getRawMistakes(item.material.id)"
                                                     @input="onInputMistakes(item.material, $event.target.value)"
@@ -345,6 +355,7 @@
                                                 <button
                                                     type="button"
                                                     @click="step(item.material, 1)"
+                                                    :aria-label="'Tambah kesalahan ' + item.material.title"
                                                     :disabled="getRowMeta(item.material, item.index).isSaving"
                                                     class="px-2 py-1 text-ink-muted hover:text-ink hover:bg-surface-alt border-l border-line disabled:opacity-40"
                                                     title="Tambah kesalahan"
@@ -377,7 +388,7 @@
                     </template>
                 </div>
             </template>
-        </main>
+        </section>
     </div>
 
     <script>

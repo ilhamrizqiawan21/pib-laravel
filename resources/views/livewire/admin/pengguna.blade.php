@@ -40,7 +40,7 @@
         <x-slot:header>
             <div class="flex items-center justify-between gap-4">
                 <div class="w-full max-w-xs">
-                    <input type="text" wire:model.live.debounce.300ms="search" placeholder="Cari nama atau email..." class="w-full text-xs rounded-lg border-gray-300 focus:border-pib-500 focus:ring-pib-500">
+                    <input type="search" aria-label="Cari nama atau email pengguna" wire:model.live.debounce.300ms="search" placeholder="Cari nama atau email..." class="w-full text-xs rounded-lg border-gray-300 focus:border-pib-500 focus:ring-pib-500">
                 </div>
             </div>
         </x-slot:header>
@@ -125,11 +125,11 @@
 
     <!-- Modal Tambah Pengguna -->
     @if($showCreateModal)
-        <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
-            <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6 space-y-4">
+        <div x-data="dialogFocus()" @keydown.tab="trap($event)" @keydown.escape.prevent="$wire.set('showCreateModal', false)" role="dialog" aria-modal="true" aria-labelledby="create-user-title" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+            <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-4 sm:p-6 space-y-4 max-h-[calc(100dvh-2rem)] overflow-y-auto">
                 <div class="flex items-center justify-between border-b pb-3">
-                    <h3 class="text-base font-bold text-gray-900">Tambah Pengguna Baru</h3>
-                    <button type="button" wire:click="$set('showCreateModal', false)" class="text-gray-400 hover:text-gray-600">✕</button>
+                    <h3 id="create-user-title" class="text-base font-bold text-gray-900">Tambah Pengguna Baru</h3>
+                    <button type="button" aria-label="Tutup dialog tambah pengguna" wire:click="$set('showCreateModal', false)" class="text-gray-400 hover:text-gray-600 p-2 rounded-lg">✕</button>
                 </div>
 
                 <form wire:submit="createUser" class="space-y-4">
@@ -176,11 +176,11 @@
 
     <!-- Modal Reset Password -->
     @if($showResetModal)
-        <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
-            <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6 space-y-4">
+        <div x-data="dialogFocus()" @keydown.tab="trap($event)" @keydown.escape.prevent="$wire.set('showResetModal', false)" role="dialog" aria-modal="true" aria-labelledby="reset-user-title" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+            <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-4 sm:p-6 space-y-4 max-h-[calc(100dvh-2rem)] overflow-y-auto">
                 <div class="flex items-center justify-between border-b pb-3">
-                    <h3 class="text-base font-bold text-gray-900">Reset Sandi Pengguna</h3>
-                    <button type="button" wire:click="$set('showResetModal', false)" class="text-gray-400 hover:text-gray-600">✕</button>
+                    <h3 id="reset-user-title" class="text-base font-bold text-gray-900">Reset Sandi Pengguna</h3>
+                    <button type="button" aria-label="Tutup dialog reset sandi" wire:click="$set('showResetModal', false)" class="text-gray-400 hover:text-gray-600 p-2 rounded-lg">✕</button>
                 </div>
 
                 <form wire:submit="resetPassword" class="space-y-4">

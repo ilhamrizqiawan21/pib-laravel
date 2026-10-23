@@ -21,12 +21,23 @@
     x-data="{
         sidebarCollapsed: localStorage.getItem('pib-sidebar-collapsed') === 'true',
         mobileDrawerOpen: false,
+        desktop: window.innerWidth >= 1024,
+        openDrawer() {
+            this.mobileDrawerOpen = true;
+            this.$nextTick(() => this.$refs.closeDrawer.focus());
+        },
+        closeDrawer() {
+            this.mobileDrawerOpen = false;
+            this.$nextTick(() => this.$refs.openDrawer.focus());
+        },
         toggleSidebar() {
             this.sidebarCollapsed = !this.sidebarCollapsed;
             localStorage.setItem('pib-sidebar-collapsed', this.sidebarCollapsed);
             document.documentElement.classList.toggle('sidebar-collapsed', this.sidebarCollapsed);
         }
     }"
+    @resize.window="desktop = window.innerWidth >= 1024"
+    @keydown.escape.window="if (mobileDrawerOpen) closeDrawer()"
 >
     <!-- Skip link aksesibilitas -->
     <a
@@ -47,13 +58,15 @@
         x-transition:leave-end="opacity-0"
         class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-40 lg:hidden"
         style="display: none;"
-        @click="mobileDrawerOpen = false"
+        @click="closeDrawer()"
     ></div>
 
     <div class="flex h-full w-full overflow-hidden">
         <!-- Sidebar Navigation Landmark -->
         <nav
+            id="navigasi-utama"
             aria-label="Navigasi Utama"
+            :inert="!mobileDrawerOpen && !desktop"
             class="fixed inset-y-0 left-0 z-50 flex flex-col bg-surface border-r border-line transition-all duration-200 lg:static"
             :class="{
                 'w-[252px]': !sidebarCollapsed,
@@ -65,7 +78,7 @@
             <!-- Sidebar Header / Logo -->
             <div class="h-[68px] flex items-center justify-between px-4 border-b border-line shrink-0">
                 <a href="/dashboard" class="flex items-center gap-2.5 overflow-hidden">
-                    <div class="w-9 h-9 rounded-xl bg-brand text-white flex items-center justify-center shrink-0 shadow-xs font-bold text-sm tracking-wider">
+                    <div class="w-9 h-9 rounded-xl bg-brand-strong text-white flex items-center justify-center shrink-0 shadow-xs font-bold text-sm tracking-wider">
                         PIB
                     </div>
                     <div
@@ -79,9 +92,10 @@
 
                 <!-- Mobile close drawer button -->
                 <button
+                    x-ref="closeDrawer"
                     type="button"
-                    class="lg:hidden p-1.5 text-muted hover:text-ink cursor-pointer rounded-lg"
-                    @click="mobileDrawerOpen = false"
+                    class="lg:hidden p-2 text-muted hover:text-ink cursor-pointer rounded-lg"
+                    @click="closeDrawer()"
                 >
                     <x-icon name="x" size="20" />
                     <span class="sr-only">Tutup menu</span>
@@ -102,6 +116,7 @@
                         <li>
                             <a
                                 href="/dashboard"
+                                @if(request()->is('dashboard*')) aria-current="page" @endif
                                 class="flex items-center gap-3 px-2.5 py-2 rounded-lg text-sm font-medium transition-colors {{ request()->is('dashboard*') ? 'bg-brand-soft text-brand-strong' : 'text-ink hover:bg-canvas text-muted hover:text-ink' }}"
                                 title="Beranda"
                             >
@@ -112,6 +127,7 @@
                         <li>
                             <a
                                 href="/penilaian"
+                                @if(request()->is('penilaian*')) aria-current="page" @endif
                                 class="flex items-center gap-3 px-2.5 py-2 rounded-lg text-sm font-medium transition-colors {{ request()->is('penilaian*') ? 'bg-brand-soft text-brand-strong' : 'text-ink hover:bg-canvas text-muted hover:text-ink' }}"
                                 title="Penilaian"
                             >
@@ -122,6 +138,7 @@
                         <li>
                             <a
                                 href="/rekap"
+                                @if(request()->is('rekap*')) aria-current="page" @endif
                                 class="flex items-center gap-3 px-2.5 py-2 rounded-lg text-sm font-medium transition-colors {{ request()->is('rekap*') ? 'bg-brand-soft text-brand-strong' : 'text-ink hover:bg-canvas text-muted hover:text-ink' }}"
                                 title="Rekap"
                             >
@@ -144,6 +161,7 @@
                         <li>
                             <a
                                 href="/sekolah"
+                                @if(request()->is('sekolah*')) aria-current="page" @endif
                                 class="flex items-center gap-3 px-2.5 py-2 rounded-lg text-sm font-medium transition-colors {{ request()->is('sekolah*') ? 'bg-brand-soft text-brand-strong' : 'text-ink hover:bg-canvas text-muted hover:text-ink' }}"
                                 title="Sekolah & periode"
                             >
@@ -154,6 +172,7 @@
                         <li>
                             <a
                                 href="/kelas"
+                                @if(request()->is('kelas*')) aria-current="page" @endif
                                 class="flex items-center gap-3 px-2.5 py-2 rounded-lg text-sm font-medium transition-colors {{ request()->is('kelas*') ? 'bg-brand-soft text-brand-strong' : 'text-ink hover:bg-canvas text-muted hover:text-ink' }}"
                                 title="Kelas"
                             >
@@ -164,6 +183,7 @@
                         <li>
                             <a
                                 href="/siswa"
+                                @if(request()->is('siswa*')) aria-current="page" @endif
                                 class="flex items-center gap-3 px-2.5 py-2 rounded-lg text-sm font-medium transition-colors {{ request()->is('siswa*') ? 'bg-brand-soft text-brand-strong' : 'text-ink hover:bg-canvas text-muted hover:text-ink' }}"
                                 title="Siswa"
                             >
@@ -174,6 +194,7 @@
                         <li>
                             <a
                                 href="/materi"
+                                @if(request()->is('materi*')) aria-current="page" @endif
                                 class="flex items-center gap-3 px-2.5 py-2 rounded-lg text-sm font-medium transition-colors {{ request()->is('materi*') ? 'bg-brand-soft text-brand-strong' : 'text-ink hover:bg-canvas text-muted hover:text-ink' }}"
                                 title="Materi"
                             >
@@ -196,6 +217,7 @@
                         <li>
                             <a
                                 href="/laporan"
+                                @if(request()->is('laporan*')) aria-current="page" @endif
                                 class="flex items-center gap-3 px-2.5 py-2 rounded-lg text-sm font-medium transition-colors {{ request()->is('laporan*') ? 'bg-brand-soft text-brand-strong' : 'text-ink hover:bg-canvas text-muted hover:text-ink' }}"
                                 title="Laporan & backup"
                             >
@@ -219,6 +241,7 @@
                             <li>
                                 <a
                                     href="/admin/pengguna"
+                                    @if(request()->is('admin/pengguna*')) aria-current="page" @endif
                                     class="flex items-center gap-3 px-2.5 py-2 rounded-lg text-sm font-medium transition-colors {{ request()->is('admin/pengguna*') ? 'bg-brand-soft text-brand-strong' : 'text-ink hover:bg-canvas text-muted hover:text-ink' }}"
                                     title="Pengguna"
                                 >
@@ -229,6 +252,7 @@
                             <li>
                                 <a
                                     href="/admin/audit"
+                                    @if(request()->is('admin/audit*')) aria-current="page" @endif
                                     class="flex items-center gap-3 px-2.5 py-2 rounded-lg text-sm font-medium transition-colors {{ request()->is('admin/audit*') ? 'bg-brand-soft text-brand-strong' : 'text-ink hover:bg-canvas text-muted hover:text-ink' }}"
                                     title="Audit"
                                 >
@@ -256,14 +280,17 @@
         </nav>
 
         <!-- Main Wrapper -->
-        <div class="flex-1 flex flex-col min-w-0 overflow-y-auto">
+        <div class="flex-1 flex flex-col min-w-0 overflow-y-auto" :inert="mobileDrawerOpen && !desktop">
             <!-- Topbar (68px, Sticky Glass) -->
             <header class="sticky top-0 z-30 h-[68px] bg-white/85 backdrop-blur-md border-b border-line px-4 md:px-8 flex items-center justify-between shrink-0">
                 <div class="flex items-center gap-3 min-w-0">
                     <button
+                        x-ref="openDrawer"
                         type="button"
                         class="lg:hidden p-2 text-muted hover:text-ink rounded-lg cursor-pointer"
-                        @click="mobileDrawerOpen = true"
+                        @click="openDrawer()"
+                        :aria-expanded="mobileDrawerOpen.toString()"
+                        aria-controls="navigasi-utama"
                     >
                         <x-icon name="menu" size="20" />
                         <span class="sr-only">Buka menu</span>
@@ -300,13 +327,17 @@
                     </div>
 
                     <!-- User Profile Dropdown / Links -->
-                    <div class="flex items-center gap-3 pl-3 border-l border-line" x-data="{ userMenuOpen: false }">
+                    <div class="flex items-center gap-3 pl-3 border-l border-line" x-data="{ userMenuOpen: false }" @keydown.escape="userMenuOpen = false; $refs.userTrigger.focus()">
                         <div class="relative">
                             <button
+                                x-ref="userTrigger"
                                 type="button"
                                 class="flex items-center gap-2 text-sm text-ink hover:text-brand-strong cursor-pointer rounded-lg p-1"
                                 @click="userMenuOpen = !userMenuOpen"
                                 @click.away="userMenuOpen = false"
+                                :aria-expanded="userMenuOpen.toString()"
+                                aria-controls="menu-pengguna"
+                                aria-label="Menu akun pengguna"
                             >
                                 <span class="w-8 h-8 rounded-full bg-brand-soft text-brand-strong font-semibold flex items-center justify-center text-xs">
                                     {{ substr(auth()->user()->name ?? 'U', 0, 1) }}
@@ -317,6 +348,7 @@
 
                             <!-- Dropdown Menu -->
                             <div
+                                id="menu-pengguna"
                                 x-show="userMenuOpen"
                                 x-transition:enter="transition ease-out duration-100"
                                 x-transition:enter-start="opacity-0 scale-95"

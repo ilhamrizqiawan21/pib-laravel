@@ -12,14 +12,14 @@
                     <button
                         type="button"
                         wire:click="$set('active_tab', 'summary')"
-                        class="rounded-md px-3 py-1.5 transition-colors {{ $active_tab === 'summary' ? 'bg-brand-light font-bold text-brand shadow-xs' : 'text-ink-muted hover:text-ink' }}"
+                        class="rounded-md px-3 py-1.5 transition-colors {{ $active_tab === 'summary' ? 'bg-brand-light font-bold text-brand-strong shadow-xs' : 'text-ink-muted hover:text-ink' }}"
                     >
                         Ringkasan Siswa
                     </button>
                     <button
                         type="button"
                         wire:click="$set('active_tab', 'matrix')"
-                        class="rounded-md px-3 py-1.5 transition-colors {{ $active_tab === 'matrix' ? 'bg-brand-light font-bold text-brand shadow-xs' : 'text-ink-muted hover:text-ink' }}"
+                        class="rounded-md px-3 py-1.5 transition-colors {{ $active_tab === 'matrix' ? 'bg-brand-light font-bold text-brand-strong shadow-xs' : 'text-ink-muted hover:text-ink' }}"
                     >
                         Matriks Kelas
                     </button>
@@ -33,8 +33,9 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             <!-- Filter Tahun Ajaran -->
             <div>
-                <label class="block text-[11px] font-semibold uppercase tracking-wider text-ink-muted mb-1">Tahun Ajaran</label>
+                <label for="rekap-tahun" class="block text-[11px] font-semibold uppercase tracking-wider text-ink-muted mb-1">Tahun Ajaran</label>
                 <select
+                    id="rekap-tahun"
                     wire:model.live="academic_year_id"
                     class="w-full rounded-lg border border-line bg-surface px-3 py-1.5 text-xs text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:border-brand"
                 >
@@ -49,8 +50,9 @@
 
             <!-- Filter Kelas -->
             <div>
-                <label class="block text-[11px] font-semibold uppercase tracking-wider text-ink-muted mb-1">Kelas</label>
+                <label for="rekap-kelas" class="block text-[11px] font-semibold uppercase tracking-wider text-ink-muted mb-1">Kelas</label>
                 <select
+                    id="rekap-kelas"
                     wire:model.live="class_id"
                     class="w-full rounded-lg border border-line bg-surface px-3 py-1.5 text-xs text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:border-brand"
                 >
@@ -63,8 +65,9 @@
 
             <!-- Filter Siswa -->
             <div>
-                <label class="block text-[11px] font-semibold uppercase tracking-wider text-ink-muted mb-1">Cari Siswa</label>
+                <label for="rekap-siswa" class="block text-[11px] font-semibold uppercase tracking-wider text-ink-muted mb-1">Cari Siswa</label>
                 <input
+                    id="rekap-siswa"
                     type="search"
                     wire:model.live.debounce.300ms="student"
                     placeholder="Nama siswa..."
@@ -108,7 +111,7 @@
                     </x-card>
                     <x-card>
                         <div class="text-xs font-semibold text-ink-muted uppercase tracking-wider">Rata-rata Nilai</div>
-                        <div class="text-2xl font-black text-brand mt-1">{{ $overallAvg !== null ? $overallAvg : '—' }}</div>
+                        <div class="text-2xl font-black text-brand-strong mt-1">{{ $overallAvg !== null ? $overallAvg : '—' }}</div>
                         <p class="text-[11px] text-ink-muted mt-0.5">Rata-rata berbobot keseluruhan</p>
                     </x-card>
                     <x-card>
@@ -163,7 +166,7 @@
                                             <button
                                                 type="button"
                                                 wire:click="selectStudent({{ $st['id'] }})"
-                                                class="hover:text-brand hover:underline text-left cursor-pointer"
+                                                class="hover:text-brand-strong hover:underline text-left cursor-pointer"
                                             >
                                                 {{ $st['name'] }}
                                             </button>
@@ -176,7 +179,7 @@
                                         <td class="py-3 px-4 text-xs text-right font-mono font-bold text-ink">
                                             {{ $st['total'] ?: '—' }}
                                         </td>
-                                        <td class="py-3 px-4 text-xs text-right font-mono font-bold text-brand">
+                                        <td class="py-3 px-4 text-xs text-right font-mono font-bold text-brand-strong">
                                             {{ $st['average'] !== null ? number_format($st['average'], 1) : '—' }}
                                         </td>
                                         <td class="py-3 px-4">
@@ -340,7 +343,7 @@
 
                     <div class="bg-surface rounded-xl border border-line shadow-xs overflow-hidden">
                         <div class="overflow-x-auto max-h-[calc(100vh-280px)]">
-                            <table class="w-full text-left border-collapse text-xs">
+                            <table data-scroll-table class="w-full text-left border-collapse text-xs">
                                 <thead class="sticky top-0 bg-surface-alt z-20">
                                     <tr class="border-b border-line text-ink-muted">
                                         <th scope="col" class="py-2.5 px-3 w-10 text-center bg-surface-alt sticky left-0 z-30 border-r border-line">No</th>

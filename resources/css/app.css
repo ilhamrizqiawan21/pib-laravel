@@ -52,6 +52,20 @@
 
     --color-focus: var(--focus);
 
+    /* Alias untuk kelas yang sudah dipakai di seluruh layar. */
+    --color-ink-muted: var(--muted);
+    --color-surface-alt: var(--canvas);
+    --color-line-hover: var(--muted);
+    --color-brand-light: var(--brand-soft);
+    --color-danger-light: var(--danger-soft);
+    --color-pib-50: var(--brand-soft);
+    --color-pib-100: var(--brand-soft);
+    --color-pib-300: var(--brand);
+    --color-pib-500: var(--brand);
+    --color-pib-600: var(--brand-strong);
+    --color-pib-700: var(--brand-strong);
+    --color-pib-800: var(--brand-strong);
+
     --radius-custom: var(--radius);
 }
 
@@ -59,4 +73,87 @@
 :focus-visible {
     outline: 3px solid var(--focus);
     outline-offset: 2px;
+    box-shadow: 0 0 0 5px var(--brand-strong);
+}
+
+@media (max-width: 639px) {
+    button:not([type='hidden']),
+    a,
+    select,
+    input:not([type='checkbox']):not([type='radio']),
+    summary {
+        min-height: 44px;
+    }
+
+    main table:not([data-scroll-table]),
+    main table:not([data-scroll-table]) tbody,
+    main table:not([data-scroll-table]) tr,
+    main table:not([data-scroll-table]) td {
+        display: block;
+        width: 100%;
+    }
+
+    main table:not([data-scroll-table]) thead {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+    }
+
+    main table:not([data-scroll-table]) tbody {
+        padding: 0.75rem;
+    }
+
+    main table:not([data-scroll-table]) tbody tr {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        margin-bottom: 0.75rem;
+        overflow: hidden;
+        background: var(--surface);
+    }
+
+    main table:not([data-scroll-table]) tbody tr:last-child {
+        margin-bottom: 0;
+    }
+
+    main table:not([data-scroll-table]) tbody td {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        padding: 0.65rem 0.8rem;
+        text-align: right;
+        min-width: 0;
+    }
+
+    main table:not([data-scroll-table]) tbody td + td {
+        border-top: 1px solid var(--line);
+    }
+
+    main table:not([data-scroll-table]) tbody td[data-label]::before {
+        content: attr(data-label);
+        color: var(--muted);
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-align: left;
+        flex: 0 0 36%;
+    }
+
+    main table:not([data-scroll-table]) tbody td[colspan] {
+        display: block;
+        text-align: center;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+    }
 }

@@ -71,7 +71,7 @@
                     </x-button>
 
                     <div wire:loading wire:target="import" class="text-xs text-muted flex items-center gap-2">
-                        <x-icon name="loader-2" class="animate-spin text-brand" size="16" />
+                        <x-icon name="loader-2" class="animate-spin text-brand-strong" size="16" />
                         <span>Memproses berkas...</span>
                     </div>
                 </div>

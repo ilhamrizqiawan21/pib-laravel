@@ -116,3 +116,5 @@ Nada ramah, ringkas, bahasa Indonesia baku sehari-hari. Istilah baku: *Setoran, 
 ## 8. Responsif
 
 Breakpoint: `≥1024` sidebar tetap · `640–1023` sidebar ciut/drawer · `<640` satu kolom, tabel → kartu. Diuji pada 360×800 dan 1366×768.
+
+Implementasi T-904: tabel data memakai `resources/js/responsive-tables.js` untuk menyalin nama kolom ke label kartu pada lebar <640px. Matriks rekap memakai `data-scroll-table` agar susunan siswa × materi tetap dapat digeser. Dialog dan drawer mengembalikan fokus ke pemicu ketika ditutup; semua tombol utama di ponsel memiliki tinggi sentuh minimal 44px. Alias kelas warna lama dipetakan ke token §1 di `resources/css/app.css`.

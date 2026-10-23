@@ -5,6 +5,7 @@ use App\Models\AcademicYear;
 use App\Models\SchoolClass;
 use App\Models\Student;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Model;
 use Livewire\Livewire;
 
 beforeEach(function () {
@@ -40,4 +41,19 @@ test('komponen livewire laporan merender filter dan tombol unduhan dengan parame
         ->assertSee(route('laporan.excel', ['academic_year_id' => $this->year->id, 'class_id' => $this->class->id]))
         ->assertSee(route('laporan.pdf', ['academic_year_id' => $this->year->id, 'class_id' => $this->class->id]))
         ->assertSee(route('laporan.pdf.student', ['student' => $this->student->id]));
+});
+
+test('pemilih rapor memuat nama kelas tanpa lazy loading', function () {
+    Model::preventLazyLoading(true);
+
+    try {
+        Student::factory()->create(['school_class_id' => $this->class->id, 'name' => 'Siti Aminah']);
+
+        Livewire::actingAs($this->user)
+            ->test(Laporan::class)
+            ->assertSee('VII A')
+            ->assertSee('Siti Aminah');
+    } finally {
+        Model::preventLazyLoading(false);
+    }
 });

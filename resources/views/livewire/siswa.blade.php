@@ -37,8 +37,9 @@
     <!-- Filter Bar -->
     <div class="mb-6 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
         <div class="flex flex-wrap items-center gap-3">
-            <div class="w-56">
+            <div class="w-full sm:w-56">
                 <select
+                    aria-label="Filter kelas siswa"
                     wire:model.live="filter_class_id"
                     class="w-full rounded-lg border border-line bg-surface px-3 py-2 text-sm text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:border-brand"
                 >
@@ -51,8 +52,9 @@
                 </select>
             </div>
 
-            <div class="w-40">
+            <div class="w-full sm:w-40">
                 <select
+                    aria-label="Filter status siswa"
                     wire:model.live="filter_active"
                     class="w-full rounded-lg border border-line bg-surface px-3 py-2 text-sm text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:border-brand"
                 >
@@ -246,7 +248,7 @@
 
             <div class="pt-1">
                 <label class="flex items-center gap-2 cursor-pointer select-none text-xs text-ink">
-                    <input type="checkbox" wire:model="form_is_active" class="rounded border-line text-brand focus:ring-focus">
+                    <input type="checkbox" wire:model="form_is_active" class="rounded border-line text-brand-strong focus:ring-focus">
                     <span class="font-medium">Siswa aktif</span>
                 </label>
             </div>

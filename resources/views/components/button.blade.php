@@ -16,7 +16,7 @@
     ];
 
     $variants = [
-        'primary' => 'bg-brand text-white hover:bg-brand-strong active:bg-brand-strong',
+        'primary' => 'bg-brand-strong text-white hover:bg-brand-strong active:bg-brand-strong',
         'secondary' => 'bg-surface border border-line text-ink hover:bg-canvas active:bg-line',
         'ghost' => 'text-muted hover:text-ink hover:bg-canvas active:bg-line',
         'danger' => 'bg-danger text-white hover:bg-red-600 active:bg-red-700',
