@@ -26,6 +26,7 @@ menjelaskan maksud, aturan, dan pemetaan dari aplikasi lama. Diagram: [ERD.md](E
 | password | string | hash; cast `hashed` |
 | role | string(20) default `teacher` | `App\Enums\Role`: admin, teacher |
 | is_active | bool default true | akun nonaktif tak bisa login |
+| profile_photo_path | string nullable | path foto profil pada disk publik |
 | remember_token, timestamps | | |
 
 Juga: `password_reset_tokens`, `sessions` (bawaan; sesi pakai driver `database`).

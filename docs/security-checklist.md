@@ -11,7 +11,7 @@ Tanggal audit: 2026-10-23. Acuan: `docs/AI_RULES.md` §5, `docs/ARCHITECTURE.md`
 | Metode dan path | Akses | Validasi / perlindungan khusus | Bukti pemeriksaan |
 |---|---|---|---|
 | `GET /` | `auth` | Redirect ke dashboard setelah login | `RouteAccessAuditTest` |
-| `GET /dashboard`, `/akun`, `/sekolah`, `/kelas`, `/materi`, `/siswa`, `/siswa/impor` | `auth` | Livewire memvalidasi semua aksi tulis | route middleware + tes tiap komponen |
+| `GET /dashboard`, `/akun`, `/pengaturan`, `/sekolah`, `/kelas`, `/materi`, `/siswa`, `/siswa/impor` | `auth` | Livewire memvalidasi semua aksi tulis | route middleware + tes tiap komponen |
 | `GET /siswa/template` | `auth` | Unduhan CSV konstan, tanpa input pengguna | `StudentImportTest` |
 | `GET /penilaian`, `/penilaian/setoran`, `/penilaian/materi` | `auth` | Hanya membaca payload kelas | `SetoranPageTest`, `MateriAssessmentPageTest` |
 | `GET /penilaian/kelas/{class}/progress` | `auth` | Binding kelas; 404 bila tidak ditemukan | `ClassProgressServiceTest` |
@@ -56,6 +56,7 @@ Tanggal audit: 2026-10-23. Acuan: `docs/AI_RULES.md` §5, `docs/ARCHITECTURE.md`
 
 - Mengharuskan login pada `/` dan menambahkan pemeriksaan `EnsureActiveUser` ke logout.
 - Mendaftarkan `EnsureActiveUser` sebagai middleware persisten Livewire agar sesi akun yang dinonaktifkan tidak dapat menjalankan aksi lanjutan.
+- Foto profil dibatasi sebagai gambar JPG/PNG/WEBP maksimal 2 MB dan disimpan pada disk terkontrol; path lama dihapus setelah penggantian berhasil.
 - Membatasi endpoint pembaruan Livewire, backup manual, dan restore; menonaktifkan route serving disk lokal.
 - Menolak impor siswa selain CSV/XLSX dan restore selain JSON.
 - Menambahkan `tests/Feature/Security/RouteAccessAuditTest.php` untuk cakupan middleware rute, sesi Livewire, signed upload, CSRF, dan rate limit.

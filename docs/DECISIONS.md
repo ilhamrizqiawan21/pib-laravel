@@ -32,6 +32,10 @@ Perbandingan "hari ini" ala aplikasi lama (isSameLocalDay) jadi benar tanpa konv
 
 **ADR-010 — Gerbang mutu: Pint + Larastan level 6 + Pest.** Diterima. `composer check` wajib hijau sebelum tugas dianggap selesai.
 
+**ADR-011 — Mode penggunaan single-user dengan login tetap wajib.** Diterima.
+Profil akun, email, nama pengguna, nama sekolah, foto profil, dan password dikelola dari Pengaturan.
+Navigasi Pengguna dihilangkan; route admin lama dipertahankan sementara untuk kompatibilitas administrasi dan migrasi data.
+
 ## Terbuka (butuh keputusan pemilik — gunakan asumsi default sampai dijawab)
 
 | # | Pertanyaan | Asumsi default |

@@ -35,6 +35,7 @@ Route::middleware(['auth', EnsureActiveUser::class])->group(function () {
     Route::get('/', fn () => redirect()->route('dashboard'));
     Route::get('/dashboard', Dashboard::class)->name('dashboard');
     Route::get('/akun', Akun::class)->name('akun');
+    Route::get('/pengaturan', Akun::class)->name('pengaturan');
     Route::get('/sekolah', Sekolah::class)->name('sekolah');
     Route::get('/kelas', Kelas::class)->name('kelas');
     Route::get('/materi', Materi::class)->name('materi');

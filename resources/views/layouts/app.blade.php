@@ -234,8 +234,8 @@
 
                 <div>
                     <div class="px-2.5 mb-2 text-[10px] font-semibold uppercase tracking-wider text-muted/80" :class="sidebarCollapsed ? 'lg:sr-only' : 'block'">Pengaturan</div>
-                    <a href="{{ route('akun') }}" @if(request()->is('akun*')) aria-current="page" @endif class="flex items-center gap-3 px-2.5 py-2 rounded-lg text-sm font-medium transition-colors {{ request()->is('akun*') ? 'bg-brand-soft text-brand-strong' : 'text-muted hover:bg-canvas hover:text-ink' }}" title="Akun">
-                        <x-icon name="user-cog" size="18" /><span :class="sidebarCollapsed ? 'lg:hidden' : 'inline'">Akun</span>
+                    <a href="{{ route('pengaturan') }}" @if(request()->is('akun*') || request()->is('pengaturan*')) aria-current="page" @endif class="flex items-center gap-3 px-2.5 py-2 rounded-lg text-sm font-medium transition-colors {{ request()->is('akun*') || request()->is('pengaturan*') ? 'bg-brand-soft text-brand-strong' : 'text-muted hover:bg-canvas hover:text-ink' }}" title="Pengaturan">
+                        <x-icon name="user-cog" size="18" /><span :class="sidebarCollapsed ? 'lg:hidden' : 'inline'">Pengaturan</span>
                     </a>
                 </div>
 
@@ -249,17 +249,6 @@
                             Admin
                         </div>
                         <ul class="space-y-1">
-                            <li>
-                                <a
-                                    href="/admin/pengguna"
-                                    @if(request()->is('admin/pengguna*')) aria-current="page" @endif
-                                    class="flex items-center gap-3 px-2.5 py-2 rounded-lg text-sm font-medium transition-colors {{ request()->is('admin/pengguna*') ? 'bg-brand-soft text-brand-strong' : 'text-ink hover:bg-canvas text-muted hover:text-ink' }}"
-                                    title="Pengguna"
-                                >
-                                    <x-icon name="user-cog" size="18" />
-                                    <span :class="sidebarCollapsed ? 'lg:hidden' : 'inline'">Pengguna</span>
-                                </a>
-                            </li>
                             <li>
                                 <a
                                     href="/admin/audit"
@@ -351,9 +340,13 @@
                                 aria-controls="menu-pengguna"
                                 aria-label="Menu akun pengguna"
                             >
-                                <span class="w-9 h-9 rounded-full bg-[#f0dcca] text-[#825f43] font-bold flex items-center justify-center text-xs">
-                                    {{ substr(auth()->user()->name ?? 'U', 0, 1) }}
-                                </span>
+                                @if (auth()->user()?->profile_photo_path)
+                                    <img src="{{ \Illuminate\Support\Facades\Storage::disk('public')->url(auth()->user()->profile_photo_path) }}" alt="Foto profil {{ auth()->user()->name }}" class="w-9 h-9 rounded-full object-cover" />
+                                @else
+                                    <span class="w-9 h-9 rounded-full bg-[#f0dcca] text-[#825f43] font-bold flex items-center justify-center text-xs">
+                                        {{ substr(auth()->user()->name ?? 'U', 0, 1) }}
+                                    </span>
+                                @endif
                                 <span class="hidden text-left md:block"><span class="block font-semibold text-xs">{{ auth()->user()->name ?? 'Pengguna' }}</span><span class="block text-[10px] text-muted">{{ auth()->user()?->isAdmin() ? 'Admin' : 'Guru' }}</span></span>
                                 <x-icon name="chevron-down" size="14" class="text-muted" />
                             </button>
@@ -375,9 +368,9 @@
                                     <div class="font-medium text-ink truncate">{{ auth()->user()->name ?? '' }}</div>
                                     <div class="text-[11px] truncate">{{ auth()->user()->email ?? '' }}</div>
                                 </div>
-                                <a href="/akun" class="flex items-center gap-2 px-3 py-2 hover:bg-canvas text-ink">
+                                <a href="{{ route('pengaturan') }}" class="flex items-center gap-2 px-3 py-2 hover:bg-canvas text-ink">
                                     <x-icon name="lock" size="14" />
-                                    <span>Akun & Kata Sandi</span>
+                                    <span>Pengaturan</span>
                                 </a>
                                 <form method="POST" action="/logout">
                                     @csrf

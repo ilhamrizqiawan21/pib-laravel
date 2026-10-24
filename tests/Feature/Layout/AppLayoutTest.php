@@ -54,7 +54,8 @@ test('menu admin tampil untuk pengguna dengan peran admin', function () {
     $response = $this->actingAs($admin)->get('/dashboard');
 
     $response->assertOk();
-    $response->assertSee('Pengguna');
+    $response->assertSee('Pengaturan');
+    $response->assertDontSee('/admin/pengguna');
     $response->assertSee('Audit');
 });
 

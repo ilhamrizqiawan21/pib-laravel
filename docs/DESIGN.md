@@ -38,8 +38,8 @@ Tujuan: **modern, bersih, konsisten, cepat dipakai di kelas**, bukan "CRUD klasi
   - *Kerja harian*: **Beranda** · **Penilaian** · **Rekap**
   - *Kelola data*: **Sekolah & periode** · **Kelas** · **Siswa** · **Materi**
   - *Laporan*: **Laporan & backup**
-  - *Pengaturan*: **Akun**
-  - *Admin* (hanya admin): **Pengguna** · **Audit**
+  - *Pengaturan*: **Pengaturan** (profil, nama sekolah, dan keamanan akun)
+  - *Admin* (hanya admin): **Audit**
   - "Penilaian" aktif untuk `/penilaian/*`; membuka mode terakhir (default: per siswa).
 - Indikator draft global (`DraftIndicator`): lencana "N nilai belum terkirim" bila ada antrean, klik → buka halaman penilaian terkait.
 
@@ -101,8 +101,8 @@ Bagian 1 *Unduh hasil*: filter (sama dengan Rekap) + tombol **Excel** dan **PDF*
 Hasil Excel memakai judul dan cakupan yang jelas pada tiap lembar, kolom angka terformat, kisi tersembunyi, serta pengaturan cetak A4. PDF kelas mengulang kepala tabel pada halaman baru dan menjaga ringkasan akhir tetap utuh. PDF rapor siswa menampilkan kemajuan, jumlah nilai, rata-rata, paraf, catatan, dan tanggal; kedua PDF memiliki footer dan nomor halaman di setiap lembar.
 Bagian 2 *Backup*: status terakhir (waktu, ukuran), tombol **Unduh backup**; admin: **Pulihkan** (unggah → ringkasan → modal konfirmasi ketik "PULIHKAN").
 
-### 4.10 Akun (`/akun`) · Admin Pengguna/Audit
-Ubah password (lama, baru, ulangi) · tabel pengguna (buat, nonaktifkan, reset password, peran) · tabel audit (cari, filter entitas/aksi, paginasi).
+### 4.10 Pengaturan (`/pengaturan`, kompatibel `/akun`) · Admin Pengguna/Audit
+Foto profil, nama pengguna, email, nama sekolah, dan ubah password (lama, baru, ulangi) berada dalam satu halaman. Pengelolaan pengguna dan audit tetap berada di area admin.
 
 ## 5. Gerak & umpan balik
 

@@ -25,6 +25,7 @@ erDiagram
         string password
         string role "admin|teacher"
         bool is_active
+        string profile_photo_path "nullable"
     }
     academic_years {
         bigint id PK

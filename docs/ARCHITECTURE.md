@@ -91,8 +91,8 @@ Paraf dan catatan yang tidak diedit tidak dikirim agar nilai lama tetap terjaga.
 | `/sekolah` | Sekolah & periode (identitas, tahun ajaran) | semua |
 | `/kelas`, `/siswa`, `/siswa/impor`, `/siswa/template` | data induk | semua |
 | `/materi`, `/materi/{chapter}`, `/materi/{chapter}/{subchapter}` | kurikulum | semua |
-| `/akun` | ubah password | semua |
-| `/admin/pengguna`, `/admin/audit`, `/admin/restore` | admin | admin |
+| `/akun`, `/pengaturan` | profil, identitas sekolah, ubah password | semua |
+| `/admin/audit`, `/admin/restore` | admin | admin |
 
 ## Keamanan (lihat juga AI_RULES.md §Keamanan)
 
