@@ -19,12 +19,12 @@ Tanggal audit: 2026-10-23. Acuan: `docs/AI_RULES.md` §5, `docs/ARCHITECTURE.md`
 | `GET /rekap`, `/laporan` | `auth` | Filter Livewire divalidasi | `RekapTest`, `LaporanTest` |
 | `GET /laporan/excel`, `/laporan/pdf` | `auth` | `ReportFilterRequest::validated()` | `ReportExcelTest`, `ReportPdfClassTest` |
 | `GET /laporan/pdf/siswa/{student}` | `auth` | Binding siswa; nama berkas di-slug | `ReportPdfStudentTest` |
-| `GET /backup/status`, `/backup/unduh` | `auth` | Unduh tanpa cache; audit unduh | `BackupDownloadTest` |
+| `GET /backup/status`, `/backup/unduh` | `auth` | Status tidak mengungkap path server; unduh tanpa cache; audit unduh | `BackupDownloadTest` |
 | `POST /backup/manual` | `auth` | CSRF, throttle 5/menit, audit backup | `BackupDownloadTest`, `RouteAccessAuditTest` |
 | `POST /logout` | `auth` | CSRF; sesi dibatalkan dan token diganti | `AuthenticationTest` |
 | `GET /admin/pengguna`, `/admin/audit` | `auth` + `can:admin` | Semua aksi Livewire mengulang `Authorize` | `PenggunaTest`, `AuditTest` |
 | `POST /admin/restore` | `auth` + `can:admin` | CSRF, throttle 5/menit, JSON saja, maks. 50 MB, konfirmasi `PULIHKAN` | `AdminRestoreTest` |
-| `GET /login`, `POST /login` | Tamu (`guest`) | CSRF; validasi; 5 percobaan/menit/email+IP; pesan generik; audit gagal tanpa password | `AuthenticationTest` |
+| `GET /login`, `POST /login` | Tamu (`guest`) | CSRF; validasi; 5 percobaan/menit/email+IP dan 30 permintaan/menit/IP; pesan generik; audit gagal tanpa password | `AuthenticationTest`, `RouteAccessAuditTest` |
 | `GET /up` | Publik | Health check Laravel, tanpa data aplikasi | `docs/DEPLOYMENT.md` T-901: HTTP 200 |
 
 ## Rute infrastruktur framework
@@ -46,9 +46,9 @@ Tanggal audit: 2026-10-23. Acuan: `docs/AI_RULES.md` §5, `docs/ARCHITECTURE.md`
 | IDOR | Lulus sesuai ADR-004 | Data memang dipakai bersama semua guru. ID path memakai route model binding dan service; akun admin/restore diberi gate. Tidak ada pemisahan kepemilikan per guru dalam desain rilis ini. |
 | Metode tulis, CSRF, fetch | Lulus | Tidak ada aksi tulis aplikasi melalui GET. Tes memastikan POST utama memakai `PreventRequestForgery`; penyimpanan draft mengirim token melalui helper fetch. Upload framework memakai URL bertanda tangan. |
 | Query berbasis input / SQL injection | Lulus | Query aplikasi memakai Eloquent/Query Builder dan binding. Tidak ditemukan `DB::raw` dengan input pengguna. Snapshot SQLite memakai nama file yang dibuat server dan escaping petik tunggal. |
-| Output di-escape dan unduhan | Lulus | Blade memakai escape `{{ }}`; satu `{!! !!}` merender SVG dari peta ikon kode tetap. Nama PDF siswa dibuat dengan `Str::slug`; file laporan/backup menggunakan nama konstan. |
+| Output di-escape dan unduhan | Lulus | Blade memakai escape `{{ }}`; data sesi pada Alpine memakai `@js`; satu `{!! !!}` merender SVG dari peta ikon kode tetap. Nama PDF siswa dibuat dengan `Str::slug`; teks dinamis XLSX ditulis eksplisit sebagai string agar tidak menjadi formula. |
 | Unggahan | Lulus | Impor membatasi CSV/XLSX, MIME, ekstensi, ukuran 2 MB, serta jumlah baris 1000. Restore membatasi JSON, MIME, ekstensi, ukuran 50 MB dan admin. Penyimpanan temporary Livewire ditandatangani; disk lokal tidak disajikan publik. |
-| Rate limit | Lulus | Login 5/menit per email+IP; sync nilai 120/menit/pengguna; Livewire update 120/menit; upload sementara 60/menit; backup manual dan restore 5/menit. |
+| Rate limit | Lulus | Login 5/menit per email+IP serta 30 permintaan/menit/IP; sync nilai 120/menit/pengguna; Livewire update 120/menit; upload sementara 60/menit; backup manual dan restore 5/menit. |
 | Audit dan log | Lulus | Perubahan nilai/master/impor/backup/restore/akun dicatat oleh service. Login gagal hanya menyimpan email, IP, dan user-agent; password/token tidak dicatat. Tes fitur memeriksa audit utama. |
 | Log sensitif | Lulus dengan batasan | Tidak ditemukan kredensial di log aplikasi. Audit login menyimpan data identifikasi untuk investigasi; akses halaman audit hanya admin. |
 
@@ -71,4 +71,7 @@ Konfigurasi TLS/reverse proxy dan izin OS diperiksa saat pemasangan host sesuai 
 - `ScoreService` menolak pasangan siswa dan materi dari periode berbeda serta siswa, kelas, atau materi nonaktif dengan 404.
 - Impor siswa memilih kelas pada tahun ajaran aktif bila nama kelas berulang, dan melaporkan baris ambigu bila tidak ada periode aktif.
 - Backup MySQL memakai JSON lengkap, termasuk snapshot pra-restore; migrasi, backup, dan restore berhasil diuji pada database MySQL 8.4.10 sementara. Restore juga menolak melanjutkan bila mode pemeliharaan gagal aktif.
-- Gerbang lokal: `composer check` lulus (Pint, Larastan 0 error, Pest 248 tes). Hasil CI perlu diverifikasi setelah perubahan ini di-push.
+- Kredensial bawaan `Admin12345!` dihapus. `AdminSeeder` sekarang gagal secara aman bila `PIB_ADMIN_PASSWORD` kosong atau kurang dari 10 karakter.
+- Endpoint status backup tidak lagi membocorkan path absolut server. Pesan toast di-encode untuk konteks JavaScript, dan teks dinamis ekspor XLSX dipaksa menjadi string untuk mencegah formula injection.
+- Login memiliki lapisan throttle IP global selain pembatas email+IP. `composer audit` dan `npm audit` melaporkan 0 advisori/kerentanan pada lockfile tanggal audit.
+- Gerbang lokal: `composer check` lulus (Pint, Larastan 0 error, Pest 261 tes/1177 assertion). Hasil CI perlu diverifikasi setelah perubahan ini di-push.

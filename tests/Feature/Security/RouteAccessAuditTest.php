@@ -59,13 +59,19 @@ test('unggahan sementara Livewire menolak permintaan tanpa tanda tangan', functi
     $this->post('/'.$uploadRoute->uri(), ['files' => []])->assertUnauthorized();
 });
 
-test('endpoint penulisan berat memiliki rate limit', function () {
+test('endpoint publik dan penulisan berat memiliki rate limit', function () {
     foreach (['backup.manual', 'admin.restore', 'default-livewire.update', 'livewire.upload-file'] as $routeName) {
         $route = Route::getRoutes()->getByName($routeName);
 
         expect($route)->not->toBeNull();
         expect(implode('|', $route->gatherMiddleware()))->toContain('throttle:');
     }
+
+    $loginRoute = collect(Route::getRoutes()->getRoutes())
+        ->first(fn ($route) => $route->uri() === 'login' && in_array('POST', $route->methods(), true));
+
+    expect($loginRoute)->not->toBeNull();
+    expect(implode('|', $loginRoute->gatherMiddleware()))->toContain('throttle:30,1');
 });
 
 test('endpoint POST aplikasi berada pada middleware perlindungan CSRF', function () {

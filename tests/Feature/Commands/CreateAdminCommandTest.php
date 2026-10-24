@@ -63,3 +63,12 @@ test('admin seeder membaca konfigurasi dan membuat admin', function () {
     expect($user->name)->toBe('Seeder Admin');
     expect($user->role)->toBe(Role::Admin);
 });
+
+test('admin seeder menolak password bawaan kosong atau terlalu pendek', function (mixed $password) {
+    config()->set('pib.admin.password', $password);
+
+    expect(fn () => $this->seed(AdminSeeder::class))
+        ->toThrow(RuntimeException::class, 'PIB_ADMIN_PASSWORD wajib diisi dan minimal 10 karakter');
+
+    expect(User::query()->where('email', 'admin@example.com')->exists())->toBeFalse();
+})->with([null, '', 'pendek']);

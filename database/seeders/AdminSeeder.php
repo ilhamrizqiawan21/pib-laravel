@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use RuntimeException;
 
 class AdminSeeder extends Seeder
 {
@@ -22,8 +23,8 @@ class AdminSeeder extends Seeder
         /** @var string|null $password */
         $password = config('pib.admin.password');
 
-        if (blank($password)) {
-            $password = 'Admin12345!';
+        if (blank($password) || mb_strlen($password) < 10) {
+            throw new RuntimeException('PIB_ADMIN_PASSWORD wajib diisi dan minimal 10 karakter sebelum menjalankan AdminSeeder.');
         }
 
         User::updateOrCreate(

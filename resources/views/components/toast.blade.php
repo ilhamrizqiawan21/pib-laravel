@@ -12,10 +12,10 @@
     }"
     x-init="
         @if (session()->has('success'))
-            add({ type: 'success', message: '{{ session('success') }}' });
+            add({ type: 'success', message: @js(session('success')) });
         @endif
         @if (session()->has('error'))
-            add({ type: 'danger', message: '{{ session('error') }}' });
+            add({ type: 'danger', message: @js(session('error')) });
         @endif
     "
     x-on:toast.window="add($event.detail)"

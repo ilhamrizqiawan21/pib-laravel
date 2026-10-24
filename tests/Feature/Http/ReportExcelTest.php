@@ -9,6 +9,7 @@ use App\Models\Score;
 use App\Models\Student;
 use App\Models\Subchapter;
 use App\Models\User;
+use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Worksheet\PageSetup;
 
@@ -106,6 +107,35 @@ test('guru dapat mengunduh excel dengan struktur sheet dan data yang sesuai', fu
     expect($recapSheet)->not->toBeNull();
     expect($recapSheet->getCell('A5')->getValue())->toBe('Ahmad');
     expect($recapSheet->getCell('E5')->getValue())->toBe(85.0);
+
+    unlink($tempFile);
+});
+
+test('teks dari basis data tidak dieksekusi sebagai formula excel', function () {
+    $this->student->update([
+        'name' => '=HYPERLINK("https://example.test","buka")',
+        'nis' => '+1+1',
+    ]);
+    Score::query()->where('student_id', $this->student->id)->update([
+        'note' => '@SUM(1+1)',
+        'initials' => '-1+1',
+    ]);
+
+    $response = $this->actingAs($this->user)
+        ->get('/laporan/excel?academic_year_id='.$this->year->id.'&class_id='.$this->class->id);
+
+    $tempFile = tempnam(sys_get_temp_dir(), 'pib_formula_test_');
+    file_put_contents($tempFile, $response->streamedContent());
+
+    $spreadsheet = IOFactory::load($tempFile);
+    $detail = $spreadsheet->getSheetByName('Detail Nilai');
+
+    expect($detail)->not->toBeNull();
+    expect($detail->getCell('A5')->getDataType())->toBe(DataType::TYPE_STRING);
+    expect($detail->getCell('B5')->getDataType())->toBe(DataType::TYPE_STRING);
+    expect($detail->getCell('M5')->getDataType())->toBe(DataType::TYPE_STRING);
+    expect($detail->getCell('N5')->getDataType())->toBe(DataType::TYPE_STRING);
+    expect($detail->getCell('B5')->getValue())->toStartWith('=HYPERLINK');
 
     unlink($tempFile);
 });

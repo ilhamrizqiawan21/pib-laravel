@@ -5,6 +5,7 @@ namespace App\Services;
 use App\DTO\RecapFilter;
 use App\Repositories\SettingsRepository;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
+use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
@@ -115,7 +116,7 @@ class ExcelReportService
         $sheet->getRowDimension(1)->setRowHeight(38);
 
         $sheet->mergeCells("A2:{$lastCol}2");
-        $sheet->setCellValue('A2', $subtitle);
+        $this->setTextCell($sheet, 'A2', $subtitle);
         $sheet->getStyle("A2:{$lastCol}2")->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB(self::COLOR_SOFT_GREEN);
         $sheet->getStyle('A2')->getFont()->setSize(10)->getColor()->setRGB(self::COLOR_MUTED);
         $sheet->getStyle('A2')->getAlignment()->setWrapText(true)->setVertical(Alignment::VERTICAL_CENTER)->setIndent(1);
@@ -248,13 +249,11 @@ class ExcelReportService
 
                 $studentRowsStart = $currentRow;
                 foreach ($classGroup['rows'] as $index => $row) {
-                    $sheet->fromArray([
-                        $index + 1,
-                        $row['name'],
-                        $row['gender'] ?: '-',
-                        $row['average'] ?? '',
-                        $row['status'],
-                    ], null, "A{$currentRow}");
+                    $sheet->setCellValue("A{$currentRow}", $index + 1);
+                    $this->setTextCell($sheet, "B{$currentRow}", $row['name']);
+                    $this->setTextCell($sheet, "C{$currentRow}", $row['gender'] ?: '-');
+                    $sheet->setCellValue("D{$currentRow}", $row['average'] ?? '');
+                    $this->setTextCell($sheet, "E{$currentRow}", $row['status']);
 
                     $currentRow++;
                 }
@@ -343,12 +342,12 @@ class ExcelReportService
                 default => 'Sebagian dinilai',
             };
 
-            $sheet->setCellValue("A{$currentRow}", $item['name']);
-            $sheet->setCellValue("B{$currentRow}", $period);
-            $sheet->setCellValue("C{$currentRow}", ($item['assessed'] ?? 0).' / '.($item['expected'] ?? 0));
+            $this->setTextCell($sheet, "A{$currentRow}", $item['name']);
+            $this->setTextCell($sheet, "B{$currentRow}", $period);
+            $this->setTextCell($sheet, "C{$currentRow}", ($item['assessed'] ?? 0).' / '.($item['expected'] ?? 0));
             $sheet->setCellValue("D{$currentRow}", $item['total'] ?? 0);
             $sheet->setCellValue("E{$currentRow}", $item['average'] ?? '');
-            $sheet->setCellValue("F{$currentRow}", $statusText);
+            $this->setTextCell($sheet, "F{$currentRow}", $statusText);
 
             $sheet->getRowDimension($currentRow)->setRowHeight(20);
             $sheet->getStyle("A{$currentRow}:F{$currentRow}")->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
@@ -405,11 +404,11 @@ class ExcelReportService
                 default => 'Sebagian dinilai',
             };
 
-            $sheet->setCellValue("A{$currentRow}", $period);
+            $this->setTextCell($sheet, "A{$currentRow}", $period);
             $sheet->setCellValue("B{$currentRow}", $item['students'] ?? 0);
-            $sheet->setCellValue("C{$currentRow}", ($item['assessed'] ?? 0).' / '.($item['expected'] ?? 0));
+            $this->setTextCell($sheet, "C{$currentRow}", ($item['assessed'] ?? 0).' / '.($item['expected'] ?? 0));
             $sheet->setCellValue("D{$currentRow}", $item['average'] ?? '');
-            $sheet->setCellValue("E{$currentRow}", $statusText);
+            $this->setTextCell($sheet, "E{$currentRow}", $statusText);
 
             $sheet->getRowDimension($currentRow)->setRowHeight(20);
             $sheet->getStyle("A{$currentRow}:E{$currentRow}")->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
@@ -457,22 +456,20 @@ class ExcelReportService
         $currentRow = 5;
         $studentRowsStart = $currentRow;
         foreach ($rows as $index => $row) {
-            $sheet->fromArray([
-                $row['nis'] ?? '',
-                $row['name'],
-                $row['gender'] ?: '-',
-                $row['class_name'],
-                $row['chapter'] ?? '',
-                $row['subchapter'] ?? '',
-                $row['assessment'] ?? '',
-                $row['weight'] ?? '',
-                $row['score'] ?? '',
-                $row['mistakes'] ?? '',
-                $row['status'],
-                $row['assessed_at'] ?? '',
-                $row['initials'] ?? '',
-                $row['note'] ?? '',
-            ], null, "A{$currentRow}");
+            $this->setTextCell($sheet, "A{$currentRow}", $row['nis'] ?? '');
+            $this->setTextCell($sheet, "B{$currentRow}", $row['name']);
+            $this->setTextCell($sheet, "C{$currentRow}", $row['gender'] ?: '-');
+            $this->setTextCell($sheet, "D{$currentRow}", $row['class_name']);
+            $this->setTextCell($sheet, "E{$currentRow}", $row['chapter'] ?? '');
+            $this->setTextCell($sheet, "F{$currentRow}", $row['subchapter'] ?? '');
+            $this->setTextCell($sheet, "G{$currentRow}", $row['assessment'] ?? '');
+            $sheet->setCellValue("H{$currentRow}", $row['weight'] ?? '');
+            $sheet->setCellValue("I{$currentRow}", $row['score'] ?? '');
+            $sheet->setCellValue("J{$currentRow}", $row['mistakes'] ?? '');
+            $this->setTextCell($sheet, "K{$currentRow}", $row['status']);
+            $this->setTextCell($sheet, "L{$currentRow}", $row['assessed_at'] ?? '');
+            $this->setTextCell($sheet, "M{$currentRow}", $row['initials'] ?? '');
+            $this->setTextCell($sheet, "N{$currentRow}", $row['note'] ?? '');
 
             $currentRow++;
         }
@@ -529,5 +526,10 @@ class ExcelReportService
             ->getStartColor()->setRGB(self::COLOR_STRIPE);
 
         $sheet->getStyle($range)->setConditionalStyles([$stripe]);
+    }
+
+    private function setTextCell(Worksheet $sheet, string $coordinate, mixed $value): void
+    {
+        $sheet->setCellValueExplicit($coordinate, (string) $value, DataType::TYPE_STRING);
     }
 }

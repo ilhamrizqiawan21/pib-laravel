@@ -31,7 +31,10 @@ class LoginController extends Controller
         $email = Str::lower($credentials['email']);
         $throttleKey = Str::transliterate($email.'|'.$request->ip());
 
-        if (RateLimiter::tooManyAttempts($throttleKey, 5)) {
+        /** @var int $maxAttempts */
+        $maxAttempts = config('pib.login_max_attempts', 5);
+
+        if (RateLimiter::tooManyAttempts($throttleKey, $maxAttempts)) {
             $seconds = RateLimiter::availableIn($throttleKey);
 
             throw ValidationException::withMessages([
