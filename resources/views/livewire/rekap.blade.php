@@ -1,13 +1,24 @@
 <div>
     <x-slot:title>Rekapitulasi Nilai</x-slot:title>
 
+    @php
+        $exportParams = array_filter([
+            'academic_year_id' => $academic_year_id,
+            'class_id' => $class_id,
+            'student' => $student,
+            'chapter' => $chapter,
+            'subchapter' => $subchapter,
+            'assessment_id' => $assessment_id,
+        ], static fn ($value) => $value !== null && $value !== '');
+    @endphp
+
     <x-page-header
         eyebrow="REKAPITULASI"
         title="Rekapitulasi Nilai"
         description="Pantau kemajuan, nilai rata-rata berbobot, dan status kelengkapan penilaian praktik ibadah siswa."
     >
         <x-slot:actions>
-            <div class="flex items-center gap-2">
+            <div class="flex flex-wrap items-center justify-end gap-2">
                 <span class="inline-flex rounded-lg border border-line bg-surface p-1 text-xs font-medium">
                     <button
                         type="button"
@@ -24,6 +35,28 @@
                         Matriks Kelas
                     </button>
                 </span>
+
+                <x-button
+                    variant="secondary"
+                    size="sm"
+                    href="{{ route('laporan.excel', $exportParams) }}"
+                    target="_blank"
+                    title="Ekspor rekap ke Excel"
+                >
+                    <x-icon name="file-spreadsheet" size="16" />
+                    <span>Excel</span>
+                </x-button>
+
+                <x-button
+                    variant="outline"
+                    size="sm"
+                    href="{{ route('laporan.pdf', $exportParams) }}"
+                    target="_blank"
+                    title="Ekspor rekap ke PDF"
+                >
+                    <x-icon name="file-pdf" size="16" class="text-danger" />
+                    <span>PDF</span>
+                </x-button>
             </div>
         </x-slot:actions>
     </x-page-header>
@@ -73,6 +106,36 @@
                     placeholder="Nama siswa..."
                     class="w-full rounded-lg border border-line bg-surface px-3 py-1.5 text-xs text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:border-brand"
                 />
+            </div>
+
+            <div>
+                <label for="rekap-bab" class="block text-[11px] font-semibold uppercase tracking-wider text-ink-muted mb-1">Bab</label>
+                <select id="rekap-bab" wire:model.live="chapter" class="w-full rounded-lg border border-line bg-surface px-3 py-1.5 text-xs text-ink">
+                    <option value="">Semua Bab</option>
+                    @foreach ($chapters->pluck('title')->unique() as $title)
+                        <option value="{{ $title }}">{{ $title }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div>
+                <label for="rekap-subbab" class="block text-[11px] font-semibold uppercase tracking-wider text-ink-muted mb-1">Subbab</label>
+                <select id="rekap-subbab" wire:model.live="subchapter" class="w-full rounded-lg border border-line bg-surface px-3 py-1.5 text-xs text-ink">
+                    <option value="">Semua Subbab</option>
+                    @foreach ($subchapters->pluck('title')->unique() as $title)
+                        <option value="{{ $title }}">{{ $title }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div>
+                <label for="rekap-materi" class="block text-[11px] font-semibold uppercase tracking-wider text-ink-muted mb-1">Materi</label>
+                <select id="rekap-materi" wire:model.live="assessment_id" class="w-full rounded-lg border border-line bg-surface px-3 py-1.5 text-xs text-ink">
+                    <option value="">Semua Materi</option>
+                    @foreach ($assessments as $assessment)
+                        <option value="{{ $assessment->id }}">{{ $assessment->title }}</option>
+                    @endforeach
+                </select>
             </div>
 
             <!-- Tombol Reset -->

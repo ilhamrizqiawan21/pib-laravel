@@ -10,6 +10,7 @@ export function setoranComponent({ classes = [], initialClassId = null, initialS
         studentId: initialStudentId ? Number(initialStudentId) : null,
         query: '',
         searchIndex: 0,
+        mobileStudentPickerOpen: false,
 
         data: null, // { classId, className, materials: [], students: [], scores: [] }
         scores: {}, // key: "studentId:assessmentId" => score object
@@ -18,8 +19,13 @@ export function setoranComponent({ classes = [], initialClassId = null, initialS
         openGroups: new Set(),
 
         loading: false,
+        loadRequestId: 0,
         errorMessage: '',
         statusMessage: '',
+        details: { raw: '', initials: '', note: '', assessedAt: '' },
+        detailsError: '',
+        savingDetails: false,
+        pendingClear: null,
 
         init() {
             // Pulihkan kelas terakhir dari localStorage jika belum ditentukan
@@ -49,7 +55,7 @@ export function setoranComponent({ classes = [], initialClassId = null, initialS
 
             // Dengarkan konfirmasi penyimpanan sukses dari background sync
             window.addEventListener('pib-score-saved', (event) => {
-                const { draft, score, mistakes, version, assessed_at } = event.detail;
+                const { draft, score, mistakes, version, assessed_at, initials, note } = event.detail;
                 if (draft) {
                     this.scores[draft.key] = {
                         student_id: draft.studentId,
@@ -58,6 +64,8 @@ export function setoranComponent({ classes = [], initialClassId = null, initialS
                         mistakes,
                         version,
                         assessed_at: assessed_at || new Date().toISOString(),
+                        initials,
+                        note,
                     };
                 }
                 this.refreshDrafts();
@@ -69,11 +77,12 @@ export function setoranComponent({ classes = [], initialClassId = null, initialS
                     const activeTag = document.activeElement ? document.activeElement.tagName.toLowerCase() : '';
                     if (activeTag !== 'input' && activeTag !== 'textarea' && activeTag !== 'select') {
                         e.preventDefault();
-                        const searchInput = document.getElementById('search-siswa-input');
-                        if (searchInput) {
-                            searchInput.focus();
-                            searchInput.select();
-                        }
+                        this.mobileStudentPickerOpen = true;
+                        this.$nextTick(() => {
+                            const searchInput = document.getElementById('search-siswa-input');
+                            searchInput?.focus();
+                            searchInput?.select();
+                        });
                     }
                 }
             });
@@ -84,22 +93,27 @@ export function setoranComponent({ classes = [], initialClassId = null, initialS
         },
 
         async loadClassProgress() {
+            const requestId = ++this.loadRequestId;
             if (!this.classId) {
                 this.data = null;
                 this.scores = {};
+                this.loading = false;
                 return;
             }
+
+            const classId = this.classId;
 
             this.loading = true;
             this.errorMessage = '';
 
             try {
-                const response = await window.DraftStore.apiRequest(`/penilaian/kelas/${this.classId}/progress`);
+                const response = await window.DraftStore.apiRequest(`/penilaian/kelas/${classId}/progress`);
                 if (!response.ok) {
                     throw new Error('Gagal memuat data kelas dari server.');
                 }
 
                 const result = await response.json();
+                if (requestId !== this.loadRequestId) return;
                 this.data = result;
 
                 // Bangun map scores
@@ -123,9 +137,11 @@ export function setoranComponent({ classes = [], initialClassId = null, initialS
 
                 this.saveLastState();
             } catch (err) {
-                this.errorMessage = err.message || 'Terjadi kesalahan saat memuat data.';
+                if (requestId === this.loadRequestId) {
+                    this.errorMessage = err.message || 'Terjadi kesalahan saat memuat data.';
+                }
             } finally {
-                this.loading = false;
+                if (requestId === this.loadRequestId) this.loading = false;
             }
         },
 
@@ -133,12 +149,14 @@ export function setoranComponent({ classes = [], initialClassId = null, initialS
             this.classId = newClassId;
             this.studentId = null;
             this.query = '';
+            this.mobileStudentPickerOpen = false;
             this.saveLastState();
             this.loadClassProgress();
         },
 
         selectStudent(id) {
             this.studentId = id;
+            this.mobileStudentPickerOpen = false;
             this.saveLastState();
             this.autoExpandAndFocus();
         },
@@ -380,6 +398,58 @@ export function setoranComponent({ classes = [], initialClassId = null, initialS
             return '';
         },
 
+        openDetails(material) {
+            if (!this.studentId) return;
+            const key = window.DraftStore.draftKey(this.studentId, material.id);
+            const draft = this.drafts[key];
+            const score = this.scores[key];
+            this.details = {
+                key,
+                studentId: this.studentId,
+                assessmentId: material.id,
+                title: material.title,
+                raw: this.getRawMistakes(material.id),
+                initials: draft?.initials ?? score?.initials ?? '',
+                note: draft?.note ?? score?.note ?? '',
+                assessedAt: draft?.assessedAt ?? (score?.assessed_at
+                    ? new Date(score.assessed_at).toLocaleDateString('sv-SE')
+                    : new Date().toLocaleDateString('sv-SE')),
+                baseVersion: score?.version ?? null,
+            };
+            this.detailsError = '';
+            this.$dispatch('open-modal', 'score-details-setoran');
+        },
+
+        async saveDetails() {
+            if (!this.details || this.savingDetails) return;
+            const parsed = window.DraftStore.parseMistakes(this.details.raw);
+            if (!parsed.valid || parsed.mistakes === null) {
+                this.detailsError = parsed.error || 'Isi jumlah kesalahan sebelum menyimpan detail.';
+                return;
+            }
+
+            const draft = {
+                ...this.details,
+                id: window.DraftStore.createDraftId(),
+                deviceId: window.DraftStore.getDeviceId(),
+                status: 'pending',
+            };
+            window.DraftStore.persistDraft(draft);
+            this.refreshDrafts();
+            this.savingDetails = true;
+            try {
+                const result = await window.DraftStore.submitScore(draft);
+                if (result.success || result.status === 0) {
+                    this.$dispatch('close-modal', 'score-details-setoran');
+                } else {
+                    this.detailsError = result.error || 'Nilai berubah di server. Muat ulang sebelum menyimpan.';
+                }
+            } finally {
+                this.savingDetails = false;
+                this.refreshDrafts();
+            }
+        },
+
         // Update nilai draft saat guru mengetik
         onInputMistakes(material, raw) {
             if (!this.studentId) return;
@@ -458,6 +528,32 @@ export function setoranComponent({ classes = [], initialClassId = null, initialS
                 return;
             }
 
+            if (parsed.mistakes === null && this.scores[key]?.score !== null) {
+                this.pendingClear = { draft, index };
+                this.$dispatch('open-modal', 'confirm-clear-setoran');
+                return;
+            }
+
+            await this.submitDraft(draft, index);
+        },
+
+        async confirmClear() {
+            if (!this.pendingClear) return;
+            const { draft, index } = this.pendingClear;
+            this.pendingClear = null;
+            this.$dispatch('close-modal', 'confirm-clear-setoran');
+            await this.submitDraft(draft, index);
+        },
+
+        cancelClear() {
+            if (!this.pendingClear) return;
+            window.DraftStore.deleteDraft(this.pendingClear.draft.key, this.pendingClear.draft.id);
+            this.pendingClear = null;
+            this.refreshDrafts();
+        },
+
+        async submitDraft(draft, index) {
+            const key = draft.key;
             this.focusNextMaterial(index);
 
             const queued = { ...draft, status: 'pending' };

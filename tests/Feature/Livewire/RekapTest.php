@@ -62,6 +62,18 @@ test('filter kelas dan pencarian siswa bekerja pada halaman rekap', function () 
         ->assertDontSee('Aisyah');
 });
 
+test('tautan laporan membawa filter kelas dan siswa ke halaman rekap', function () {
+    Livewire::withQueryParams([
+        'academic_year_id' => $this->year->id,
+        'class_id' => $this->class->id,
+        'student' => 'Bilal',
+    ])->actingAs($this->user)
+        ->test(Rekap::class)
+        ->assertSet('academic_year_id', $this->year->id)
+        ->assertSet('class_id', $this->class->id)
+        ->assertSet('student', 'Bilal');
+});
+
 test('tab matriks menampilkan siswa dan materi dalam format grid', function () {
     Livewire::actingAs($this->user)
         ->test(Rekap::class)

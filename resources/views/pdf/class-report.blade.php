@@ -5,7 +5,7 @@
     <title>Laporan Penilaian Praktik Ibadah</title>
     <style>
         @page {
-            margin: 15mm 15mm 15mm 15mm;
+            margin: 17mm 15mm 20mm 15mm;
             size: a4 portrait;
         }
         body {
@@ -65,13 +65,14 @@
         }
         table.data-table {
             width: 100%;
-            table-layout: fixed;
+            table-layout: auto;
             border-collapse: collapse;
             margin-bottom: 12px;
             page-break-inside: auto;
         }
+        table.data-table thead { display: table-header-group; }
         table.data-table tr {
-            page-break-inside: auto;
+            page-break-inside: avoid;
             page-break-after: auto;
         }
         .chapter-band {
@@ -106,6 +107,20 @@
         table.data-table th.right, table.data-table td.right {
             text-align: right;
         }
+        table.data-table th.chapter-band {
+            background-color: #176B57;
+            color: #FFFFFF;
+            font-size: 9pt;
+            text-align: left;
+            padding: 6px 8px;
+        }
+        table.data-table th.class-band {
+            background-color: #EAF5F1;
+            color: #176B57;
+            font-size: 8.5pt;
+            text-align: left;
+            padding: 5px 8px;
+        }
         table.data-table td {
             padding: 4px 6px;
             font-size: 8pt;
@@ -134,16 +149,16 @@
         .summary-card tr.zebra {
             background-color: #F7FAF8;
         }
-        .footer {
-            position: fixed;
-            bottom: -8mm;
-            left: 0;
-            right: 0;
-            height: 6mm;
-            border-top: 0.5pt solid #DCE3DF;
-            font-size: 7.5pt;
+        .summary-heading {
+            color: #176B57;
+            font-size: 10pt;
+            font-weight: bold;
+            margin: 8px 0 5px;
+        }
+        .report-note {
             color: #657186;
-            padding-top: 2mm;
+            font-size: 7.5pt;
+            margin: 0 0 9px;
         }
     </style>
 </head>
@@ -161,6 +176,9 @@
             </td>
             <td class="meta-text">
                 <div>Dicetak: {{ now()->translatedFormat('d F Y, H:i') }}</div>
+                @if($teacherName)
+                    <div>Penilai: {{ $teacherName }}</div>
+                @endif
             </td>
         </tr>
     </table>
@@ -170,26 +188,34 @@
     <div class="scope-box">
         <strong>Cakupan:</strong> {{ $scope }}
     </div>
+    <p class="report-note">Nilai rata-rata berbobot dihitung dari materi yang sudah dinilai. Tanda — berarti belum ada nilai.</p>
 
     @forelse($groups as $group)
-        <table class="data-table">
-            <thead>
-                <tr>
-                    <td colspan="5" class="chapter-band">BAB/MATERI: {{ $group['label'] }}</td>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($group['classes'] as $cls)
+        @foreach($group['classes'] as $cls)
+            <table class="data-table">
+                <colgroup>
+                    <col style="width: 7%;">
+                    <col style="width: 48%;">
+                    <col style="width: 7%;">
+                    <col style="width: 11%;">
+                    <col style="width: 27%;">
+                </colgroup>
+                <thead>
                     <tr>
-                        <td colspan="5" class="class-band">KELAS: {{ $cls['name'] }}</td>
+                        <th colspan="5" class="chapter-band">BAB/MATERI: {{ $group['label'] }}</th>
                     </tr>
                     <tr>
-                        <th style="width: 28px;" class="center">No</th>
+                        <th colspan="5" class="class-band">KELAS: {{ $cls['name'] }}</th>
+                    </tr>
+                    <tr>
+                        <th class="center">No</th>
                         <th>Nama Siswa</th>
-                        <th style="width: 35px;" class="center">JK</th>
-                        <th style="width: 50px;" class="right">Nilai</th>
-                        <th style="width: 100px;">Status</th>
+                        <th class="center">JK</th>
+                        <th class="right">Nilai</th>
+                        <th>Status</th>
                     </tr>
+                </thead>
+                <tbody>
                     @foreach($cls['rows'] as $idx => $row)
                         <tr class="{{ $idx % 2 === 1 ? 'zebra' : '' }}">
                             <td class="center">{{ $idx + 1 }}</td>
@@ -210,16 +236,18 @@
                         <td class="right">{{ number_format($clsStats['total'], 1) }}</td>
                         <td>Rata-rata: {{ $clsStats['average'] !== null ? number_format($clsStats['average'], 1) : '-' }}</td>
                     </tr>
-                @endforeach
-            </tbody>
-        </table>
+                </tbody>
+            </table>
+        @endforeach
     @empty
         <div style="padding: 16px; text-align: center; color: #657186; background-color: #F7FAF8; border-radius: 4px;">
             Tidak ada data penilaian dalam cakupan ini.
         </div>
     @endforelse
 
-    <table class="summary-card" style="page-break-inside: avoid;">
+    <div style="page-break-inside: avoid;">
+    <div class="summary-heading">Ringkasan akhir laporan</div>
+    <table class="summary-card">
         <thead>
             <tr>
                 <td colspan="2" class="chapter-band">RINGKASAN AKHIR LAPORAN</td>
@@ -248,17 +276,8 @@
             </tr>
         </tbody>
     </table>
+    </div>
 
-    <script type="text/php">
-        if (isset($pdf)) {
-            $text = "PIB Penilaian • Halaman {PAGE_NUM} dari {PAGE_COUNT}";
-            $font = $fontMetrics->get_font("DejaVu Sans", "normal");
-            $size = 7.5;
-            $color = array(0.4, 0.45, 0.52);
-            $width = $fontMetrics->get_text_width($text, $font, $size);
-            $pdf->page_text(297.5 - ($width / 2), 820, $text, $font, $size, $color);
-        }
-    </script>
 </body>
 </html>
 

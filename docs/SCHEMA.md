@@ -107,7 +107,7 @@ Dipakai untuk **idempotensi**: operasi dengan `id` yang sama dan `SYNCED` mengem
 | `individual_test_sessions`, `…_items` | — | **tidak diimpor** (fitur lama sudah dihapus) |
 | `schema_migrations` | `migrations` | tak relevan |
 
-ID **dipertahankan** saat impor (memudahkan verifikasi paritas & FK). Setelah impor, sekuens auto-increment disetel ke `MAX(id)+1` (MySQL: `ALTER TABLE … AUTO_INCREMENT`; SQLite otomatis).
+ID entitas akademik dan nilai **dipertahankan** saat impor (memudahkan verifikasi paritas & FK). Jika ID pengguna lama bertabrakan dengan akun tujuan yang berbeda, akun tujuan dipertahankan dan pengguna lama memperoleh ID baru; referensi `scores.assessor_id` dan `audit_logs.user_id` ikut dipetakan. Setelah impor, sekuens auto-increment mengikuti ID tertinggi.
 
 ### Spesifikasi `php artisan pib:import-legacy {path.sqlite} [--dry-run] [--force]`
 1. Tolak bila DB tujuan tidak kosong (kecuali `--force`, yang membuat snapshot dulu).
@@ -115,6 +115,7 @@ ID **dipertahankan** saat impor (memudahkan verifikasi paritas & FK). Setelah im
    curriculum_templates, chapters, subchapters, assessments, scores, settings, audit_logs.
 3. Terapkan transformasi di atas; baris yang melanggar invarian (mis. `score ≠ 90−mistakes`) **dilaporkan**, bukan diperbaiki diam-diam
    (kecuali `score` diturunkan ulang dari `mistakes` — dicatat di laporan).
+   Waktu ISO UTC dari SQLite dinormalkan ke waktu aplikasi dalam format SQL; paraf dan catatan kosong disimpan sebagai string kosong sesuai kolom MySQL.
 4. Cetak laporan: jumlah baris per tabel (lama vs baru), anomali, dan **checksum paritas**: untuk tiap siswa, `(jumlah nilai, total, rata-rata berbobot)`
    dihitung dari DB lama oleh SQL ekuivalen vs hasil `RecapService` baru; harus identik.
 5. `--dry-run`: jalankan semua di dalam transaksi lalu rollback.

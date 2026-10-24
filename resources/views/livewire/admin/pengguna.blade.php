@@ -85,22 +85,37 @@
                                 @endif
                             </td>
                             <td class="px-4 py-3 text-right">
-                                <div class="inline-flex items-center gap-2">
+                                <div class="user-actions inline-flex items-center gap-2">
                                     <!-- Ubah Peran -->
                                     @if($user->role === \App\Enums\Role::Admin)
-                                        <button type="button" wire:click="changeRole({{ $user->id }}, 'teacher')" class="text-xs text-gray-600 hover:text-pib-600 underline">Jadikan Guru</button>
+                                        <x-button type="button" variant="secondary" size="sm" wire:click="changeRole({{ $user->id }}, 'teacher')" class="user-action-button !px-2.5 !py-1.5 text-xs" title="Ubah menjadi guru">
+                                            <x-icon name="user-cog" size="14" />
+                                            <span>Jadikan Guru</span>
+                                        </x-button>
                                     @else
-                                        <button type="button" wire:click="changeRole({{ $user->id }}, 'admin')" class="text-xs text-gray-600 hover:text-purple-600 underline">Jadikan Admin</button>
+                                        <x-button type="button" variant="secondary" size="sm" wire:click="changeRole({{ $user->id }}, 'admin')" class="user-action-button !px-2.5 !py-1.5 text-xs" title="Ubah menjadi administrator">
+                                            <x-icon name="user-cog" size="14" />
+                                            <span>Jadikan Admin</span>
+                                        </x-button>
                                     @endif
 
                                     <!-- Reset Password -->
-                                    <button type="button" wire:click="openResetModal({{ $user->id }})" class="text-xs text-blue-600 hover:text-blue-800 underline">Reset Sandi</button>
+                                    <x-button type="button" variant="secondary" size="sm" wire:click="openResetModal({{ $user->id }})" class="user-action-button !px-2.5 !py-1.5 text-xs text-blue-700" title="Reset sandi pengguna">
+                                        <x-icon name="key" size="14" />
+                                        <span>Reset Sandi</span>
+                                    </x-button>
 
                                     <!-- Toggle Active -->
                                     @if($user->is_active)
-                                        <button type="button" wire:click="toggleActive({{ $user->id }})" class="text-xs text-red-600 hover:text-red-800 underline">Nonaktifkan</button>
+                                        <x-button type="button" variant="danger-ghost" size="sm" wire:click="toggleActive({{ $user->id }})" class="user-action-button !px-2.5 !py-1.5 text-xs" title="Nonaktifkan pengguna">
+                                            <x-icon name="x" size="14" />
+                                            <span>Nonaktifkan</span>
+                                        </x-button>
                                     @else
-                                        <button type="button" wire:click="toggleActive({{ $user->id }})" class="text-xs text-emerald-600 hover:text-emerald-800 underline">Aktifkan</button>
+                                        <x-button type="button" variant="secondary" size="sm" wire:click="toggleActive({{ $user->id }})" class="user-action-button !px-2.5 !py-1.5 text-xs text-emerald-700" title="Aktifkan pengguna">
+                                            <x-icon name="check" size="14" />
+                                            <span>Aktifkan</span>
+                                        </x-button>
                                     @endif
                                 </div>
                             </td>

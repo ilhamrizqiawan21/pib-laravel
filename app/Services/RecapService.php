@@ -318,10 +318,16 @@ class RecapService
      *     cells: array<string, array{score: int|null, mistakes: int|null, weight: float|null, status: string}>
      * }
      */
-    public function getMatrix(int $classId): array
+    public function getMatrix(int $classId, ?RecapFilter $filter = null): array
     {
-        $filter = new RecapFilter(classId: $classId);
-        $rows = $this->getRows($filter);
+        $rows = $this->getRows(new RecapFilter(
+            academicYearId: $filter?->academicYearId,
+            classId: $classId,
+            student: $filter?->student,
+            chapter: $filter?->chapter,
+            subchapter: $filter?->subchapter,
+            assessmentId: $filter?->assessmentId,
+        ));
 
         $studentMap = [];
         $materialMap = [];

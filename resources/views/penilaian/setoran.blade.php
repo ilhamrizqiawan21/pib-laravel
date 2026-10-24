@@ -7,13 +7,13 @@
             initialClassId: {{ Js::from($initialClassId) }},
             initialStudentId: {{ Js::from($initialStudentId) }}
         })"
-        class="space-y-6"
+        class="assessment-page space-y-6"
     >
     <!-- Header Halaman -->
     <x-page-header
         eyebrow="PENILAIAN • PER SISWA"
         title="Setoran"
-        description="Pilih siswa yang maju, ketik jumlah kesalahan, lalu tekan Enter. Nilai langsung tersimpan dan kursor pindah ke materi berikutnya."
+        description="Pilih siswa, isi jumlah kesalahan, lalu tekan Enter untuk menyimpan."
     >
         <x-slot:actions>
             <div class="flex items-center gap-2">
@@ -46,7 +46,7 @@
     <!-- Layout Dua Panel -->
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         <!-- Panel Kiri: Daftar Siswa (4 kolom desktop) -->
-        <aside class="lg:col-span-4 bg-surface rounded-xl border border-line shadow-xs overflow-hidden flex flex-col max-h-[42vh] lg:max-h-none lg:h-[calc(100vh-220px)] lg:min-h-[500px]">
+        <aside class="lg:col-span-4 bg-surface rounded-xl border border-line shadow-xs overflow-hidden flex flex-col lg:h-[calc(100vh-220px)] lg:min-h-[500px]">
             <!-- Pemilih Kelas -->
             <div class="p-4 border-b border-line space-y-3 bg-surface-alt/50">
                 <div>
@@ -68,8 +68,13 @@
                     </select>
                 </div>
 
+                <button type="button" x-show="classId && data && data.students.length" @click="mobileStudentPickerOpen = !mobileStudentPickerOpen" :aria-expanded="mobileStudentPickerOpen.toString()" aria-controls="setoran-student-list" class="lg:hidden w-full flex items-center justify-between rounded-lg border border-line bg-surface px-3 py-2 text-sm font-semibold text-ink">
+                    <span x-text="selectedStudent ? selectedStudent.name : 'Pilih siswa'"></span>
+                    <span class="text-brand-strong" x-text="mobileStudentPickerOpen ? 'Tutup' : 'Ganti siswa'"></span>
+                </button>
+
                 <!-- Kotak Pencarian Siswa (Shortcut '/') -->
-                <div class="relative" x-show="classId && data">
+                <div class="relative" x-show="classId && data" :class="mobileStudentPickerOpen ? 'block' : 'hidden lg:block'">
                     <input
                         type="search"
                         id="search-siswa-input"
@@ -92,7 +97,7 @@
             </div>
 
             <!-- List Siswa (Scrollable) -->
-            <div class="flex-1 overflow-y-auto p-2 space-y-4">
+            <div id="setoran-student-list" :class="mobileStudentPickerOpen ? 'block' : 'hidden lg:block'" class="flex-1 overflow-y-auto p-2 space-y-4 max-h-[42vh] lg:max-h-none">
                 <template x-if="loading">
                     <div class="p-4">
                         <x-loading-state message="Memuat siswa..." />
@@ -116,7 +121,7 @@
                         <!-- Grup: Dinilai Hari Ini -->
                         <template x-if="filteredStudents.today.length > 0">
                             <div>
-                                <div class="px-2 py-1 text-[11px] font-bold uppercase tracking-wider text-brand-strong">
+                                <div class="px-2 py-1 text-xs font-bold uppercase tracking-wider text-brand-strong">
                                     Dinilai Hari Ini (<span x-text="filteredStudents.today.length"></span>)
                                 </div>
                                 <ul class="space-y-1 mt-1">
@@ -127,7 +132,7 @@
                                                 @click="selectStudent(st.id)"
                                                 :class="[st.id === studentId ? 'bg-brand-light border-brand text-brand-strong font-semibold shadow-xs' : 'hover:bg-canvas text-ink border-transparent', query && isSearchHighlight(st.id) ? 'ring-2 ring-brand-strong' : '']"
                                                 :aria-current="query && isSearchHighlight(st.id) ? 'true' : null"
-                                                class="w-full flex items-center justify-between px-3 py-2 rounded-lg border text-left text-xs transition-colors"
+                                                class="w-full flex items-center justify-between px-3 py-2 rounded-lg border text-left text-sm transition-colors"
                                             >
                                                 <div class="flex items-center gap-2 overflow-hidden">
                                                     <span
@@ -137,10 +142,10 @@
                                                     ></span>
                                                     <div class="truncate">
                                                         <div class="truncate font-medium" x-text="st.name"></div>
-                                                        <div class="text-[10px] text-ink-muted" x-text="st.nis || 'Tanpa NIS'"></div>
+                                                        <div class="text-xs text-ink-muted" x-text="st.nis || 'Tanpa NIS'"></div>
                                                     </div>
                                                 </div>
-                                                <span class="text-[11px] font-mono shrink-0 ml-2 text-ink-muted" x-text="studentProgressLabel(st.id)"></span>
+                                                <span class="text-xs font-mono shrink-0 ml-2 text-ink-muted" x-text="studentProgressLabel(st.id)"></span>
                                             </button>
                                         </li>
                                     </template>
@@ -150,7 +155,7 @@
 
                         <!-- Grup: Siswa Lainnya -->
                         <div>
-                            <div class="px-2 py-1 text-[11px] font-bold uppercase tracking-wider text-ink-muted">
+                            <div class="px-2 py-1 text-xs font-bold uppercase tracking-wider text-ink-muted">
                                 Siswa (<span x-text="filteredStudents.others.length"></span>)
                             </div>
                             <ul class="space-y-1 mt-1">
@@ -161,7 +166,7 @@
                                             @click="selectStudent(st.id)"
                                             :class="[st.id === studentId ? 'bg-brand-light border-brand text-brand-strong font-semibold shadow-xs' : 'hover:bg-canvas text-ink border-transparent', query && isSearchHighlight(st.id) ? 'ring-2 ring-brand-strong' : '']"
                                             :aria-current="query && isSearchHighlight(st.id) ? 'true' : null"
-                                            class="w-full flex items-center justify-between px-3 py-2 rounded-lg border text-left text-xs transition-colors"
+                                            class="w-full flex items-center justify-between px-3 py-2 rounded-lg border text-left text-sm transition-colors"
                                         >
                                             <div class="flex items-center gap-2 overflow-hidden">
                                                 <span
@@ -171,10 +176,10 @@
                                                 ></span>
                                                 <div class="truncate">
                                                     <div class="truncate font-medium" x-text="st.name"></div>
-                                                    <div class="text-[10px] text-ink-muted" x-text="st.nis || 'Tanpa NIS'"></div>
+                                                    <div class="text-xs text-ink-muted" x-text="st.nis || 'Tanpa NIS'"></div>
                                                 </div>
                                             </div>
-                                            <span class="text-[11px] font-mono shrink-0 ml-2 text-ink-muted" x-text="studentProgressLabel(st.id)"></span>
+                                            <span class="text-xs font-mono shrink-0 ml-2 text-ink-muted" x-text="studentProgressLabel(st.id)"></span>
                                         </button>
                                     </li>
                                 </template>
@@ -277,11 +282,11 @@
                             <div x-show="isGroupOpen(group.key)" class="divide-y divide-line/60">
                                 <template x-for="item in group.items" :key="item.material.id">
                                     <div
-                                        class="p-3.5 flex flex-wrap items-center justify-between gap-3 hover:bg-canvas/50 transition-colors"
+                                        class="score-row p-3.5 flex flex-wrap items-center justify-between gap-3 hover:bg-canvas/50 transition-colors"
                                         :class="getRowMeta(item.material, item.index).isNext ? 'bg-brand-light/30 border-l-4 border-l-brand' : ''"
                                     >
                                         <!-- Info Materi -->
-                                        <div class="flex items-center gap-3 min-w-[200px]">
+                                        <div class="score-row-info flex items-center gap-3 min-w-[200px]">
                                             <span class="text-xs font-mono font-medium text-ink-muted w-6 text-center" x-text="item.index + 1"></span>
                                             <div>
                                                 <div class="flex items-center gap-2">
@@ -312,7 +317,7 @@
                                         </div>
 
                                         <!-- Editor Nilai Kesalahan -->
-                                        <div class="flex items-center gap-3">
+                                        <div class="score-row-editor flex w-full items-center justify-between gap-2 sm:w-auto sm:justify-start">
                                             <!-- Tombol 90 Cepat -->
                                             <button
                                                 type="button"
@@ -323,6 +328,9 @@
                                                 class="px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-300 hover:bg-emerald-100 font-bold text-xs tracking-wider shadow-2xs disabled:opacity-50"
                                             >
                                                 90
+                                            </button>
+                                            <button type="button" @click="openDetails(item.material)" :aria-label="'Detail nilai ' + item.material.title" class="rounded-lg border border-line px-2.5 py-1 text-xs font-semibold text-brand-strong hover:bg-brand-soft">
+                                                Detail
                                             </button>
 
                                             <!-- Stepper Kesalahan -->
@@ -377,7 +385,7 @@
                                             </template>
 
                                             <!-- Hasil Nilai -->
-                                            <div class="w-12 text-right">
+                                            <div class="w-12 shrink-0 text-right">
                                                 <span class="text-base font-extrabold text-ink" x-text="'= ' + getRowMeta(item.material, item.index).scoreDisplay"></span>
                                             </div>
                                         </div>
@@ -389,6 +397,21 @@
                 </div>
             </template>
         </section>
+    </div>
+    <x-modal name="score-details-setoran" title="Detail nilai">
+        <x-score-details-fields />
+        <x-slot:footer>
+            <button type="button" @click="close()" class="rounded-lg border border-line px-4 py-2 text-sm">Batal</button>
+            <button type="button" @click="saveDetails()" :disabled="savingDetails" class="rounded-lg bg-brand-strong px-4 py-2 text-sm font-semibold text-white disabled:opacity-50">Simpan detail</button>
+        </x-slot:footer>
+    </x-modal>
+    <x-modal name="confirm-clear-setoran" title="Kosongkan nilai?" :danger="true">
+        <p>Nilai tersimpan akan berubah menjadi Belum dinilai. Riwayat perubahan tetap tercatat.</p>
+        <x-slot:footer>
+            <button type="button" @click="cancelClear(); close()" class="rounded-lg border border-line px-4 py-2 text-sm">Batal</button>
+            <button type="button" @click="confirmClear()" class="rounded-lg bg-danger px-4 py-2 text-sm font-semibold text-white">Kosongkan nilai</button>
+        </x-slot:footer>
+    </x-modal>
     </div>
 
     <script>

@@ -4,7 +4,7 @@
     'description' => null,
 ])
 
-<div {{ $attributes->merge(['class' => 'flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6']) }}>
+<div {{ $attributes->merge(['class' => 'page-header flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6']) }}>
     <div>
         @if ($eyebrow)
             <div class="text-xs font-semibold uppercase tracking-wider text-brand-strong mb-1">
@@ -22,7 +22,7 @@
     </div>
 
     @if (isset($actions))
-        <div class="flex items-center gap-2.5 shrink-0">
+        <div class="page-header-actions flex items-center gap-2.5 shrink-0">
             {{ $actions }}
         </div>
     @endif

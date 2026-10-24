@@ -13,7 +13,7 @@ cp .env.example .env && php artisan key:generate
 # edit .env: APP_ENV=production APP_DEBUG=false APP_URL=https://… SESSION_SECURE_COOKIE=true
 touch database/database.sqlite
 php artisan migrate --force
-php artisan pib:create-admin           # interaktif; atau isi PIB_ADMIN_* lalu db:seed --class=AdminSeeder
+php artisan pib:create-admin           # interaktif; atau isi PIB_ADMIN_PASSWORD (min. 10 karakter) lalu jalankan AdminSeeder
 npm ci && npm run build                # atau unggah public/build dari CI
 php artisan config:cache && php artisan route:cache && php artisan view:cache && php artisan event:cache
 chown -R www-data:www-data storage bootstrap/cache database

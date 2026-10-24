@@ -123,6 +123,8 @@ Legenda prioritas mengikuti PRD (P0 wajib 1.0).
 - [x] **T-604 Halaman Laporan (bagian unduh)** (P0) — selesai 2026-10-22. Bukti: tests/Feature/Livewire/LaporanTest.php (3 tes), app/Livewire/Laporan.php, resources/views/livewire/laporan.blade.php, composer check ✔ (191 tes, Larastan 0 error).
   DESIGN §4.9; filter sinkron dengan Rekap, kartu unduhan Excel, PDF Kelas, dan pemilih siswa untuk Rapor individual.
 
+  Penyempurnaan hasil ekspor 2026-10-24: lembar Excel disiapkan untuk tampilan dan cetak A4; PDF kelas memakai kepala tabel berulang, kolom yang terbaca, dan ringkasan tanpa terpotong; rapor siswa menampilkan metadata nilai. Footer bernomor dicetak pada semua halaman. Bukti: `ReportExcelTest`, `ReportPdfClassTest`, `ReportPdfStudentTest`, pratinjau PDF A4 dua/lebih halaman, `composer check` (256 tes, Larastan 0).
+
 ---
 
 ## Fase 7 — Backup, restore, admin, audit
@@ -145,6 +147,7 @@ Legenda prioritas mengikuti PRD (P0 wajib 1.0).
 - [x] **T-801 Fixture DB lama** — selesai 2026-10-22. Bukti: tests/Fixtures/generate.php, tests/Fixtures/legacy-sample.sqlite (3 kelas, 30 siswa, 9 materi kurikulum berbobot beragam, variasi nilai lengkap, sebagian, dan kosong).
 - [x] **T-802 `pib:import-legacy`** (P0) — selesai 2026-10-22. Bukti: tests/Feature/Import/LegacyImportTest.php (4 tes), app/Services/LegacyImporter.php, app/Console/Commands/ImportLegacyCommand.php, composer check ✔ (224 tes, Larastan 0 error).
   Spesifikasi SCHEMA.md: ID dipertahankan, pemetaan tabel lama ke skema baru, penyesuaian snake_case settings, akun LOCAL_ONLY dinonaktifkan, proteksi --force dengan snapshot otomatis pra-impor, opsi --dry-run.
+  Tindak lanjut 2026-10-24: impor SQLite dari Downloads ke MySQL `pib` lulus simulasi dan verifikasi pasca-impor (126 siswa, 21 materi, 404 nilai, agregat nilai per siswa cocok, 0 orphan). Importir kini menormalkan waktu ISO UTC/metadata kosong dan mempertahankan admin tujuan saat ID pengguna bertabrakan. Bukti: `LegacyImportTest` (6 tes), `composer check` (255 tes, Larastan 0 error), snapshot pra-impor MySQL.
 - [x] **T-803 Uji paritas** (P0) — selesai 2026-10-22. Bukti: tests/Feature/Parity/LegacyParityTest.php (2 tes), composer check ✔ (226 tes, Larastan 0 error).
   Untuk setiap 30 siswa, hasil `RecapService` (assessed, total nilai, rata-rata berbobot) 100% IDENTIK dengan query SQL asli pada DB lama; buku kerja Excel memuat angka paritas yang sama persis.
 
@@ -154,11 +157,16 @@ Legenda prioritas mengikuti PRD (P0 wajib 1.0).
 
 - [x] **T-901 Dokumen deploy teruji** — selesai 2026-10-23. Bukti: instalasi SQLite di container PHP 8.5.12 berhasil; migrasi, admin, cache, route:list, npm ci/build, `/up` 200, `/login` 200; `composer check` ✔ (226 tes, Larastan 0 error).
 - [x] **T-902 Audit keamanan** — selesai 2026-10-23. Bukti: `docs/security-checklist.md`, `tests/Feature/Security/RouteAccessAuditTest.php` (7 tes); route inventory, auth/admin/CSRF, signed upload, validation, rate limit; `composer check` ✔ (235 tes, Larastan 0 error).
+  Tindak lanjut 2026-10-24: hapus kredensial seeder bawaan, cegah formula injection XLSX dan injeksi toast, sembunyikan path server dari status backup, tambah throttle login per IP. `composer audit` dan `npm audit` 0 temuan; `composer check` ✔ (261 tes, 1177 assertion, Larastan 0 error).
 - [x] **T-903 Audit performa** — selesai 2026-10-23. Bukti: `scripts/performance-audit.php`, `docs/performance.md`; fixture 5 kelas × 40 siswa × 100 materi; rekap 27 ms (<500 ms), Excel 2,13 dtk dan PDF median 9,91 dtk (<10 dtk), payload Setoran 3 query; composer check ✔ (235 tes, Larastan 0 error). PDF mendekati batas (maks 10,27 dtk; 394 MiB), `DEPLOYMENT.md` kini menyarankan memory_limit 512M.
 - [x] **T-904 A11y & responsif** — selesai 2026-10-23. Bukti: browser 360×800 dan 1366×768 pada login + 13 halaman internal (HTTP 200, tanpa luapan horizontal); keyboard drawer, menu, dialog, `/` + Enter Setoran; `LaporanTest` menguji relasi kelas tanpa lazy loading; `npm run build` dan `composer check` hijau (236 tes, Larastan 0 error). Tabel menjadi kartu pada ponsel, kecuali matriks rekap yang dapat digeser.
 - [ ] **T-905 Rilis 1.0** — semua KP PRD §8 centang; tag `v1.0.0`; catatan rilis.
 
   Audit backend lanjutan 2026-10-24: restore, sinkronisasi nilai lintas periode, impor kelas bernama sama, hitungan beranda, dan aturan password diperbaiki; `composer check` lokal hijau (248 tes, Larastan 0 error). Backup dan restore diuji pada MySQL 8.4.10 sementara. Verifikasi CI dan pengujian pada server target masih diperlukan sebelum rilis.
+
+  Tindak lanjut audit alur/UI 2026-10-24: metadata nilai dipertahankan dan dapat diedit di kedua mode penilaian; filter Rekap/Laporan konsisten; matriks mengikuti filter; antrean draft dan perpindahan kelas tahan respons terlambat; Setoran ponsel memprioritaskan editor; pengosongan nilai meminta konfirmasi. Bukti lokal: `composer check` (251 tes, Larastan 0), tes JS Node, build Vite, dan verifikasi browser 360×800. Verifikasi CI/server target tetap diperlukan sebelum T-905 dicentang.
+
+  Implementasi `docs/mockups/modern-ui.html` 2026-10-24: token warna/kartu dan kerangka navigasi diterapkan; Beranda memakai hero penilaian, empat statistik, prioritas kelas, serta aktivitas dengan data aplikasi. Checklist penyiapan tetap tersedia. Bukti lokal: `composer check` (253 tes, Larastan 0), build Vite, tes JS Node, dan browser desktop/ponsel. Verifikasi CI/server target tetap diperlukan sebelum T-905 dicentang.
 
 ---
 

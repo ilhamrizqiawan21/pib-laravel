@@ -61,7 +61,7 @@ docs/
 | Metode & path | Fungsi | Respons |
 |---|---|---|
 | `GET /penilaian/kelas/{class}/progress` | Payload satu kelas: `materials[]` (urutan kurikulum), `students[]`, `scores[]` termasuk baris kosong (membawa `version`) | 200 JSON, 404 |
-| `POST /penilaian/sync` | Simpan satu operasi nilai **idempoten**. Body: `{id, device_id, student_id, assessment_id, mistakes\|null, base_version\|null, initials?, note?, assessed_at?}` | 200 `{status:"SYNCED", score, mistakes, version, assessed_at}` · 409 konflik `{current:{…}}` · 422 validasi · 404 |
+| `POST /penilaian/sync` | Simpan satu operasi nilai **idempoten**. Body: `{id, device_id, student_id, assessment_id, mistakes\|null, base_version\|null, initials?, note?, assessed_at?}` | 200 `{status:"SYNCED", score, mistakes, version, assessed_at, initials, note}` · 409 konflik `{current:{…}}` · 422 validasi · 404 |
 
 Aturan `POST /penilaian/sync` (port dari `app/api/sync` & `scores` lama):
 1. Validasi (Form Request): `id` 8–100, `mistakes` int 0–90 atau null, `base_version` int|null (`null` = editor tidak melihat baris; **absen** = klien lama → tanpa cek konflik).
@@ -73,6 +73,7 @@ Aturan `POST /penilaian/sync` (port dari `app/api/sync` & `scores` lama):
 
 Di sisi klien (`draft-store.js`): kunci `pib-score-edit:{studentId}:{assessmentId}` di localStorage, event `pib-draft-change`, status
 `dirty|pending|conflict|failed`, retry GET 1×, `crypto.getRandomValues` untuk id (jalan di HTTP LAN). Port dari `lib/assessment-workspace.ts` & `lib/score-client.ts` aplikasi lama.
+Paraf dan catatan yang tidak diedit tidak dikirim agar nilai lama tetap terjaga. Bila satu nilai diedit lagi ketika permintaan sebelumnya masih berjalan, draft terbaru dikirim sesudah respons pertama dengan versi server terbaru.
 
 ## Rute (semua `auth` kecuali tertulis)
 
@@ -128,6 +129,7 @@ Di sisi klien (`draft-store.js`): kunci `pib-score-edit:{studentId}:{assessmentI
 - **Unit/Domain**: Pest murni (`tests/Unit/Domain`) — perilaku hitung & posisi.
 - **Feature/Schema**: integritas DB (`tests/Feature/Schema`).
 - **Feature/HTTP & Livewire**: auth wajib, otorisasi peran, validasi, 409/422, audit tercatat, tanpa N+1.
+- **Frontend Node**: `npm run test:js` memeriksa antrean draft dan respons kelas terlambat; CI menjalankannya setelah build Vite.
 - **Paritas**: `tests/Feature/Parity` — fixture DB lama → `RecapService` = angka referensi (TODO fase 8).
 - Gerbang: `composer check` = Pint(`--test`) + Larastan level 6 + Pest. Wajib hijau sebelum tiap tugas dianggap selesai.
 - Kebijakan: tiap perilaku baru ⇒ tes dulu (merah → hijau). Tes mengambil kontrak dari PRD §4–5, bukan dari implementasi.

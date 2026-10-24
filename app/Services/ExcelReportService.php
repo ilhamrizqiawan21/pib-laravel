@@ -5,11 +5,13 @@ namespace App\Services;
 use App\DTO\RecapFilter;
 use App\Repositories\SettingsRepository;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
+use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Conditional;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Worksheet\PageSetup;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class ExcelReportService
@@ -87,6 +89,18 @@ class ExcelReportService
 
         $spreadsheet->setActiveSheetIndex(0);
 
+        foreach ($spreadsheet->getAllSheets() as $sheet) {
+            $sheet->setShowGridlines(false);
+            $sheet->getPageSetup()
+                ->setOrientation($sheet->getTitle() === 'Detail Nilai' ? PageSetup::ORIENTATION_LANDSCAPE : PageSetup::ORIENTATION_PORTRAIT)
+                ->setPaperSize(PageSetup::PAPERSIZE_A4)
+                ->setFitToWidth(1)
+                ->setFitToHeight(0);
+            $sheet->getPageMargins()->setLeft(0.35)->setRight(0.35)->setTop(0.55)->setBottom(0.55);
+            $sheet->getHeaderFooter()->setOddFooter('&LPIB Penilaian&RHalaman &P dari &N');
+            $sheet->getPageSetup()->setRowsToRepeatAtTopByStartAndEnd(1, $sheet->getTitle() === 'Laporan per Materi' ? 2 : 4);
+        }
+
         return $spreadsheet;
     }
 
@@ -96,14 +110,17 @@ class ExcelReportService
 
         $sheet->mergeCells("A1:{$lastCol}1");
         $sheet->setCellValue('A1', $title);
-        $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(16)->getColor()->setRGB(self::COLOR_GREEN);
-        $sheet->getRowDimension(1)->setRowHeight(28);
+        $sheet->getStyle("A1:{$lastCol}1")->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB(self::COLOR_GREEN);
+        $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(16)->getColor()->setRGB('FFFFFF');
+        $sheet->getStyle('A1')->getAlignment()->setVertical(Alignment::VERTICAL_CENTER)->setIndent(1);
+        $sheet->getRowDimension(1)->setRowHeight(38);
 
         $sheet->mergeCells("A2:{$lastCol}2");
-        $sheet->setCellValue('A2', $subtitle);
+        $this->setTextCell($sheet, 'A2', $subtitle);
+        $sheet->getStyle("A2:{$lastCol}2")->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB(self::COLOR_SOFT_GREEN);
         $sheet->getStyle('A2')->getFont()->setSize(10)->getColor()->setRGB(self::COLOR_MUTED);
-        $sheet->getStyle('A2')->getAlignment()->setWrapText(true)->setVertical(Alignment::VERTICAL_CENTER);
-        $sheet->getRowDimension(2)->setRowHeight(24);
+        $sheet->getStyle('A2')->getAlignment()->setWrapText(true)->setVertical(Alignment::VERTICAL_CENTER)->setIndent(1);
+        $sheet->getRowDimension(2)->setRowHeight(32);
 
         $sheet->freezePane('A5');
     }
@@ -133,7 +150,6 @@ class ExcelReportService
         $sheet->setCellValue('A4', 'Indikator');
         $sheet->setCellValue('B4', 'Hasil');
         $sheet->setCellValue('C4', 'Keterangan');
-        $sheet->setCellValue('D4', '');
         $this->styleTableHeader($sheet, 4, 3);
 
         $assessmentsCount = count(array_filter($rows, fn ($r) => $r['assessment_id'] !== null));
@@ -181,6 +197,7 @@ class ExcelReportService
         $sheet->getColumnDimension('B')->setWidth(20);
         $sheet->getColumnDimension('C')->setWidth(40);
         $sheet->getColumnDimension('D')->setWidth(4);
+        $sheet->getStyle('B11:B12')->getNumberFormat()->setFormatCode('#,##0.0#');
     }
 
     /**
@@ -232,13 +249,11 @@ class ExcelReportService
 
                 $studentRowsStart = $currentRow;
                 foreach ($classGroup['rows'] as $index => $row) {
-                    $sheet->fromArray([
-                        $index + 1,
-                        $row['name'],
-                        $row['gender'] ?: '-',
-                        $row['average'] ?? '',
-                        $row['status'],
-                    ], null, "A{$currentRow}");
+                    $sheet->setCellValue("A{$currentRow}", $index + 1);
+                    $this->setTextCell($sheet, "B{$currentRow}", $row['name']);
+                    $this->setTextCell($sheet, "C{$currentRow}", $row['gender'] ?: '-');
+                    $sheet->setCellValue("D{$currentRow}", $row['average'] ?? '');
+                    $this->setTextCell($sheet, "E{$currentRow}", $row['status']);
 
                     $currentRow++;
                 }
@@ -294,6 +309,7 @@ class ExcelReportService
         $sheet->getColumnDimension('C')->setWidth(10);
         $sheet->getColumnDimension('D')->setWidth(14);
         $sheet->getColumnDimension('E')->setWidth(22);
+        $sheet->getStyle("D5:D{$currentRow}")->getNumberFormat()->setFormatCode('0.0');
     }
 
     /**
@@ -326,12 +342,12 @@ class ExcelReportService
                 default => 'Sebagian dinilai',
             };
 
-            $sheet->setCellValue("A{$currentRow}", $item['name']);
-            $sheet->setCellValue("B{$currentRow}", $period);
-            $sheet->setCellValue("C{$currentRow}", ($item['assessed'] ?? 0).' / '.($item['expected'] ?? 0));
+            $this->setTextCell($sheet, "A{$currentRow}", $item['name']);
+            $this->setTextCell($sheet, "B{$currentRow}", $period);
+            $this->setTextCell($sheet, "C{$currentRow}", ($item['assessed'] ?? 0).' / '.($item['expected'] ?? 0));
             $sheet->setCellValue("D{$currentRow}", $item['total'] ?? 0);
             $sheet->setCellValue("E{$currentRow}", $item['average'] ?? '');
-            $sheet->setCellValue("F{$currentRow}", $statusText);
+            $this->setTextCell($sheet, "F{$currentRow}", $statusText);
 
             $sheet->getRowDimension($currentRow)->setRowHeight(20);
             $sheet->getStyle("A{$currentRow}:F{$currentRow}")->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
@@ -347,6 +363,9 @@ class ExcelReportService
         }
 
         $sheet->setAutoFilter('A4:F'.max(4, $currentRow - 1));
+        if ($currentRow > 5) {
+            $sheet->getStyle('D5:E'.($currentRow - 1))->getNumberFormat()->setFormatCode('0.0');
+        }
 
         $sheet->getColumnDimension('A')->setWidth(28);
         $sheet->getColumnDimension('B')->setWidth(32);
@@ -385,11 +404,11 @@ class ExcelReportService
                 default => 'Sebagian dinilai',
             };
 
-            $sheet->setCellValue("A{$currentRow}", $period);
+            $this->setTextCell($sheet, "A{$currentRow}", $period);
             $sheet->setCellValue("B{$currentRow}", $item['students'] ?? 0);
-            $sheet->setCellValue("C{$currentRow}", ($item['assessed'] ?? 0).' / '.($item['expected'] ?? 0));
+            $this->setTextCell($sheet, "C{$currentRow}", ($item['assessed'] ?? 0).' / '.($item['expected'] ?? 0));
             $sheet->setCellValue("D{$currentRow}", $item['average'] ?? '');
-            $sheet->setCellValue("E{$currentRow}", $statusText);
+            $this->setTextCell($sheet, "E{$currentRow}", $statusText);
 
             $sheet->getRowDimension($currentRow)->setRowHeight(20);
             $sheet->getStyle("A{$currentRow}:E{$currentRow}")->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
@@ -405,6 +424,9 @@ class ExcelReportService
         }
 
         $sheet->setAutoFilter('A4:E'.max(4, $currentRow - 1));
+        if ($currentRow > 5) {
+            $sheet->getStyle('D5:D'.($currentRow - 1))->getNumberFormat()->setFormatCode('0.0');
+        }
 
         $sheet->getColumnDimension('A')->setWidth(32);
         $sheet->getColumnDimension('B')->setWidth(18);
@@ -434,22 +456,20 @@ class ExcelReportService
         $currentRow = 5;
         $studentRowsStart = $currentRow;
         foreach ($rows as $index => $row) {
-            $sheet->fromArray([
-                $row['nis'] ?? '',
-                $row['name'],
-                $row['gender'] ?: '-',
-                $row['class_name'],
-                $row['chapter'] ?? '',
-                $row['subchapter'] ?? '',
-                $row['assessment'] ?? '',
-                $row['weight'] ?? '',
-                $row['score'] ?? '',
-                $row['mistakes'] ?? '',
-                $row['status'],
-                $row['assessed_at'] ?? '',
-                $row['initials'] ?? '',
-                $row['note'] ?? '',
-            ], null, "A{$currentRow}");
+            $this->setTextCell($sheet, "A{$currentRow}", $row['nis'] ?? '');
+            $this->setTextCell($sheet, "B{$currentRow}", $row['name']);
+            $this->setTextCell($sheet, "C{$currentRow}", $row['gender'] ?: '-');
+            $this->setTextCell($sheet, "D{$currentRow}", $row['class_name']);
+            $this->setTextCell($sheet, "E{$currentRow}", $row['chapter'] ?? '');
+            $this->setTextCell($sheet, "F{$currentRow}", $row['subchapter'] ?? '');
+            $this->setTextCell($sheet, "G{$currentRow}", $row['assessment'] ?? '');
+            $sheet->setCellValue("H{$currentRow}", $row['weight'] ?? '');
+            $sheet->setCellValue("I{$currentRow}", $row['score'] ?? '');
+            $sheet->setCellValue("J{$currentRow}", $row['mistakes'] ?? '');
+            $this->setTextCell($sheet, "K{$currentRow}", $row['status']);
+            $this->setTextCell($sheet, "L{$currentRow}", $row['assessed_at'] ?? '');
+            $this->setTextCell($sheet, "M{$currentRow}", $row['initials'] ?? '');
+            $this->setTextCell($sheet, "N{$currentRow}", $row['note'] ?? '');
 
             $currentRow++;
         }
@@ -457,6 +477,9 @@ class ExcelReportService
         $this->styleStudentRows($sheet, $studentRowsStart, $currentRow - 1, 'N', ['C'], ['H', 'I', 'J']);
 
         $sheet->setAutoFilter('A4:N'.max(4, $currentRow - 1));
+        if ($currentRow > 5) {
+            $sheet->getStyle('H5:H'.($currentRow - 1))->getNumberFormat()->setFormatCode('0.0#');
+        }
 
         $widths = [14, 25, 8, 17, 20, 20, 28, 10, 10, 12, 16, 20, 12, 36];
         foreach ($widths as $idx => $width) {
@@ -503,5 +526,10 @@ class ExcelReportService
             ->getStartColor()->setRGB(self::COLOR_STRIPE);
 
         $sheet->getStyle($range)->setConditionalStyles([$stripe]);
+    }
+
+    private function setTextCell(Worksheet $sheet, string $coordinate, mixed $value): void
+    {
+        $sheet->setCellValueExplicit($coordinate, (string) $value, DataType::TYPE_STRING);
     }
 }

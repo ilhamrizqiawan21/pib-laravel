@@ -9,7 +9,9 @@ use App\Models\Score;
 use App\Models\Student;
 use App\Models\Subchapter;
 use App\Models\User;
+use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Worksheet\PageSetup;
 
 beforeEach(function () {
     $this->user = User::factory()->create(['is_active' => true, 'role' => 'teacher']);
@@ -81,6 +83,10 @@ test('guru dapat mengunduh excel dengan struktur sheet dan data yang sesuai', fu
     $summary = $spreadsheet->getSheetByName('Ringkasan');
     expect($summary)->not->toBeNull();
     expect($summary->getCell('A1')->getValue())->toContain('Ringkasan Laporan Penilaian');
+    expect($summary->getShowGridlines())->toBeFalse();
+    expect($summary->getPageSetup()->getPaperSize())->toBe(PageSetup::PAPERSIZE_A4);
+    expect($summary->getPageSetup()->getFitToWidth())->toBe(1);
+    expect($summary->getStyle('A1')->getFont()->getColor()->getRGB())->toBe('FFFFFF');
 
     // Cek sheet Detail Nilai
     $detail = $spreadsheet->getSheetByName('Detail Nilai');
@@ -89,6 +95,8 @@ test('guru dapat mengunduh excel dengan struktur sheet dan data yang sesuai', fu
     expect($detail->getCell('I5')->getValue())->toBe(85);
     expect($detail->getCell('B6')->getValue())->toBe('Zainab');
     expect($detail->getConditionalStyles('A6'))->not->toBeEmpty();
+    expect($detail->getPageSetup()->getOrientation())->toBe(PageSetup::ORIENTATION_LANDSCAPE);
+    expect($detail->getPageSetup()->getRowsToRepeatAtTop())->not->toBeEmpty();
 
     $materialSheet = $spreadsheet->getSheetByName('Laporan per Materi');
     expect($materialSheet)->not->toBeNull();
@@ -99,6 +107,35 @@ test('guru dapat mengunduh excel dengan struktur sheet dan data yang sesuai', fu
     expect($recapSheet)->not->toBeNull();
     expect($recapSheet->getCell('A5')->getValue())->toBe('Ahmad');
     expect($recapSheet->getCell('E5')->getValue())->toBe(85.0);
+
+    unlink($tempFile);
+});
+
+test('teks dari basis data tidak dieksekusi sebagai formula excel', function () {
+    $this->student->update([
+        'name' => '=HYPERLINK("https://example.test","buka")',
+        'nis' => '+1+1',
+    ]);
+    Score::query()->where('student_id', $this->student->id)->update([
+        'note' => '@SUM(1+1)',
+        'initials' => '-1+1',
+    ]);
+
+    $response = $this->actingAs($this->user)
+        ->get('/laporan/excel?academic_year_id='.$this->year->id.'&class_id='.$this->class->id);
+
+    $tempFile = tempnam(sys_get_temp_dir(), 'pib_formula_test_');
+    file_put_contents($tempFile, $response->streamedContent());
+
+    $spreadsheet = IOFactory::load($tempFile);
+    $detail = $spreadsheet->getSheetByName('Detail Nilai');
+
+    expect($detail)->not->toBeNull();
+    expect($detail->getCell('A5')->getDataType())->toBe(DataType::TYPE_STRING);
+    expect($detail->getCell('B5')->getDataType())->toBe(DataType::TYPE_STRING);
+    expect($detail->getCell('M5')->getDataType())->toBe(DataType::TYPE_STRING);
+    expect($detail->getCell('N5')->getDataType())->toBe(DataType::TYPE_STRING);
+    expect($detail->getCell('B5')->getValue())->toStartWith('=HYPERLINK');
 
     unlink($tempFile);
 });

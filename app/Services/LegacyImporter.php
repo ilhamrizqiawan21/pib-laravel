@@ -8,6 +8,7 @@ use App\Models\AcademicYear;
 use App\Models\SchoolClass;
 use App\Models\Student;
 use App\Models\User;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
@@ -81,9 +82,31 @@ class LegacyImporter
 
             // 1. Users
             $usersCount = 0;
+            $userIdMap = [];
             if ($this->hasTable($pdo, 'users')) {
                 $stmt = $pdo->query('SELECT * FROM users');
-                while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                $sourceUsers = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                $existingUsers = DB::table('users')->pluck('email', 'id')->all();
+                $existingIdByEmail = [];
+                foreach ($existingUsers as $id => $email) {
+                    $existingIdByEmail[(string) $email] = (int) $id;
+                }
+
+                $nextUserId = (int) DB::table('users')->max('id');
+                foreach ($sourceUsers as $row) {
+                    $nextUserId = max($nextUserId, (int) $row['id']);
+                }
+                $nextUserId++;
+
+                foreach ($sourceUsers as $row) {
+                    $sourceId = (int) $row['id'];
+                    $email = (string) $row['email'];
+                    $targetId = $existingIdByEmail[$email] ?? $sourceId;
+                    if (isset($existingUsers[$targetId]) && $existingUsers[$targetId] !== $email) {
+                        $targetId = $nextUserId++;
+                    }
+                    $userIdMap[$sourceId] = $targetId;
+
                     $hash = (string) ($row['password_hash'] ?? '');
                     $isActive = true;
                     if ($hash === 'LOCAL_ONLY') {
@@ -97,15 +120,15 @@ class LegacyImporter
                     $role = $roleStr === 'admin' ? Role::Admin->value : Role::Teacher->value;
 
                     DB::table('users')->updateOrInsert(
-                        ['id' => (int) $row['id']],
+                        ['id' => $targetId],
                         [
                             'name' => (string) $row['name'],
-                            'email' => (string) $row['email'],
+                            'email' => $email,
                             'password' => $password,
                             'role' => $role,
                             'is_active' => $isActive,
-                            'created_at' => $row['created_at'] ?? now(),
-                            'updated_at' => $row['updated_at'] ?? now(),
+                            'created_at' => $this->normalizeTimestamp($row['created_at'] ?? null) ?? now(),
+                            'updated_at' => $this->normalizeTimestamp($row['updated_at'] ?? null) ?? now(),
                         ]
                     );
                     $usersCount++;
@@ -123,7 +146,7 @@ class LegacyImporter
                         'name' => (string) $row['name'],
                         'semester' => (string) $row['semester'],
                         'is_active' => (bool) $row['is_active'],
-                        'created_at' => $row['created_at'] ?? now(),
+                        'created_at' => $this->normalizeTimestamp($row['created_at'] ?? null) ?? now(),
                         'updated_at' => now(),
                     ]);
                     $ayCount++;
@@ -268,8 +291,8 @@ class LegacyImporter
                         }
                     }
 
-                    $note = ! empty($row['note']) ? (string) $row['note'] : null;
-                    $initials = ! empty($row['initials']) ? (string) $row['initials'] : null;
+                    $note = (string) ($row['note'] ?? '');
+                    $initials = (string) ($row['initials'] ?? '');
 
                     DB::table('scores')->insert([
                         'id' => (int) $row['id'],
@@ -277,13 +300,13 @@ class LegacyImporter
                         'assessment_id' => (int) $row['assessment_id'],
                         'mistakes' => $mistakes,
                         'score' => $score,
-                        'assessed_at' => $row['assessed_at'] ?? null,
-                        'assessor_id' => $row['assessor_id'] ?? null,
+                        'assessed_at' => $this->normalizeTimestamp($row['assessed_at'] ?? null),
+                        'assessor_id' => $row['assessor_id'] !== null ? ($userIdMap[(int) $row['assessor_id']] ?? null) : null,
                         'initials' => $initials,
                         'note' => $note,
                         'version' => 1,
-                        'created_at' => $row['updated_at'] ?? now(),
-                        'updated_at' => $row['updated_at'] ?? now(),
+                        'created_at' => $this->normalizeTimestamp($row['updated_at'] ?? null) ?? now(),
+                        'updated_at' => $this->normalizeTimestamp($row['updated_at'] ?? null) ?? now(),
                     ]);
                     $scoresCount++;
                 }
@@ -318,13 +341,13 @@ class LegacyImporter
                 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                     DB::table('audit_logs')->insert([
                         'id' => (int) $row['id'],
-                        'user_id' => $row['user_id'] ?? null,
+                        'user_id' => $row['user_id'] !== null ? ($userIdMap[(int) $row['user_id']] ?? null) : null,
                         'entity' => (string) $row['entity'],
                         'entity_id' => (string) $row['entity_id'],
                         'action' => (string) $row['action'],
                         'summary' => (string) $row['summary'],
                         'meta' => null,
-                        'created_at' => $row['created_at'] ?? now(),
+                        'created_at' => $this->normalizeTimestamp($row['created_at'] ?? null) ?? now(),
                     ]);
                     $auditCount++;
                 }
@@ -362,5 +385,18 @@ class LegacyImporter
         $stmt->execute([$table]);
 
         return (bool) $stmt->fetch();
+    }
+
+    private function normalizeTimestamp(mixed $value): ?string
+    {
+        if ($value === null || $value === '') {
+            return null;
+        }
+
+        $timezone = (string) config('app.timezone');
+
+        return Carbon::parse((string) $value, $timezone)
+            ->setTimezone($timezone)
+            ->format('Y-m-d H:i:s');
     }
 }

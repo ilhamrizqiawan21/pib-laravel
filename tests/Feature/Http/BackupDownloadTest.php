@@ -26,7 +26,8 @@ test('guru dapat melihat status backup dan status berisi informasi yang valid', 
             'count',
             'interval_hours',
             'keep',
-        ]);
+        ])
+        ->assertJsonMissingPath('dir');
 });
 
 test('guru dapat mengunduh backup json lengkap dan tercatat di audit log', function () {

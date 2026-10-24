@@ -7,7 +7,7 @@
             initialClassId: {{ Js::from($initialClassId) }},
             initialAssessmentId: {{ Js::from($initialAssessmentId) }}
         })"
-        class="space-y-6"
+        class="assessment-page space-y-6"
     >
         <!-- Header Halaman -->
         <x-page-header
@@ -238,7 +238,7 @@
                                     </td>
                                     <td class="py-3 px-4">
                                         <!-- Stepper Kesalahan -->
-                                        <div class="flex items-center rounded-lg border border-line bg-surface overflow-hidden shadow-2xs w-36">
+                                        <div class="materi-score-control flex items-center rounded-lg border border-line bg-surface overflow-hidden shadow-2xs w-36">
                                             <button
                                                 type="button"
                                                 @click="step(st, -1)"
@@ -280,7 +280,7 @@
                                         <span class="text-base font-extrabold text-ink" x-text="'= ' + getRowMeta(st).scoreDisplay"></span>
                                     </td>
                                     <td class="py-3 px-4 text-center">
-                                        <div class="flex items-center justify-center gap-2">
+                                        <div class="materi-row-actions flex flex-wrap items-center justify-center gap-2">
                                             <!-- Tombol 90 -->
                                             <button
                                                 type="button"
@@ -292,6 +292,7 @@
                                             >
                                                 90
                                             </button>
+                                            <button type="button" @click="openDetails(st)" :aria-label="'Detail nilai ' + st.name" class="rounded-lg border border-line px-2.5 py-1 text-xs font-semibold text-brand-strong hover:bg-brand-soft">Detail</button>
 
                                             <!-- Tombol Discard Draft jika ada -->
                                             <template x-if="getRowMeta(st).draft">
@@ -314,6 +315,20 @@
                 </div>
             </div>
         </template>
+    <x-modal name="score-details-materi" title="Detail nilai">
+        <x-score-details-fields />
+        <x-slot:footer>
+            <button type="button" @click="close()" class="rounded-lg border border-line px-4 py-2 text-sm">Batal</button>
+            <button type="button" @click="saveDetails()" :disabled="savingDetails" class="rounded-lg bg-brand-strong px-4 py-2 text-sm font-semibold text-white disabled:opacity-50">Simpan detail</button>
+        </x-slot:footer>
+    </x-modal>
+    <x-modal name="confirm-clear-materi" title="Kosongkan nilai?" :danger="true">
+        <p>Nilai tersimpan akan berubah menjadi Belum dinilai. Riwayat perubahan tetap tercatat.</p>
+        <x-slot:footer>
+            <button type="button" @click="cancelClear(); close()" class="rounded-lg border border-line px-4 py-2 text-sm">Batal</button>
+            <button type="button" @click="confirmClear()" class="rounded-lg bg-danger px-4 py-2 text-sm font-semibold text-white">Kosongkan nilai</button>
+        </x-slot:footer>
+    </x-modal>
     </div>
 
     <script>

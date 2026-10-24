@@ -6,14 +6,14 @@
 @source '../views/**/*.blade.php';
 
 :root {
-    --ink: #0f172a;
-    --muted: #64748b;
-    --canvas: #f1f5f9;
+    --ink: #142b32;
+    --muted: #71838a;
+    --canvas: #f4f8f7;
     --surface: #ffffff;
-    --line: #e2e8f0;
+    --line: #e5ecea;
     --brand: #0d9488;
     --brand-strong: #0f766e;
-    --brand-soft: #ccfbf1;
+    --brand-soft: #def5f0;
     --success: #10b981;
     --success-soft: #ecfdf5;
     --warning: #d97706;
@@ -21,10 +21,26 @@
     --danger: #ef4444;
     --danger-soft: #fef2f2;
     --radius: 14px;
-    --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
-    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    --shadow: 0 8px 30px rgb(25 60 58 / 0.06);
+    --shadow-md: 0 12px 32px rgb(25 60 58 / 0.12);
+    --shadow-lg: 0 18px 42px rgb(25 60 58 / 0.16);
     --focus: #5eead4;
+}
+
+/* Permukaan bersama mengikuti kartu pada mockup, tanpa mengubah perilaku komponen. */
+.shadow-sm, .shadow-xs { box-shadow: var(--shadow); }
+
+#navigasi-utama a[aria-current='page'] { background: var(--brand-soft); color: var(--brand-strong); }
+#navigasi-utama a:not([aria-current='page']):hover { background: var(--canvas); color: var(--ink); }
+@media (min-width: 1024px) {
+    #navigasi-utama a[title] { padding-top: 0.375rem; padding-bottom: 0.375rem; }
+    #navigasi-utama [class*='mb-2'][class*='uppercase'] { margin-bottom: 0.25rem; }
+}
+
+main input:not([type='checkbox']):not([type='radio']),
+main select,
+main textarea {
+    border-color: var(--line);
 }
 
 @theme {
@@ -77,6 +93,158 @@
 }
 
 @media (max-width: 639px) {
+    html, body {
+        overflow-x: hidden;
+    }
+
+    #konten {
+        padding: 0.75rem;
+    }
+
+    .page-header {
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+    }
+
+    .page-header h1 {
+        font-size: 1.5rem;
+        line-height: 1.2;
+    }
+
+    .page-header p {
+        max-width: 34rem;
+        font-size: 0.8125rem;
+        line-height: 1.45;
+    }
+
+    .page-header-actions {
+        width: 100%;
+        min-width: 0;
+        overflow-x: auto;
+        padding-bottom: 0.125rem;
+        scrollbar-width: none;
+    }
+
+    .page-header-actions::-webkit-scrollbar {
+        display: none;
+    }
+
+    .page-header-actions > * {
+        flex: 0 0 auto;
+    }
+
+    .draft-indicator {
+        max-width: min(42vw, 10.5rem);
+    }
+
+    .assessment-page {
+        gap: 1rem;
+    }
+
+    .assessment-page .page-header-actions > div,
+    .assessment-page .page-header-actions > div > span {
+        max-width: 100%;
+    }
+
+    .assessment-page .page-header-actions a {
+        padding-inline: 0.625rem;
+        font-size: 0.6875rem;
+        white-space: nowrap;
+    }
+
+    .assessment-page aside,
+    .assessment-page section[aria-label='Daftar materi siswa'] {
+        border-radius: 0.875rem;
+    }
+
+    .assessment-page aside > div:first-child,
+    .assessment-page section[aria-label='Daftar materi siswa'] > div:first-child {
+        padding: 0.875rem;
+    }
+
+    .assessment-page .score-row {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        gap: 0.75rem;
+        padding: 0.875rem;
+    }
+
+    .assessment-page .score-row-info {
+        min-width: 0;
+        align-items: flex-start;
+    }
+
+    .assessment-page .score-row-info > div {
+        min-width: 0;
+    }
+
+    .assessment-page .score-row-info .text-sm {
+        line-height: 1.35;
+        overflow-wrap: anywhere;
+    }
+
+    .assessment-page .score-row-editor {
+        min-width: 0;
+        gap: 0.375rem;
+    }
+
+    .assessment-page .score-row-editor > button,
+    .assessment-page .score-row-editor .score-editor-actions button {
+        flex: 0 0 auto;
+    }
+
+    .assessment-page .score-row-editor .w-12 {
+        width: auto;
+        min-width: 2.75rem;
+    }
+
+    .assessment-page .score-row-editor input {
+        min-width: 2.75rem;
+    }
+
+    .assessment-page .score-row-editor .text-base {
+        font-size: 0.875rem;
+    }
+
+    .assessment-page .score-row-editor .score-editor-actions {
+        display: inline-flex;
+        flex: 0 0 auto;
+        gap: 0.25rem;
+    }
+
+    .assessment-page .max-h-\[calc\(100vh-280px\)\] {
+        max-height: none;
+    }
+
+    .modal-panel {
+        max-height: calc(100dvh - 1.5rem);
+        margin-block: 0.75rem;
+        border-radius: 1rem;
+        padding: 1rem;
+    }
+
+    .modal-panel > div:last-child {
+        overflow-wrap: anywhere;
+    }
+
+    main table:not([data-scroll-table]) tbody td {
+        align-items: flex-start;
+        overflow-wrap: anywhere;
+    }
+
+    main table:not([data-scroll-table]) tbody td[data-label]::before {
+        flex-basis: 34%;
+    }
+
+    main table[data-scroll-table] {
+        min-width: 42rem;
+    }
+
+    main .overflow-x-auto {
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: thin;
+    }
+
     button:not([type='hidden']),
     a,
     select,
@@ -147,6 +315,27 @@
     main table:not([data-scroll-table]) tbody td[colspan] {
         display: block;
         text-align: center;
+    }
+
+    /* Aksi tabel admin tetap berada di dalam kartu pada layar sempit. */
+    main table:not([data-scroll-table]) tbody td .user-actions,
+    main table:not([data-scroll-table]) tbody td .materi-row-actions {
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        max-width: 100%;
+        row-gap: 0.25rem;
+    }
+
+    main table:not([data-scroll-table]) tbody td .user-actions {
+        width: 100%;
+    }
+
+    .materi-score-control {
+        max-width: 100%;
+    }
+
+    .audit-timestamp {
+        white-space: normal;
     }
 }
 

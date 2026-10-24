@@ -60,6 +60,7 @@ class ReportController extends Controller
             $schoolName = 'PIB Penilaian';
         }
         $schoolAddress = $this->settingsRepository->schoolAddress();
+        $teacherName = $this->settingsRepository->teacherName();
         $scope = $this->reportGrouper->formatScope($filter, $schoolName);
         $assessmentsCount = count(array_filter($rows, fn ($r) => $r['assessment_id'] !== null));
 
@@ -70,11 +71,13 @@ class ReportController extends Controller
             'overall' => $overall,
             'schoolName' => $schoolName,
             'schoolAddress' => $schoolAddress,
+            'teacherName' => $teacherName,
             'scope' => $scope,
             'assessmentsCount' => $assessmentsCount,
         ]);
 
         $pdf->setPaper('a4', 'portrait');
+        $this->stampPdfFooter($pdf);
 
         /** @var string $output */
         $output = $pdf->output();
@@ -110,6 +113,7 @@ class ReportController extends Controller
         ]);
 
         $pdf->setPaper('a4', 'portrait');
+        $this->stampPdfFooter($pdf);
 
         $slug = Str::slug($student->name) ?: 'siswa';
         $filename = "rapor-{$slug}.pdf";
@@ -121,5 +125,20 @@ class ReportController extends Controller
             'Content-Type' => 'application/pdf',
             'Content-Disposition' => 'inline; filename="'.$filename.'"',
         ]);
+    }
+
+    private function stampPdfFooter(\Barryvdh\DomPDF\PDF $pdf): void
+    {
+        $pdf->render();
+        $dompdf = $pdf->getDomPDF();
+        $canvas = $dompdf->getCanvas();
+        $font = $dompdf->getFontMetrics()->getFont('DejaVu Sans', 'normal');
+        $width = $canvas->get_width();
+        $baseline = $canvas->get_height() - 34;
+        $color = [0.4, 0.45, 0.52];
+
+        $canvas->page_line(42, $baseline - 12, $width - 42, $baseline - 12, [0.86, 0.89, 0.87], 0.5);
+        $canvas->page_text(42, $baseline, 'PIB Penilaian', $font, 7.5, $color);
+        $canvas->page_text($width - 120, $baseline, 'Halaman {PAGE_NUM} dari {PAGE_COUNT}', $font, 7.5, $color);
     }
 }

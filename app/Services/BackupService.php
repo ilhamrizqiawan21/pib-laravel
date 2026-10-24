@@ -206,7 +206,6 @@ class BackupService
     /**
      * @return array{
      *     enabled: bool,
-     *     dir: string,
      *     count: int,
      *     interval_hours: int,
      *     keep: int,
@@ -223,7 +222,6 @@ class BackupService
 
         return [
             'enabled' => true,
-            'dir' => $dir,
             'count' => count($backups),
             'interval_hours' => $this->getIntervalHours(),
             'keep' => $this->getKeepCount(),

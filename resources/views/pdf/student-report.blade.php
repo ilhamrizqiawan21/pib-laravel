@@ -5,7 +5,7 @@
     <title>Rapor Penilaian Praktik Ibadah - {{ $student->name }}</title>
     <style>
         @page {
-            margin: 15mm 15mm 15mm 15mm;
+            margin: 17mm 15mm 20mm 15mm;
             size: a4 portrait;
         }
         body {
@@ -79,10 +79,18 @@
             border-collapse: collapse;
         }
         .stats-table td {
-            padding: 0;
+            padding: 2px 8px;
             font-size: 8.5pt;
             font-weight: bold;
             color: #176B57;
+        }
+        .stats-table td + td { border-left: 1px solid #C2DFD4; }
+        .stat-label {
+            display: block;
+            font-size: 7pt;
+            color: #657186;
+            font-weight: normal;
+            margin-bottom: 3px;
         }
         .stats-table td.right {
             text-align: right;
@@ -92,6 +100,9 @@
             border-collapse: collapse;
             margin-bottom: 20px;
         }
+        table.materials-table thead { display: table-header-group; }
+        table.materials-table tr { page-break-inside: avoid; }
+        table.materials-table tbody tr:nth-child(odd) { background-color: #F7FAF8; }
         table.materials-table th {
             background-color: #176B57;
             color: #FFFFFF;
@@ -119,8 +130,10 @@
             padding: 5px 6px;
             font-size: 8pt;
             border-bottom: 0.5pt solid #E5E9E7;
-            vertical-align: middle;
+            vertical-align: top;
+            word-wrap: break-word;
         }
+        .material-note { color: #657186; font-size: 7pt; margin-top: 2px; }
         .signature-section {
             width: 100%;
             margin-top: 15px;
@@ -139,6 +152,11 @@
             font-weight: bold;
             border-bottom: 1px solid #17202D;
             padding-bottom: 2px;
+        }
+        .report-note {
+            color: #657186;
+            font-size: 7.5pt;
+            margin: -8px 0 12px;
         }
     </style>
 </head>
@@ -178,19 +196,22 @@
     <div class="stats-badge">
         <table class="stats-table">
             <tr>
-                <td>Dinilai: {{ $stats['assessed'] }} dari {{ $stats['expected'] }} materi ({{ $stats['percent'] }}%)</td>
-                <td class="right">Rata-rata berbobot: {{ $stats['average'] !== null ? number_format($stats['average'], 1) : '-' }}</td>
+                <td><span class="stat-label">Kemajuan penilaian</span>{{ $stats['assessed'] }} / {{ $stats['expected'] }} materi ({{ $stats['percent'] }}%)</td>
+                <td><span class="stat-label">Jumlah nilai terisi</span>{{ number_format($stats['total'], 0) }}</td>
+                <td class="right"><span class="stat-label">Rata-rata berbobot</span>{{ $stats['average'] !== null ? number_format($stats['average'], 1) : '-' }}</td>
             </tr>
         </table>
     </div>
+    <p class="report-note">Tanda — pada kolom nilai berarti materi belum dinilai; nilai kosong tidak dihitung sebagai nol.</p>
 
     <table class="materials-table">
         <thead>
             <tr>
                 <th style="text-align: left;">Materi</th>
-                <th style="width: 50px;" class="right">Bobot</th>
-                <th style="width: 70px;" class="right">Kesalahan</th>
-                <th style="width: 80px;" class="right">Nilai</th>
+                <th style="width: 45px;" class="right">Bobot</th>
+                <th style="width: 62px;" class="right">Kesalahan</th>
+                <th style="width: 62px;" class="right">Nilai</th>
+                <th style="width: 52px;" class="center">Paraf</th>
             </tr>
         </thead>
         <tbody>
@@ -205,11 +226,19 @@
                 @if($groupLabel !== $currentGroup)
                     @php $currentGroup = $groupLabel; @endphp
                     <tr>
-                        <td colspan="4" class="group-header">{{ $groupLabel }}</td>
+                        <td colspan="5" class="group-header">{{ $groupLabel }}</td>
                     </tr>
                 @endif
                 <tr>
-                    <td style="padding-left: 12px;">{{ $row['assessment'] }}</td>
+                    <td style="padding-left: 12px;">
+                        <strong>{{ $row['assessment'] }}</strong>
+                        @if($row['note'])
+                            <div class="material-note">Catatan: {{ $row['note'] }}</div>
+                        @endif
+                        @if($row['assessed_at'])
+                            <div class="material-note">Tanggal: {{ $row['assessed_at'] }}</div>
+                        @endif
+                    </td>
                     <td class="right">{{ number_format((float) ($row['weight'] ?? 1.0), 1) }}</td>
                     <td class="right">{{ $row['mistakes'] !== null ? $row['mistakes'] : '-' }}</td>
                     <td class="right">
@@ -219,10 +248,11 @@
                             <span style="color: #657186; font-style: italic;">Belum dinilai</span>
                         @endif
                     </td>
+                    <td class="center">{{ $row['initials'] ?: '—' }}</td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="4" style="text-align: center; color: #657186; padding: 16px;">
+                    <td colspan="5" style="text-align: center; color: #657186; padding: 16px;">
                         Materi belum tersedia untuk kelas ini.
                     </td>
                 </tr>
@@ -240,16 +270,6 @@
         <div style="clear: both;"></div>
     </div>
 
-    <script type="text/php">
-        if (isset($pdf)) {
-            $text = "PIB Penilaian • Halaman {PAGE_NUM} dari {PAGE_COUNT}";
-            $font = $fontMetrics->get_font("DejaVu Sans", "normal");
-            $size = 7.5;
-            $color = array(0.4, 0.45, 0.52);
-            $width = $fontMetrics->get_text_width($text, $font, $size);
-            $pdf->page_text(297.5 - ($width / 2), 820, $text, $font, $size, $color);
-        }
-    </script>
 </body>
 </html>
 

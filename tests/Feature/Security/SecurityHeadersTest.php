@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\Blade;
+
 test('respons web menyertakan security headers wajib', function () {
     $response = $this->get('/login');
 
@@ -22,4 +24,14 @@ test('hsts ditambahkan pada lingkungan produksi', function () {
     $response->assertHeader('Strict-Transport-Security');
     expect((string) $response->headers->get('Strict-Transport-Security'))
         ->toContain('max-age=31536000');
+});
+
+test('pesan toast sesi di-encode aman untuk konteks javascript', function () {
+    $payload = "');window.pibInjected=true;//</script>";
+    session()->flash('error', $payload);
+
+    $html = Blade::render('<x-toast />');
+
+    expect($html)->not->toContain($payload);
+    expect($html)->toContain('\\u003C');
 });

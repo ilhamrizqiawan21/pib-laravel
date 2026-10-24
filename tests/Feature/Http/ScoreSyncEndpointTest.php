@@ -56,6 +56,23 @@ test('menyimpan nilai berhasil mengembalikan respons 200 SYNCED', function () {
     expect(Score::where('student_id', $this->student->id)->where('assessment_id', $this->assessment->id)->value('score'))->toBe(86);
 });
 
+test('respons simpan nilai mengembalikan paraf dan catatan untuk memperbarui layar', function () {
+    $this->actingAs($this->user)
+        ->postJson('/penilaian/sync', [
+            'id' => 'op-metadata-response',
+            'device_id' => 'dev-1',
+            'student_id' => $this->student->id,
+            'assessment_id' => $this->assessment->id,
+            'mistakes' => 2,
+            'base_version' => null,
+            'initials' => 'IR',
+            'note' => 'Bacaan lancar',
+        ])
+        ->assertOk()
+        ->assertJsonPath('initials', 'IR')
+        ->assertJsonPath('note', 'Bacaan lancar');
+});
+
 test('idempoten ketika mengirim op id yang sama berkali-kali', function () {
     $payload = [
         'id' => 'op-idempotent-request',
