@@ -75,6 +75,36 @@
                 />
             </div>
 
+            <div>
+                <label for="rekap-bab" class="block text-[11px] font-semibold uppercase tracking-wider text-ink-muted mb-1">Bab</label>
+                <select id="rekap-bab" wire:model.live="chapter" class="w-full rounded-lg border border-line bg-surface px-3 py-1.5 text-xs text-ink">
+                    <option value="">Semua Bab</option>
+                    @foreach ($chapters->pluck('title')->unique() as $title)
+                        <option value="{{ $title }}">{{ $title }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div>
+                <label for="rekap-subbab" class="block text-[11px] font-semibold uppercase tracking-wider text-ink-muted mb-1">Subbab</label>
+                <select id="rekap-subbab" wire:model.live="subchapter" class="w-full rounded-lg border border-line bg-surface px-3 py-1.5 text-xs text-ink">
+                    <option value="">Semua Subbab</option>
+                    @foreach ($subchapters->pluck('title')->unique() as $title)
+                        <option value="{{ $title }}">{{ $title }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div>
+                <label for="rekap-materi" class="block text-[11px] font-semibold uppercase tracking-wider text-ink-muted mb-1">Materi</label>
+                <select id="rekap-materi" wire:model.live="assessment_id" class="w-full rounded-lg border border-line bg-surface px-3 py-1.5 text-xs text-ink">
+                    <option value="">Semua Materi</option>
+                    @foreach ($assessments as $assessment)
+                        <option value="{{ $assessment->id }}">{{ $assessment->title }}</option>
+                    @endforeach
+                </select>
+            </div>
+
             <!-- Tombol Reset -->
             <div class="flex items-end">
                 <x-button variant="outline" size="sm" wire:click="resetFilters" class="w-full justify-center">

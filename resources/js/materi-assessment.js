@@ -17,8 +17,13 @@ export function materiAssessmentComponent({ classes = [], initialClassId = null,
         savingKeys: [],
 
         loading: false,
+        loadRequestId: 0,
         errorMessage: '',
         statusMessage: '',
+        details: { raw: '', initials: '', note: '', assessedAt: '' },
+        detailsError: '',
+        savingDetails: false,
+        pendingClear: null,
 
         init() {
             // Pulihkan preferensi dari localStorage bila tidak disediakan
@@ -46,7 +51,7 @@ export function materiAssessmentComponent({ classes = [], initialClassId = null,
             window.addEventListener('storage', () => this.refreshDrafts());
 
             window.addEventListener('pib-score-saved', (event) => {
-                const { draft, score, mistakes, version, assessed_at } = event.detail;
+                const { draft, score, mistakes, version, assessed_at, initials, note } = event.detail;
                 if (draft) {
                     this.scores[draft.key] = {
                         student_id: draft.studentId,
@@ -55,6 +60,8 @@ export function materiAssessmentComponent({ classes = [], initialClassId = null,
                         mistakes,
                         version,
                         assessed_at: assessed_at || new Date().toISOString(),
+                        initials,
+                        note,
                     };
                 }
                 this.refreshDrafts();
@@ -66,22 +73,27 @@ export function materiAssessmentComponent({ classes = [], initialClassId = null,
         },
 
         async loadClassProgress() {
+            const requestId = ++this.loadRequestId;
             if (!this.classId) {
                 this.data = null;
                 this.scores = {};
+                this.loading = false;
                 return;
             }
+
+            const classId = this.classId;
 
             this.loading = true;
             this.errorMessage = '';
 
             try {
-                const response = await window.DraftStore.apiRequest(`/penilaian/kelas/${this.classId}/progress`);
+                const response = await window.DraftStore.apiRequest(`/penilaian/kelas/${classId}/progress`);
                 if (!response.ok) {
                     throw new Error('Gagal memuat data kelas dari server.');
                 }
 
                 const result = await response.json();
+                if (requestId !== this.loadRequestId) return;
                 this.data = result;
 
                 const scoreMap = {};
@@ -102,9 +114,11 @@ export function materiAssessmentComponent({ classes = [], initialClassId = null,
 
                 this.saveLastState();
             } catch (err) {
-                this.errorMessage = err.message || 'Terjadi kesalahan saat memuat data.';
+                if (requestId === this.loadRequestId) {
+                    this.errorMessage = err.message || 'Terjadi kesalahan saat memuat data.';
+                }
             } finally {
-                this.loading = false;
+                if (requestId === this.loadRequestId) this.loading = false;
             }
         },
 
@@ -214,6 +228,58 @@ export function materiAssessmentComponent({ classes = [], initialClassId = null,
             return '';
         },
 
+        openDetails(student) {
+            if (!this.assessmentId) return;
+            const key = window.DraftStore.draftKey(student.id, this.assessmentId);
+            const draft = this.drafts[key];
+            const score = this.scores[key];
+            this.details = {
+                key,
+                studentId: student.id,
+                assessmentId: this.assessmentId,
+                title: student.name,
+                raw: this.getRawMistakes(student.id),
+                initials: draft?.initials ?? score?.initials ?? '',
+                note: draft?.note ?? score?.note ?? '',
+                assessedAt: draft?.assessedAt ?? (score?.assessed_at
+                    ? new Date(score.assessed_at).toLocaleDateString('sv-SE')
+                    : new Date().toLocaleDateString('sv-SE')),
+                baseVersion: score?.version ?? null,
+            };
+            this.detailsError = '';
+            this.$dispatch('open-modal', 'score-details-materi');
+        },
+
+        async saveDetails() {
+            if (!this.details || this.savingDetails) return;
+            const parsed = window.DraftStore.parseMistakes(this.details.raw);
+            if (!parsed.valid || parsed.mistakes === null) {
+                this.detailsError = parsed.error || 'Isi jumlah kesalahan sebelum menyimpan detail.';
+                return;
+            }
+
+            const draft = {
+                ...this.details,
+                id: window.DraftStore.createDraftId(),
+                deviceId: window.DraftStore.getDeviceId(),
+                status: 'pending',
+            };
+            window.DraftStore.persistDraft(draft);
+            this.refreshDrafts();
+            this.savingDetails = true;
+            try {
+                const result = await window.DraftStore.submitScore(draft);
+                if (result.success || result.status === 0) {
+                    this.$dispatch('close-modal', 'score-details-materi');
+                } else {
+                    this.detailsError = result.error || 'Nilai berubah di server. Muat ulang sebelum menyimpan.';
+                }
+            } finally {
+                this.savingDetails = false;
+                this.refreshDrafts();
+            }
+        },
+
         onInputMistakes(student, raw) {
             if (!this.assessmentId) return;
             const key = window.DraftStore.draftKey(student.id, this.assessmentId);
@@ -297,6 +363,32 @@ export function materiAssessmentComponent({ classes = [], initialClassId = null,
                 return;
             }
 
+            if (parsed.mistakes === null && this.scores[key]?.score !== null) {
+                this.pendingClear = { draft, index };
+                this.$dispatch('open-modal', 'confirm-clear-materi');
+                return;
+            }
+
+            await this.submitDraft(draft, index);
+        },
+
+        async confirmClear() {
+            if (!this.pendingClear) return;
+            const { draft, index } = this.pendingClear;
+            this.pendingClear = null;
+            this.$dispatch('close-modal', 'confirm-clear-materi');
+            await this.submitDraft(draft, index);
+        },
+
+        cancelClear() {
+            if (!this.pendingClear) return;
+            window.DraftStore.deleteDraft(this.pendingClear.draft.key, this.pendingClear.draft.id);
+            this.pendingClear = null;
+            this.refreshDrafts();
+        },
+
+        async submitDraft(draft, index) {
+            const key = draft.key;
             this.focusNextStudent(index);
 
             const queued = { ...draft, status: 'pending' };

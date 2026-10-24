@@ -160,6 +160,8 @@ Legenda prioritas mengikuti PRD (P0 wajib 1.0).
 
   Audit backend lanjutan 2026-10-24: restore, sinkronisasi nilai lintas periode, impor kelas bernama sama, hitungan beranda, dan aturan password diperbaiki; `composer check` lokal hijau (248 tes, Larastan 0 error). Backup dan restore diuji pada MySQL 8.4.10 sementara. Verifikasi CI dan pengujian pada server target masih diperlukan sebelum rilis.
 
+  Tindak lanjut audit alur/UI 2026-10-24: metadata nilai dipertahankan dan dapat diedit di kedua mode penilaian; filter Rekap/Laporan konsisten; matriks mengikuti filter; antrean draft dan perpindahan kelas tahan respons terlambat; Setoran ponsel memprioritaskan editor; pengosongan nilai meminta konfirmasi. Bukti lokal: `composer check` (251 tes, Larastan 0), tes JS Node, build Vite, dan verifikasi browser 360×800. Verifikasi CI/server target tetap diperlukan sebelum T-905 dicentang.
+
 ---
 
 ## Parkiran (P2, jangan dikerjakan tanpa persetujuan)

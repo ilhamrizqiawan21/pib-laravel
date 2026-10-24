@@ -52,6 +52,8 @@ class ScoreSyncController extends Controller
                 'mistakes' => $score?->mistakes,
                 'version' => $score !== null ? $score->version : 0,
                 'assessed_at' => $score?->assessed_at?->toISOString(),
+                'initials' => $score?->initials,
+                'note' => $score?->note,
             ]);
         } catch (ScoreConflictException $e) {
             $current = $e->currentScore;

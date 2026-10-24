@@ -304,8 +304,8 @@
                             $activeAcademicYear = app(\App\Services\AcademicYearService::class)->active();
                         @endphp
                         <span class="font-medium text-sm text-ink truncate">{{ $currentSchoolName ?: 'PIB Penilaian' }}</span>
-                        <span class="text-line">/</span>
-                        <span class="text-xs text-muted truncate">{{ $activeAcademicYear ? $activeAcademicYear->label() : 'Periode Aktif' }}</span>
+                        <span class="hidden sm:inline text-line">/</span>
+                        <span class="hidden sm:inline text-xs text-muted truncate">{{ $activeAcademicYear ? $activeAcademicYear->label() : 'Periode Aktif' }}</span>
                     </div>
                 </div>
 

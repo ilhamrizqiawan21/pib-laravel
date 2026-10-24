@@ -74,9 +74,11 @@ Dua panel: **kiri daftar siswa** (260px), **kanan daftar materi**.
 - Perilaku: ketik angka → Enter = kirim + fokus ke baris berikutnya; angka tak valid → pesan "Isi bilangan bulat 0–90." tanpa kirim; kolom kosong+Enter = kosongkan nilai (dengan konfirmasi ringan bila ada nilai).
 - Kondisi: belum pilih kelas ("Pilih kelas…"), tanpa materi (tautan ke Materi), tanpa siswa (tautan ke Siswa), belum pilih siswa (petunjuk `/`).
 - Ponsel: panel siswa jadi *bottom sheet*/dropdown; satu kolom materi; tombol 90 ≥ 44px.
+- Implementasi: pada ponsel, daftar siswa tertutup secara bawaan di balik tombol "Ganti siswa"; pemilih kelas dan siswa terpilih tetap terlihat, sehingga editor nilai muncul di layar pertama. Tombol "Detail" membuka paraf, catatan, dan tanggal; pengosongan nilai tersimpan meminta konfirmasi.
 
 ### 4.4 Penilaian → Per materi (`/penilaian/materi`)
 Pilih bab/subbab/materi → tabel siswa kelas (nama, input kesalahan, nilai, paraf, catatan, tanggal). Tombol ± langkah 1; Tab/Enter turun ke siswa berikutnya. Progres "18/32 siswa".
+Paraf, catatan, dan tanggal dibuka melalui tombol "Detail" per siswa; pengosongan nilai tersimpan meminta konfirmasi.
 
 ### 4.5 Rekap (`/rekap`)
 Filter bar (tahun ajaran/semester, kelas, siswa, bab, subbab, materi) — **bagian URL query** sehingga bisa dibagikan/ditandai. Ringkasan per siswa: nama, NIS, terisi/total, total, rata-rata, **status** (badge), progres.

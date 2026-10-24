@@ -134,3 +134,18 @@ test('filter nama siswa bekerja dengan pencarian parsial case-insensitive', func
     expect($names)->toContain('Tanpa materi');
     expect($names)->not->toContain('Budi');
 });
+
+test('matriks mengikuti filter siswa dan materi pada rekap', function () {
+    $filter = new RecapFilter(
+        classId: $this->class1->id,
+        student: 'Ani',
+        assessmentId: $this->m2->id,
+    );
+
+    $matrix = $this->service->getMatrix($this->class1->id, $filter);
+
+    expect($matrix['students'])->toHaveCount(1);
+    expect($matrix['students'][0]['name'])->toBe('Ani');
+    expect($matrix['materials'])->toHaveCount(1);
+    expect($matrix['materials'][0]['id'])->toBe($this->m2->id);
+});

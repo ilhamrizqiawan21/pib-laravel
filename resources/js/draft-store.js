@@ -213,22 +213,35 @@ const inFlightRequests = new Map();
  * Kirim draft nilai ke server via POST /penilaian/sync secara idempoten.
  */
 export function submitScore(draft) {
+    const parsed = parseMistakes(draft.raw);
+    if (!parsed.valid) {
+        persistDraft({ ...draft, status: 'failed', error: parsed.error });
+        return Promise.resolve({ success: false, status: 422, error: parsed.error });
+    }
+
     const current = inFlightRequests.get(draft.key);
     if (current) {
-        return current;
+        if (current.id === draft.id) {
+            return current.promise;
+        }
+
+        return current.promise.then((result) => {
+            const latest = getDraft(draft.studentId, draft.assessmentId);
+            if (!latest) return result;
+            if (result.status === 409) {
+                persistDraft({ ...latest, status: 'conflict', conflict: result.conflict });
+                return result;
+            }
+
+            const next = result.success
+                ? { ...latest, baseVersion: result.data.version }
+                : latest;
+            if (result.success) persistDraft(next);
+            return submitScore(next);
+        });
     }
 
     const request = (async () => {
-        const parsed = parseMistakes(draft.raw);
-        if (!parsed.valid) {
-            persistDraft({
-                ...draft,
-                status: 'failed',
-                error: parsed.error,
-            });
-            return { success: false, status: 422, error: parsed.error };
-        }
-
         try {
             const payload = {
                 id: draft.id,
@@ -237,9 +250,9 @@ export function submitScore(draft) {
                 assessment_id: draft.assessmentId,
                 mistakes: parsed.mistakes,
                 base_version: typeof draft.baseVersion === 'number' ? draft.baseVersion : null,
-                initials: draft.initials || '',
-                note: draft.note || '',
-                assessed_at: draft.assessedAt || null,
+                ...(draft.initials !== undefined ? { initials: draft.initials } : {}),
+                ...(draft.note !== undefined ? { note: draft.note } : {}),
+                ...(draft.assessedAt !== undefined ? { assessed_at: draft.assessedAt } : {}),
             };
 
             const response = await apiRequest('/penilaian/sync', {
@@ -259,6 +272,8 @@ export function submitScore(draft) {
                             mistakes: data.mistakes,
                             version: data.version,
                             assessed_at: data.assessed_at,
+                            initials: data.initials,
+                            note: data.note,
                         },
                     })
                 );
@@ -300,11 +315,13 @@ export function submitScore(draft) {
             }
             return { success: false, status: 0, error: 'Menunggu koneksi untuk dikirim.' };
         } finally {
-            inFlightRequests.delete(draft.key);
+            if (inFlightRequests.get(draft.key)?.id === draft.id) {
+                inFlightRequests.delete(draft.key);
+            }
         }
     })();
 
-    inFlightRequests.set(draft.key, request);
+    inFlightRequests.set(draft.key, { id: draft.id, promise: request });
     return request;
 }
 

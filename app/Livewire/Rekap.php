@@ -7,6 +7,7 @@ use App\Models\Assessment;
 use App\Models\Chapter;
 use App\Models\SchoolClass;
 use App\Models\Student;
+use App\Models\Subchapter;
 use App\Services\AcademicYearService;
 use App\Services\RecapService;
 use Illuminate\Contracts\View\View;
@@ -17,22 +18,22 @@ use Livewire\Component;
 #[Layout('layouts.app')]
 class Rekap extends Component
 {
-    #[Url(as: 'tahun')]
+    #[Url(as: 'academic_year_id')]
     public ?int $academic_year_id = null;
 
-    #[Url(as: 'kelas')]
+    #[Url(as: 'class_id')]
     public ?int $class_id = null;
 
-    #[Url(as: 'siswa')]
+    #[Url(as: 'student')]
     public ?string $student = null;
 
-    #[Url(as: 'bab')]
+    #[Url(as: 'chapter')]
     public ?string $chapter = null;
 
-    #[Url(as: 'subbab')]
+    #[Url(as: 'subchapter')]
     public ?string $subchapter = null;
 
-    #[Url(as: 'materi')]
+    #[Url(as: 'assessment_id')]
     public ?int $assessment_id = null;
 
     #[Url(as: 'tab')]
@@ -54,6 +55,24 @@ class Rekap extends Component
         $this->class_id = null;
         $this->chapter = null;
         $this->subchapter = null;
+        $this->assessment_id = null;
+        $this->selected_student_id = null;
+    }
+
+    public function updatedClassId(): void
+    {
+        $this->selected_student_id = null;
+    }
+
+    public function updatedChapter(): void
+    {
+        $this->subchapter = null;
+        $this->assessment_id = null;
+        $this->selected_student_id = null;
+    }
+
+    public function updatedSubchapter(): void
+    {
         $this->assessment_id = null;
         $this->selected_student_id = null;
     }
@@ -90,10 +109,18 @@ class Rekap extends Component
             ->orderBy('display_order')
             ->get();
 
+        $subchapters = Subchapter::query()
+            ->when($this->academic_year_id, fn ($q) => $q->whereHas('chapter.curriculumTemplate', fn ($t) => $t->where('academic_year_id', $this->academic_year_id)))
+            ->when($this->chapter, fn ($q) => $q->whereHas('chapter', fn ($c) => $c->where('title', $this->chapter)))
+            ->orderBy('display_order')
+            ->get();
+
         $assessments = Assessment::query()
             ->when($this->academic_year_id, function ($q) {
                 $q->whereHas('subchapter.chapter.curriculumTemplate', fn ($t) => $t->where('academic_year_id', $this->academic_year_id));
             })
+            ->when($this->chapter, fn ($q) => $q->whereHas('subchapter.chapter', fn ($c) => $c->where('title', $this->chapter)))
+            ->when($this->subchapter, fn ($q) => $q->whereHas('subchapter', fn ($s) => $s->where('title', $this->subchapter)))
             ->where('is_active', true)
             ->orderBy('title')
             ->get();
@@ -120,13 +147,14 @@ class Rekap extends Component
             : null;
 
         $matrix = ($this->active_tab === 'matrix' && $this->class_id)
-            ? $recapService->getMatrix($this->class_id)
+            ? $recapService->getMatrix($this->class_id, $filter)
             : null;
 
         return view('livewire.rekap', [
             'academicYears' => $academicYears,
             'classes' => $classes,
             'chapters' => $chapters,
+            'subchapters' => $subchapters,
             'assessments' => $assessments,
             'recap' => $recap,
             'studentDetails' => $studentDetails,
