@@ -338,11 +338,11 @@
                     >
                         <a
                             href="/penilaian"
-                            class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-300 hover:bg-amber-100 transition-colors shadow-2xs"
+                            class="draft-indicator inline-flex min-w-0 max-w-[min(42vw,190px)] items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-300 hover:bg-amber-100 transition-colors shadow-2xs"
                             title="Klik untuk membuka antrean nilai"
                         >
                             <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
-                            <span x-text="count + ' nilai belum terkirim'"></span>
+                            <span class="truncate" x-text="count + ' nilai belum terkirim'"></span>
                         </a>
                     </div>
 

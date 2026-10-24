@@ -7,7 +7,7 @@
             initialClassId: {{ Js::from($initialClassId) }},
             initialAssessmentId: {{ Js::from($initialAssessmentId) }}
         })"
-        class="space-y-6"
+        class="assessment-page space-y-6"
     >
         <!-- Header Halaman -->
         <x-page-header

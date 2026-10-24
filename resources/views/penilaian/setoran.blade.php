@@ -7,7 +7,7 @@
             initialClassId: {{ Js::from($initialClassId) }},
             initialStudentId: {{ Js::from($initialStudentId) }}
         })"
-        class="space-y-6"
+        class="assessment-page space-y-6"
     >
     <!-- Header Halaman -->
     <x-page-header
@@ -282,11 +282,11 @@
                             <div x-show="isGroupOpen(group.key)" class="divide-y divide-line/60">
                                 <template x-for="item in group.items" :key="item.material.id">
                                     <div
-                                        class="p-3.5 flex flex-wrap items-center justify-between gap-3 hover:bg-canvas/50 transition-colors"
+                                        class="score-row p-3.5 flex flex-wrap items-center justify-between gap-3 hover:bg-canvas/50 transition-colors"
                                         :class="getRowMeta(item.material, item.index).isNext ? 'bg-brand-light/30 border-l-4 border-l-brand' : ''"
                                     >
                                         <!-- Info Materi -->
-                                        <div class="flex items-center gap-3 min-w-[200px]">
+                                        <div class="score-row-info flex items-center gap-3 min-w-[200px]">
                                             <span class="text-xs font-mono font-medium text-ink-muted w-6 text-center" x-text="item.index + 1"></span>
                                             <div>
                                                 <div class="flex items-center gap-2">
@@ -317,7 +317,7 @@
                                         </div>
 
                                         <!-- Editor Nilai Kesalahan -->
-                                        <div class="flex w-full items-center justify-between gap-2 sm:w-auto sm:justify-start">
+                                        <div class="score-row-editor flex w-full items-center justify-between gap-2 sm:w-auto sm:justify-start">
                                             <!-- Tombol 90 Cepat -->
                                             <button
                                                 type="button"

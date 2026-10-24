@@ -64,7 +64,7 @@
         x-transition:leave="ease-in duration-150"
         x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
         x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-        class="relative bg-surface rounded-[14px] border border-line shadow-lg overflow-y-auto max-h-[calc(100dvh-3rem)] w-full max-w-lg p-4 sm:p-6 my-8 z-10"
+        class="modal-panel relative bg-surface rounded-[14px] border border-line shadow-lg overflow-y-auto max-h-[calc(100dvh-3rem)] w-full max-w-lg p-4 sm:p-6 my-8 z-10"
     >
         @if ($title)
             <div class="flex items-center justify-between pb-4 mb-4 border-b border-line">
