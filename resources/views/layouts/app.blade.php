@@ -80,9 +80,7 @@
             <!-- Sidebar Header / Logo -->
             <div class="h-[72px] flex items-center justify-between px-5 shrink-0">
                 <a href="/dashboard" class="flex items-center gap-2.5 overflow-hidden">
-                    <div class="w-10 h-10 rounded-[13px] bg-brand-strong text-white flex items-center justify-center shrink-0 shadow-md font-extrabold text-xl">
-                        P
-                    </div>
+                    <img src="{{ asset('images/pib-logo.png') }}" alt="Logo PIB" class="h-10 w-10 shrink-0 object-contain" />
                     <div
                         class="flex flex-col whitespace-nowrap transition-opacity duration-150"
                         :class="sidebarCollapsed ? 'lg:hidden' : 'block'"
@@ -321,7 +319,7 @@
                         @php
                             $currentSchoolName = app(\App\Repositories\SettingsRepository::class)->schoolName();
                         @endphp
-                        <span class="hidden h-7 w-7 items-center justify-center rounded-lg bg-canvas text-brand-strong sm:flex"><x-icon name="school" size="16" /></span>
+                        <img src="{{ asset('images/pib-logo.png') }}" alt="" class="hidden h-7 w-7 object-contain sm:block" />
                         <span class="font-semibold text-xs text-ink truncate">{{ $currentSchoolName ?: 'PIB Penilaian' }}</span>
                     </div>
                 </div>

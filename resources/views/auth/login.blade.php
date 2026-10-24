@@ -15,9 +15,7 @@
     <div class="w-full max-w-sm">
         <!-- Logo & App Header -->
         <div class="text-center mb-8">
-            <div class="inline-flex w-12 h-12 rounded-2xl bg-brand-strong text-white items-center justify-center shadow-md font-bold text-lg tracking-wider mb-3">
-                PIB
-            </div>
+            <img src="{{ asset('images/pib-logo.png') }}" alt="Logo PIB" class="mx-auto mb-3 h-16 w-16 object-contain" />
             <h1 class="text-2xl font-bold text-ink tracking-tight">PIB Penilaian</h1>
             <p class="text-xs text-muted mt-1">Aplikasi Penilaian Praktik Ibadah Siswa</p>
         </div>
