@@ -123,6 +123,8 @@ Legenda prioritas mengikuti PRD (P0 wajib 1.0).
 - [x] **T-604 Halaman Laporan (bagian unduh)** (P0) — selesai 2026-10-22. Bukti: tests/Feature/Livewire/LaporanTest.php (3 tes), app/Livewire/Laporan.php, resources/views/livewire/laporan.blade.php, composer check ✔ (191 tes, Larastan 0 error).
   DESIGN §4.9; filter sinkron dengan Rekap, kartu unduhan Excel, PDF Kelas, dan pemilih siswa untuk Rapor individual.
 
+  Penyempurnaan hasil ekspor 2026-10-24: lembar Excel disiapkan untuk tampilan dan cetak A4; PDF kelas memakai kepala tabel berulang, kolom yang terbaca, dan ringkasan tanpa terpotong; rapor siswa menampilkan metadata nilai. Footer bernomor dicetak pada semua halaman. Bukti: `ReportExcelTest`, `ReportPdfClassTest`, `ReportPdfStudentTest`, pratinjau PDF A4 dua/lebih halaman, `composer check` (256 tes, Larastan 0).
+
 ---
 
 ## Fase 7 — Backup, restore, admin, audit

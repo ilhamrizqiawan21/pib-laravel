@@ -98,6 +98,7 @@ Pilih template/tahun ajaran → daftar bab → subbab → materi (breadcrumb). E
 
 ### 4.9 Laporan & backup (`/laporan`)
 Bagian 1 *Unduh hasil*: filter (sama dengan Rekap) + tombol **Excel** dan **PDF** (+ pilih siswa untuk PDF per siswa).
+Hasil Excel memakai judul dan cakupan yang jelas pada tiap lembar, kolom angka terformat, kisi tersembunyi, serta pengaturan cetak A4. PDF kelas mengulang kepala tabel pada halaman baru dan menjaga ringkasan akhir tetap utuh. PDF rapor siswa menampilkan kemajuan, jumlah nilai, rata-rata, paraf, catatan, dan tanggal; kedua PDF memiliki footer dan nomor halaman di setiap lembar.
 Bagian 2 *Backup*: status terakhir (waktu, ukuran), tombol **Unduh backup**; admin: **Pulihkan** (unggah → ringkasan → modal konfirmasi ketik "PULIHKAN").
 
 ### 4.10 Akun (`/akun`) · Admin Pengguna/Audit

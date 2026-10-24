@@ -10,6 +10,7 @@ use App\Models\Student;
 use App\Models\Subchapter;
 use App\Models\User;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Worksheet\PageSetup;
 
 beforeEach(function () {
     $this->user = User::factory()->create(['is_active' => true, 'role' => 'teacher']);
@@ -81,6 +82,10 @@ test('guru dapat mengunduh excel dengan struktur sheet dan data yang sesuai', fu
     $summary = $spreadsheet->getSheetByName('Ringkasan');
     expect($summary)->not->toBeNull();
     expect($summary->getCell('A1')->getValue())->toContain('Ringkasan Laporan Penilaian');
+    expect($summary->getShowGridlines())->toBeFalse();
+    expect($summary->getPageSetup()->getPaperSize())->toBe(PageSetup::PAPERSIZE_A4);
+    expect($summary->getPageSetup()->getFitToWidth())->toBe(1);
+    expect($summary->getStyle('A1')->getFont()->getColor()->getRGB())->toBe('FFFFFF');
 
     // Cek sheet Detail Nilai
     $detail = $spreadsheet->getSheetByName('Detail Nilai');
@@ -89,6 +94,8 @@ test('guru dapat mengunduh excel dengan struktur sheet dan data yang sesuai', fu
     expect($detail->getCell('I5')->getValue())->toBe(85);
     expect($detail->getCell('B6')->getValue())->toBe('Zainab');
     expect($detail->getConditionalStyles('A6'))->not->toBeEmpty();
+    expect($detail->getPageSetup()->getOrientation())->toBe(PageSetup::ORIENTATION_LANDSCAPE);
+    expect($detail->getPageSetup()->getRowsToRepeatAtTop())->not->toBeEmpty();
 
     $materialSheet = $spreadsheet->getSheetByName('Laporan per Materi');
     expect($materialSheet)->not->toBeNull();
