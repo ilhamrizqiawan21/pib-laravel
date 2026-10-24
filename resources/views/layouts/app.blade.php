@@ -314,14 +314,6 @@
                         <x-icon name="menu" size="20" />
                         <span class="sr-only">Buka menu</span>
                     </button>
-
-                    <div class="flex items-center gap-2.5 truncate">
-                        @php
-                            $currentSchoolName = app(\App\Repositories\SettingsRepository::class)->schoolName();
-                        @endphp
-                        <img src="{{ asset('images/pib-logo.png') }}" alt="" class="hidden h-7 w-7 object-contain sm:block" />
-                        <span class="font-semibold text-xs text-ink truncate">{{ $currentSchoolName ?: 'PIB Penilaian' }}</span>
-                    </div>
                 </div>
 
                 <!-- Right Topbar Items -->
