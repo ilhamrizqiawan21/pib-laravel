@@ -168,6 +168,8 @@ Legenda prioritas mengikuti PRD (P0 wajib 1.0).
 
   Implementasi `docs/mockups/modern-ui.html` 2026-10-24: token warna/kartu dan kerangka navigasi diterapkan; Beranda memakai hero penilaian, empat statistik, prioritas kelas, serta aktivitas dengan data aplikasi. Checklist penyiapan tetap tersedia. Bukti lokal: `composer check` (253 tes, Larastan 0), build Vite, tes JS Node, dan browser desktop/ponsel. Verifikasi CI/server target tetap diperlukan sebelum T-905 dicentang.
 
+  Penyisiran gaya tombol, heading, dan font 2026-10-24: standarisasi `button` (`rounded-xl`, `font-semibold`, mikro-interaksi `active:scale-[0.98]`, elevasi shadow, dan perbaikan varian primary/secondary/ghost/danger); unifikasi heading dan `page-header` pada seluruh modul (Admin Pengguna, Audit, Laporan); peningkatan tipografi Inter Variable (`font-feature-settings`, perataan spasi huruf `letter-spacing`, rendering halus); segment control pill yang lebih rapi pada Setoran, Per Materi, dan Rekap. Bukti: `composer check` ✔ (261 tes, 1177 assertion, Larastan 0 error), `npm run build` sukses.
+
 ---
 
 ## Parkiran (P2, jangan dikerjakan tanpa persetujuan)

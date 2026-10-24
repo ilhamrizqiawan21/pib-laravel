@@ -17,11 +17,11 @@
         >
             <x-slot:actions>
                 <div class="flex items-center gap-2">
-                    <span class="inline-flex rounded-lg border border-line bg-surface p-1 text-xs font-medium">
-                        <a href="{{ route('penilaian.setoran') }}" class="rounded-md px-3 py-1.5 text-ink-muted hover:text-ink">
+                    <span class="inline-flex rounded-xl border border-line bg-surface p-1 text-xs font-semibold shadow-2xs">
+                        <a href="{{ route('penilaian.setoran') }}" class="rounded-lg px-3.5 py-1.5 text-muted hover:text-ink hover:bg-canvas transition-colors">
                             Per siswa (Setoran)
                         </a>
-                        <a href="{{ route('penilaian.materi') }}" class="rounded-md bg-brand-light px-3 py-1.5 font-semibold text-brand-strong shadow-xs">
+                        <a href="{{ route('penilaian.materi') }}" class="rounded-lg bg-brand-soft px-3.5 py-1.5 text-brand-strong shadow-xs">
                             Per materi
                         </a>
                     </span>
@@ -200,7 +200,7 @@
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse text-sm">
                         <thead>
-                            <tr class="border-b border-line bg-surface-alt text-xs font-semibold uppercase tracking-wider text-ink-muted">
+                            <tr class="border-b border-line bg-canvas/80 text-[11px] font-bold uppercase tracking-wider text-muted">
                                 <th scope="col" class="py-3 px-4 w-12 text-center">No</th>
                                 <th scope="col" class="py-3 px-4">Nama Siswa</th>
                                 <th scope="col" class="py-3 px-4 w-32">NIS</th>
@@ -213,11 +213,11 @@
                         <tbody class="divide-y divide-line/60">
                             <template x-for="(st, idx) in filteredStudents" :key="st.id">
                                 <tr class="hover:bg-canvas/50 transition-colors">
-                                    <td class="py-3 px-4 text-center text-xs font-mono text-ink-muted" x-text="idx + 1"></td>
+                                    <td class="py-3 px-4 text-center text-xs font-mono text-muted" x-text="idx + 1"></td>
                                     <td class="py-3 px-4">
                                         <div class="font-semibold text-ink" x-text="st.name"></div>
                                     </td>
-                                    <td class="py-3 px-4 text-xs font-mono text-ink-muted" x-text="st.nis || '—'"></td>
+                                    <td class="py-3 px-4 text-xs font-mono text-muted" x-text="st.nis || '—'"></td>
                                     <td class="py-3 px-4">
                                         <template x-if="getRowMeta(st).statusLabel">
                                             <span
@@ -233,7 +233,7 @@
                                             ></span>
                                         </template>
                                         <template x-if="!getRowMeta(st).statusLabel">
-                                            <span class="text-xs text-ink-muted italic">Belum dinilai</span>
+                                            <span class="text-xs text-muted italic">Belum dinilai</span>
                                         </template>
                                     </td>
                                     <td class="py-3 px-4">
@@ -244,7 +244,7 @@
                                                 @click="step(st, -1)"
                                                 :aria-label="'Kurangi kesalahan ' + st.name"
                                                 :disabled="getRowMeta(st).isSaving"
-                                                class="px-2.5 py-1 text-ink-muted hover:text-ink hover:bg-surface-alt border-r border-line disabled:opacity-40"
+                                                class="px-2.5 py-1 text-muted hover:text-ink hover:bg-canvas border-r border-line disabled:opacity-40 active:bg-line transition-colors cursor-pointer"
                                                 title="Kurangi kesalahan"
                                             >
                                                 -
@@ -269,7 +269,7 @@
                                                 @click="step(st, 1)"
                                                 :aria-label="'Tambah kesalahan ' + st.name"
                                                 :disabled="getRowMeta(st).isSaving"
-                                                class="px-2.5 py-1 text-ink-muted hover:text-ink hover:bg-surface-alt border-l border-line disabled:opacity-40"
+                                                class="px-2.5 py-1 text-muted hover:text-ink hover:bg-canvas border-l border-line disabled:opacity-40 active:bg-line transition-colors cursor-pointer"
                                                 title="Tambah kesalahan"
                                             >
                                                 +
@@ -288,11 +288,11 @@
                                                 :aria-label="'Nilai 90 untuk ' + st.name"
                                                 :disabled="getRowMeta(st).isSaving"
                                                 title="Lancar: 0 kesalahan (nilai 90), langsung simpan dan lanjut"
-                                                class="px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-300 hover:bg-emerald-100 font-bold text-xs tracking-wider shadow-2xs disabled:opacity-50"
+                                                class="px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-300 hover:bg-emerald-100 font-bold text-xs tracking-wider shadow-2xs disabled:opacity-50 active:scale-95 transition-all cursor-pointer"
                                             >
                                                 90
                                             </button>
-                                            <button type="button" @click="openDetails(st)" :aria-label="'Detail nilai ' + st.name" class="rounded-lg border border-line px-2.5 py-1 text-xs font-semibold text-brand-strong hover:bg-brand-soft">Detail</button>
+                                            <button type="button" @click="openDetails(st)" :aria-label="'Detail nilai ' + st.name" class="rounded-lg border border-line px-2.5 py-1 text-xs font-semibold text-brand-strong hover:bg-brand-soft active:scale-95 transition-all cursor-pointer">Detail</button>
 
                                             <!-- Tombol Discard Draft jika ada -->
                                             <template x-if="getRowMeta(st).draft">

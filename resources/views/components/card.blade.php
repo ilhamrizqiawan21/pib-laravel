@@ -4,14 +4,18 @@
 ])
 
 <div {{ $attributes->merge(['class' => 'bg-surface border border-line rounded-[14px] p-5 shadow-sm']) }}>
-    @if ($title || isset($actions))
+    @if (isset($header))
+        <div class="pb-4 mb-4 border-b border-line">
+            {{ $header }}
+        </div>
+    @elseif ($title || isset($actions))
         <div class="flex items-center justify-between gap-4 pb-4 mb-4 border-b border-line">
             <div>
                 @if ($title)
-                    <h2 class="text-base font-semibold text-ink">{{ $title }}</h2>
+                    <h2 class="text-base font-bold text-ink tracking-tight">{{ $title }}</h2>
                 @endif
                 @if ($description)
-                    <p class="text-xs text-muted mt-0.5">{{ $description }}</p>
+                    <p class="text-xs text-muted mt-0.5 leading-normal">{{ $description }}</p>
                 @endif
             </div>
             @if (isset($actions))

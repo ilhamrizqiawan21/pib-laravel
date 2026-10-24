@@ -17,11 +17,11 @@
     >
         <x-slot:actions>
             <div class="flex items-center gap-2">
-                <span class="inline-flex rounded-lg border border-line bg-surface p-1 text-xs font-medium">
-                    <a href="{{ route('penilaian.setoran') }}" class="rounded-md bg-brand-light px-3 py-1.5 font-semibold text-brand-strong shadow-xs">
+                <span class="inline-flex rounded-xl border border-line bg-surface p-1 text-xs font-semibold shadow-2xs">
+                    <a href="{{ route('penilaian.setoran') }}" class="rounded-lg bg-brand-soft px-3.5 py-1.5 text-brand-strong shadow-xs">
                         Per siswa (Setoran)
                     </a>
-                    <a href="{{ route('penilaian.materi') }}" class="rounded-md px-3 py-1.5 text-ink-muted hover:text-ink">
+                    <a href="{{ route('penilaian.materi') }}" class="rounded-lg px-3.5 py-1.5 text-muted hover:text-ink hover:bg-canvas transition-colors">
                         Per materi
                     </a>
                 </span>
@@ -325,11 +325,11 @@
                                                 :disabled="getRowMeta(item.material, item.index).isSaving"
                                                 :aria-label="'Nilai 90 untuk ' + item.material.title"
                                                 title="Lancar: 0 kesalahan (nilai 90), langsung simpan dan lanjut"
-                                                class="px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-300 hover:bg-emerald-100 font-bold text-xs tracking-wider shadow-2xs disabled:opacity-50"
+                                                class="px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-300 hover:bg-emerald-100 font-bold text-xs tracking-wider shadow-2xs disabled:opacity-50 active:scale-95 transition-all cursor-pointer"
                                             >
                                                 90
                                             </button>
-                                            <button type="button" @click="openDetails(item.material)" :aria-label="'Detail nilai ' + item.material.title" class="rounded-lg border border-line px-2.5 py-1 text-xs font-semibold text-brand-strong hover:bg-brand-soft">
+                                            <button type="button" @click="openDetails(item.material)" :aria-label="'Detail nilai ' + item.material.title" class="rounded-lg border border-line px-2.5 py-1 text-xs font-semibold text-brand-strong hover:bg-brand-soft active:scale-95 transition-all cursor-pointer">
                                                 Detail
                                             </button>
 
@@ -340,7 +340,7 @@
                                                     @click="step(item.material, -1)"
                                                     :aria-label="'Kurangi kesalahan ' + item.material.title"
                                                     :disabled="getRowMeta(item.material, item.index).isSaving"
-                                                    class="px-2 py-1 text-ink-muted hover:text-ink hover:bg-surface-alt border-r border-line disabled:opacity-40"
+                                                    class="px-2 py-1 text-muted hover:text-ink hover:bg-canvas border-r border-line disabled:opacity-40 active:bg-line transition-colors cursor-pointer"
                                                     title="Kurangi kesalahan"
                                                 >
                                                     -
@@ -365,7 +365,7 @@
                                                     @click="step(item.material, 1)"
                                                     :aria-label="'Tambah kesalahan ' + item.material.title"
                                                     :disabled="getRowMeta(item.material, item.index).isSaving"
-                                                    class="px-2 py-1 text-ink-muted hover:text-ink hover:bg-surface-alt border-l border-line disabled:opacity-40"
+                                                    class="px-2 py-1 text-muted hover:text-ink hover:bg-canvas border-l border-line disabled:opacity-40 active:bg-line transition-colors cursor-pointer"
                                                     title="Tambah kesalahan"
                                                 >
                                                     +

@@ -19,18 +19,18 @@
     >
         <x-slot:actions>
             <div class="flex flex-wrap items-center justify-end gap-2">
-                <span class="inline-flex rounded-lg border border-line bg-surface p-1 text-xs font-medium">
+                <span class="inline-flex rounded-xl border border-line bg-surface p-1 text-xs font-semibold shadow-2xs">
                     <button
                         type="button"
                         wire:click="$set('active_tab', 'summary')"
-                        class="rounded-md px-3 py-1.5 transition-colors {{ $active_tab === 'summary' ? 'bg-brand-light font-bold text-brand-strong shadow-xs' : 'text-ink-muted hover:text-ink' }}"
+                        class="rounded-lg px-3.5 py-1.5 transition-colors cursor-pointer {{ $active_tab === 'summary' ? 'bg-brand-soft font-bold text-brand-strong shadow-xs' : 'text-muted hover:text-ink hover:bg-canvas' }}"
                     >
                         Ringkasan Siswa
                     </button>
                     <button
                         type="button"
                         wire:click="$set('active_tab', 'matrix')"
-                        class="rounded-md px-3 py-1.5 transition-colors {{ $active_tab === 'matrix' ? 'bg-brand-light font-bold text-brand-strong shadow-xs' : 'text-ink-muted hover:text-ink' }}"
+                        class="rounded-lg px-3.5 py-1.5 transition-colors cursor-pointer {{ $active_tab === 'matrix' ? 'bg-brand-soft font-bold text-brand-strong shadow-xs' : 'text-muted hover:text-ink hover:bg-canvas' }}"
                     >
                         Matriks Kelas
                     </button>

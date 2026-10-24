@@ -1,37 +1,27 @@
-<div class="space-y-6">
+<div>
+    <x-slot:title>Laporan &amp; Backup</x-slot:title>
+
     <!-- Header Halaman -->
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-            <div class="text-xs font-semibold uppercase tracking-wider text-pib-600 mb-1">Unduhan & Arsip</div>
-            <h1 class="text-2xl font-semibold tracking-tight text-ink md:text-3xl">Laporan & Backup</h1>
-            <p class="text-sm text-muted mt-1">Unduh berkas rekap nilai, cetak rapor siswa, dan kelola salinan data.</p>
-        </div>
-        <div>
-            <a href="{{ route('rekap', $this->queryStringParams) }}" wire:navigate class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-pib-700 bg-pib-50 hover:bg-pib-100 rounded-lg transition-colors">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                </svg>
-                Tinjau di Rekap
-            </a>
-        </div>
-    </div>
+    <x-page-header
+        eyebrow="UNDUHAN & ARSIP"
+        title="Laporan & Backup"
+        description="Unduh berkas rekap nilai, cetak rapor siswa, dan kelola salinan data."
+    >
+        <x-slot:actions>
+            <x-button variant="secondary" size="sm" href="{{ route('rekap', $this->queryStringParams) }}" wire:navigate>
+                <x-icon name="bar-chart-3" size="16" />
+                <span>Tinjau di Rekap</span>
+            </x-button>
+        </x-slot:actions>
+    </x-page-header>
 
     <!-- Filter Cakupan Laporan -->
-    <x-card>
-        <x-slot:header>
-            <div class="flex items-center justify-between">
-                <div>
-                    <h2 class="text-base font-semibold text-gray-900">Cakupan Laporan</h2>
-                    <p class="text-xs text-gray-500">Pilih parameter untuk membatasi data yang akan diunduh.</p>
-                </div>
-            </div>
-        </x-slot:header>
-
+    <x-card title="Cakupan Laporan" description="Pilih parameter untuk membatasi data yang akan diunduh." class="mb-6">
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <!-- Tahun Ajaran -->
             <div>
-                <label for="filter-year" class="block text-xs font-medium text-gray-700 mb-1">Tahun Ajaran / Periode</label>
-                <select id="filter-year" wire:model.live="academicYearId" class="w-full text-sm rounded-lg border-gray-300 focus:border-pib-500 focus:ring-pib-500">
+                <label for="filter-year" class="block text-xs font-semibold text-ink mb-1.5">Tahun Ajaran / Periode</label>
+                <select id="filter-year" wire:model.live="academicYearId" class="w-full text-sm rounded-xl border border-line bg-surface px-3 py-2 text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:border-brand">
                     <option value="">Semua Periode</option>
                     @foreach($years as $y)
                         <option value="{{ $y->id }}">{{ $y->name }} · {{ $y->semester->value }}{{ $y->is_active ? ' (Aktif)' : '' }}</option>
@@ -41,8 +31,8 @@
 
             <!-- Kelas -->
             <div>
-                <label for="filter-class" class="block text-xs font-medium text-gray-700 mb-1">Kelas</label>
-                <select id="filter-class" wire:model.live="classId" class="w-full text-sm rounded-lg border-gray-300 focus:border-pib-500 focus:ring-pib-500">
+                <label for="filter-class" class="block text-xs font-semibold text-ink mb-1.5">Kelas</label>
+                <select id="filter-class" wire:model.live="classId" class="w-full text-sm rounded-xl border border-line bg-surface px-3 py-2 text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:border-brand">
                     <option value="">Semua Kelas</option>
                     @foreach($classes as $c)
                         <option value="{{ $c->id }}">{{ $c->name }}</option>
@@ -52,14 +42,14 @@
 
             <!-- Nama Siswa -->
             <div>
-                <label for="filter-student" class="block text-xs font-medium text-gray-700 mb-1">Cari Nama Siswa</label>
-                <input type="text" id="filter-student" wire:model.live.debounce.300ms="student" placeholder="Ketik nama siswa..." class="w-full text-sm rounded-lg border-gray-300 focus:border-pib-500 focus:ring-pib-500">
+                <label for="filter-student" class="block text-xs font-semibold text-ink mb-1.5">Cari Nama Siswa</label>
+                <input type="text" id="filter-student" wire:model.live.debounce.300ms="student" placeholder="Ketik nama siswa..." class="w-full text-sm rounded-xl border border-line bg-surface px-3 py-2 text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:border-brand">
             </div>
 
             <!-- Bab -->
             <div>
-                <label for="filter-chapter" class="block text-xs font-medium text-gray-700 mb-1">Bab</label>
-                <select id="filter-chapter" wire:model.live="chapter" class="w-full text-sm rounded-lg border-gray-300 focus:border-pib-500 focus:ring-pib-500">
+                <label for="filter-chapter" class="block text-xs font-semibold text-ink mb-1.5">Bab</label>
+                <select id="filter-chapter" wire:model.live="chapter" class="w-full text-sm rounded-xl border border-line bg-surface px-3 py-2 text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:border-brand">
                     <option value="">Semua Bab</option>
                     @foreach($chapters as $ch)
                         <option value="{{ $ch }}">{{ $ch }}</option>
@@ -69,8 +59,8 @@
 
             <!-- Subbab -->
             <div>
-                <label for="filter-subchapter" class="block text-xs font-medium text-gray-700 mb-1">Subbab</label>
-                <select id="filter-subchapter" wire:model.live="subchapter" class="w-full text-sm rounded-lg border-gray-300 focus:border-pib-500 focus:ring-pib-500">
+                <label for="filter-subchapter" class="block text-xs font-semibold text-ink mb-1.5">Subbab</label>
+                <select id="filter-subchapter" wire:model.live="subchapter" class="w-full text-sm rounded-xl border border-line bg-surface px-3 py-2 text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:border-brand">
                     <option value="">Semua Subbab</option>
                     @foreach($subchapters as $sub)
                         <option value="{{ $sub }}">{{ $sub }}</option>
@@ -80,8 +70,8 @@
 
             <!-- Materi -->
             <div>
-                <label for="filter-assessment" class="block text-xs font-medium text-gray-700 mb-1">Materi</label>
-                <select id="filter-assessment" wire:model.live="assessmentId" class="w-full text-sm rounded-lg border-gray-300 focus:border-pib-500 focus:ring-pib-500">
+                <label for="filter-assessment" class="block text-xs font-semibold text-ink mb-1.5">Materi</label>
+                <select id="filter-assessment" wire:model.live="assessmentId" class="w-full text-sm rounded-xl border border-line bg-surface px-3 py-2 text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:border-brand">
                     <option value="">Semua Materi</option>
                     @foreach($assessments as $a)
                         <option value="{{ $a->id }}">{{ $a->title }}</option>
@@ -92,58 +82,58 @@
     </x-card>
 
     <!-- Kartu Unduhan -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
         <!-- Unduh Excel -->
-        <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6 flex flex-col justify-between hover:border-pib-300 transition-all">
+        <div class="bg-surface rounded-[14px] border border-line shadow-sm p-6 flex flex-col justify-between hover:border-brand/50 hover:shadow-md transition-all">
             <div>
                 <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center mb-4">
                     <x-icon name="file-spreadsheet" size="24" />
                 </div>
-                <h3 class="text-lg font-bold text-gray-900 mb-1">Laporan Excel</h3>
-                <p class="text-xs text-gray-500 mb-4 leading-relaxed">
+                <h3 class="text-lg font-bold text-ink mb-1 tracking-tight">Laporan Excel</h3>
+                <p class="text-xs text-muted mb-4 leading-relaxed">
                     Buku kerja lengkap berisi 5 lembar: Ringkasan, Laporan per Materi, Rekap Siswa, Rekap Kelas, dan Detail Nilai mentah.
                 </p>
             </div>
             <div>
-                <a href="{{ route('laporan.excel', $this->queryStringParams) }}" target="_blank" class="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-pib-600 hover:bg-pib-700 text-white text-sm font-semibold rounded-lg shadow-sm transition-colors">
+                <x-button variant="primary" class="w-full font-bold" href="{{ route('laporan.excel', $this->queryStringParams) }}" target="_blank">
                     <x-icon name="file-spreadsheet" size="17" />
-                    Unduh Excel (.xlsx)
-                </a>
+                    <span>Unduh Excel (.xlsx)</span>
+                </x-button>
             </div>
         </div>
 
         <!-- Unduh PDF Kelas -->
-        <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6 flex flex-col justify-between hover:border-pib-300 transition-all">
+        <div class="bg-surface rounded-[14px] border border-line shadow-sm p-6 flex flex-col justify-between hover:border-brand/50 hover:shadow-md transition-all">
             <div>
-                <div class="w-12 h-12 rounded-xl bg-red-50 text-red-700 flex items-center justify-center mb-4">
+                <div class="w-12 h-12 rounded-xl bg-red-50 text-danger flex items-center justify-center mb-4">
                     <x-icon name="file-pdf" size="24" />
                 </div>
-                <h3 class="text-lg font-bold text-gray-900 mb-1">Laporan PDF Kelas</h3>
-                <p class="text-xs text-gray-500 mb-4 leading-relaxed">
+                <h3 class="text-lg font-bold text-ink mb-1 tracking-tight">Laporan PDF Kelas</h3>
+                <p class="text-xs text-muted mb-4 leading-relaxed">
                     Dokumen siap cetak format A4 portrait dengan identitas sekolah, rekap per materi dan kelas, serta rata-rata berbobot.
                 </p>
             </div>
             <div>
-                <a href="{{ route('laporan.pdf', $this->queryStringParams) }}" target="_blank" class="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 text-sm font-semibold rounded-lg shadow-sm transition-colors">
+                <x-button variant="secondary" class="w-full font-bold" href="{{ route('laporan.pdf', $this->queryStringParams) }}" target="_blank">
                     <x-icon name="file-pdf" size="17" />
-                    Unduh PDF Kelas
-                </a>
+                    <span>Unduh PDF Kelas</span>
+                </x-button>
             </div>
         </div>
 
         <!-- Unduh Rapor Per Siswa -->
-        <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6 flex flex-col justify-between hover:border-pib-300 transition-all">
+        <div class="bg-surface rounded-[14px] border border-line shadow-sm p-6 flex flex-col justify-between hover:border-brand/50 hover:shadow-md transition-all">
             <div>
                 <div class="w-12 h-12 rounded-xl bg-brand-soft text-brand-strong flex items-center justify-center mb-4">
                     <x-icon name="file-pdf" size="24" />
                 </div>
-                <h3 class="text-lg font-bold text-gray-900 mb-1">Rapor Per Siswa</h3>
-                <p class="text-xs text-gray-500 mb-3 leading-relaxed">
+                <h3 class="text-lg font-bold text-ink mb-1 tracking-tight">Rapor Per Siswa</h3>
+                <p class="text-xs text-muted mb-3 leading-relaxed">
                     Lembar rapor individual mencakup seluruh materi, nilai, rata-rata berbobot, dan blok paraf guru penilai.
                 </p>
                 <div class="mb-4">
-                    <label for="select-student" class="block text-xs font-medium text-gray-700 mb-1">Pilih Siswa</label>
-                    <select id="select-student" wire:model.live="selectedStudentId" class="w-full text-sm rounded-lg border-line focus:border-brand focus:ring-brand">
+                    <label for="select-student" class="block text-xs font-semibold text-ink mb-1.5">Pilih Siswa</label>
+                    <select id="select-student" wire:model.live="selectedStudentId" class="w-full text-sm rounded-xl border border-line bg-surface px-3 py-2 text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:border-brand">
                         <option value="">-- Pilih salah satu siswa --</option>
                         @foreach($students as $st)
                             <option value="{{ $st->id }}">{{ $st->name }} ({{ $st->schoolClass?->name ?? 'Tanpa kelas' }})</option>
@@ -153,84 +143,65 @@
             </div>
             <div>
                 @if($selectedStudentId)
-                    <a href="{{ route('laporan.pdf.student', ['student' => $selectedStudentId]) }}" target="_blank" class="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-brand-strong hover:bg-brand text-white text-sm font-semibold rounded-lg shadow-sm transition-colors">
+                    <x-button variant="primary" class="w-full font-bold" href="{{ route('laporan.pdf.student', ['student' => $selectedStudentId]) }}" target="_blank">
                         <x-icon name="file-pdf" size="17" />
-                        Unduh Rapor Siswa
-                    </a>
+                        <span>Unduh Rapor Siswa</span>
+                    </x-button>
                 @else
-                    <button type="button" disabled class="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-gray-100 text-gray-400 text-sm font-semibold rounded-lg cursor-not-allowed">
+                    <x-button variant="secondary" disabled class="w-full opacity-60">
                         <x-icon name="file-pdf" size="17" />
-                        Pilih siswa terlebih dahulu
-                    </button>
+                        <span>Pilih siswa terlebih dahulu</span>
+                    </x-button>
                 @endif
             </div>
         </div>
     </div>
 
     <!-- Cadangan Data Sistem (Bagian 2 - Cadangan Data) -->
-    <x-card>
-        <x-slot:header>
-            <div class="flex items-center justify-between flex-wrap gap-2">
-                <div class="flex items-center gap-2">
-                    <svg class="w-5 h-5 text-pib-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                    </svg>
-                    <h2 class="text-base font-semibold text-gray-900">Cadangan Data (Backup)</h2>
-                </div>
-                <div class="flex items-center gap-2">
-                    <button type="button" wire:click="backupNow" wire:loading.attr="disabled" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-pib-600 hover:bg-pib-700 text-white text-xs font-semibold rounded-lg shadow-sm transition-colors">
-                        <span wire:loading.remove wire:target="backupNow">
-                            <svg class="w-3.5 h-3.5 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
-                            </svg>
-                            Cadangkan Sekarang
-                        </span>
-                        <span wire:loading wire:target="backupNow">Menyiapkan…</span>
-                    </button>
-                    <a href="{{ route('backup.download') }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 text-xs font-semibold rounded-lg shadow-sm transition-colors">
-                        <svg class="w-3.5 h-3.5 text-gray-500 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                        </svg>
-                        Unduh Backup (.json)
-                    </a>
-                </div>
+    <x-card title="Cadangan Data (Backup)" description="Pencadangan mencakup seluruh data master sekolah, kelas, siswa, materi kurikulum, nilai, dan log audit.">
+        <x-slot:actions>
+            <div class="flex items-center gap-2">
+                <x-button type="button" variant="primary" size="sm" wire:click="backupNow" wire:loading.attr="disabled">
+                    <span wire:loading.remove wire:target="backupNow" class="inline-flex items-center gap-1.5">
+                        <x-icon name="download-cloud" size="15" />
+                        <span>Cadangkan Sekarang</span>
+                    </span>
+                    <span wire:loading wire:target="backupNow">Menyiapkan…</span>
+                </x-button>
+                <x-button variant="secondary" size="sm" href="{{ route('backup.download') }}">
+                    <x-icon name="download" size="15" />
+                    <span>Unduh Backup (.json)</span>
+                </x-button>
             </div>
-        </x-slot:header>
+        </x-slot:actions>
 
         @if(session('backup_status'))
-            <div class="mb-4 p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-lg text-xs flex items-center gap-2">
-                <svg class="w-4 h-4 text-emerald-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                </svg>
-                <span>{{ session('backup_status') }}</span>
+            <div class="mb-4">
+                <x-alert variant="success">
+                    {{ session('backup_status') }}
+                </x-alert>
             </div>
         @endif
 
-        <div class="space-y-4">
-            <p class="text-sm text-gray-600">
-                Pencadangan mencakup seluruh data master sekolah, kelas, siswa, materi kurikulum, nilai, dan log audit.
-            </p>
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
-                <div class="bg-gray-50 border border-gray-200 rounded-lg p-3">
-                    <div class="text-xs text-gray-500 font-medium">Backup Otomatis Terakhir</div>
-                    <div class="text-sm font-semibold text-gray-900 mt-0.5">
-                        {{ $backupStatus['last_backup_time'] ? \Illuminate\Support\Carbon::parse($backupStatus['last_backup_time'])->translatedFormat('d M Y, H:i') : 'Belum ada' }}
-                    </div>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
+            <div class="bg-canvas border border-line rounded-xl p-3.5">
+                <div class="text-xs text-muted font-medium">Backup Otomatis Terakhir</div>
+                <div class="text-sm font-bold text-ink mt-0.5">
+                    {{ $backupStatus['last_backup_time'] ? \Illuminate\Support\Carbon::parse($backupStatus['last_backup_time'])->translatedFormat('d M Y, H:i') : 'Belum ada' }}
                 </div>
-                <div class="bg-gray-50 border border-gray-200 rounded-lg p-3">
-                    <div class="text-xs text-gray-500 font-medium">Jadwal & Retensi</div>
-                    <div class="text-sm font-semibold text-gray-900 mt-0.5">
-                        Tiap {{ $backupStatus['interval_hours'] }} jam · simpan {{ $backupStatus['keep'] }} file
-                    </div>
+            </div>
+            <div class="bg-canvas border border-line rounded-xl p-3.5">
+                <div class="text-xs text-muted font-medium">Jadwal & Retensi</div>
+                <div class="text-sm font-bold text-ink mt-0.5">
+                    Tiap {{ $backupStatus['interval_hours'] }} jam · simpan {{ $backupStatus['keep'] }} file
                 </div>
-                <div class="bg-gray-50 border border-gray-200 rounded-lg p-3">
-                    <div class="text-xs text-gray-500 font-medium">Berkas Tersimpan</div>
-                    <div class="text-sm font-semibold text-gray-900 mt-0.5">
-                        {{ $backupStatus['count'] }} berkas di server
-                    </div>
+            </div>
+            <div class="bg-canvas border border-line rounded-xl p-3.5">
+                <div class="text-xs text-muted font-medium">Berkas Tersimpan</div>
+                <div class="text-sm font-bold text-ink mt-0.5">
+                    {{ $backupStatus['count'] }} berkas di server
                 </div>
             </div>
         </div>
     </x-card>
 </div>
-

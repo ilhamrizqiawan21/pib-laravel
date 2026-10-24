@@ -68,10 +68,10 @@
     >
         @if ($title)
             <div class="flex items-center justify-between pb-4 mb-4 border-b border-line">
-                <h3 id="modal-title-{{ $name }}" class="text-base font-semibold {{ $danger ? 'text-danger' : 'text-ink' }}">
+                <h3 id="modal-title-{{ $name }}" class="text-base font-bold tracking-tight {{ $danger ? 'text-danger' : 'text-ink' }}">
                     {{ $title }}
                 </h3>
-                <button type="button" x-on:click="close()" class="text-muted hover:text-ink cursor-pointer p-2 rounded-lg">
+                <button type="button" x-on:click="close()" class="text-muted hover:text-ink hover:bg-canvas transition-colors cursor-pointer p-2 rounded-xl">
                     <x-icon name="x" size="18" />
                     <span class="sr-only">Tutup</span>
                 </button>

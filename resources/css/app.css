@@ -30,6 +30,29 @@
 /* Permukaan bersama mengikuti kartu pada mockup, tanpa mengubah perilaku komponen. */
 .shadow-sm, .shadow-xs { box-shadow: var(--shadow); }
 
+html {
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    letter-spacing: -0.011em;
+}
+
+h1, h2, h3, h4, .font-heading {
+    letter-spacing: -0.022em;
+}
+
+button, [role='button'], a {
+    -webkit-tap-highlight-color: transparent;
+}
+
+main table thead th {
+    font-size: 0.6875rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    font-weight: 700;
+}
+
 #navigasi-utama a[aria-current='page'] { background: var(--brand-soft); color: var(--brand-strong); }
 #navigasi-utama a:not([aria-current='page']):hover { background: var(--canvas); color: var(--ink); }
 @media (min-width: 1024px) {

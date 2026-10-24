@@ -9,7 +9,10 @@
                     <option value="{{ $year->id }}">{{ $year->label() }} {{ $year->is_active ? '(Aktif)' : '' }}</option>
                 @endforeach
             </select>
-            <a href="{{ route('penilaian') }}" class="hidden min-h-11 items-center gap-2 rounded-xl bg-brand-strong px-4 text-xs font-bold text-white hover:bg-brand sm:inline-flex"><x-icon name="plus" size="16" /> Penilaian baru</a>
+            <x-button variant="primary" size="md" href="{{ route('penilaian') }}" class="hidden sm:inline-flex min-h-11">
+                <x-icon name="plus" size="16" />
+                <span>Penilaian baru</span>
+            </x-button>
         </x-slot:actions>
     </x-page-header>
 
@@ -25,7 +28,7 @@
                 <p class="mt-1 text-xs text-teal-50">Pilih kelas dan siswa untuk mengisi nilai praktik ibadah.</p>
             @endif
         </div>
-        <a href="{{ ! empty($priorityClasses) ? route('penilaian.setoran', ['classId' => $priorityClasses[0]['id']]) : route('penilaian') }}" class="relative inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-white px-4 text-xs font-bold text-brand-strong shadow-sm hover:bg-teal-50">Lanjutkan penilaian <span aria-hidden="true">&rarr;</span></a>
+        <a href="{{ ! empty($priorityClasses) ? route('penilaian.setoran', ['classId' => $priorityClasses[0]['id']]) : route('penilaian') }}" class="relative inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-white px-4 text-xs font-bold text-brand-strong shadow-sm hover:shadow-md hover:bg-teal-50 active:scale-[0.98] transition-all">Lanjutkan penilaian <span aria-hidden="true">&rarr;</span></a>
     </section>
 
     <section class="mb-5 grid grid-cols-2 gap-3 lg:grid-cols-4" aria-label="Statistik periode">
