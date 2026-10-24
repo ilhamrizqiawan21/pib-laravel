@@ -18,6 +18,7 @@
     $variants = [
         'primary' => 'bg-brand-strong text-white hover:bg-brand-strong active:bg-brand-strong',
         'secondary' => 'bg-surface border border-line text-ink hover:bg-canvas active:bg-line',
+        'outline' => 'bg-transparent border border-line text-ink hover:bg-canvas active:bg-line',
         'ghost' => 'text-muted hover:text-ink hover:bg-canvas active:bg-line',
         'danger' => 'bg-danger text-white hover:bg-red-600 active:bg-red-700',
         'danger-ghost' => 'text-danger hover:bg-danger-soft active:bg-red-100',

@@ -97,9 +97,7 @@
         <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6 flex flex-col justify-between hover:border-pib-300 transition-all">
             <div>
                 <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center mb-4">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
+                    <x-icon name="file-spreadsheet" size="24" />
                 </div>
                 <h3 class="text-lg font-bold text-gray-900 mb-1">Laporan Excel</h3>
                 <p class="text-xs text-gray-500 mb-4 leading-relaxed">
@@ -108,9 +106,7 @@
             </div>
             <div>
                 <a href="{{ route('laporan.excel', $this->queryStringParams) }}" target="_blank" class="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-pib-600 hover:bg-pib-700 text-white text-sm font-semibold rounded-lg shadow-sm transition-colors">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                    </svg>
+                    <x-icon name="file-spreadsheet" size="17" />
                     Unduh Excel (.xlsx)
                 </a>
             </div>
@@ -120,9 +116,7 @@
         <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6 flex flex-col justify-between hover:border-pib-300 transition-all">
             <div>
                 <div class="w-12 h-12 rounded-xl bg-red-50 text-red-700 flex items-center justify-center mb-4">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                    </svg>
+                    <x-icon name="file-pdf" size="24" />
                 </div>
                 <h3 class="text-lg font-bold text-gray-900 mb-1">Laporan PDF Kelas</h3>
                 <p class="text-xs text-gray-500 mb-4 leading-relaxed">
@@ -131,9 +125,7 @@
             </div>
             <div>
                 <a href="{{ route('laporan.pdf', $this->queryStringParams) }}" target="_blank" class="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 text-sm font-semibold rounded-lg shadow-sm transition-colors">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                    </svg>
+                    <x-icon name="file-pdf" size="17" />
                     Unduh PDF Kelas
                 </a>
             </div>
@@ -143,9 +135,7 @@
         <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6 flex flex-col justify-between hover:border-pib-300 transition-all">
             <div>
                 <div class="w-12 h-12 rounded-xl bg-brand-soft text-brand-strong flex items-center justify-center mb-4">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                    </svg>
+                    <x-icon name="file-pdf" size="24" />
                 </div>
                 <h3 class="text-lg font-bold text-gray-900 mb-1">Rapor Per Siswa</h3>
                 <p class="text-xs text-gray-500 mb-3 leading-relaxed">
@@ -164,16 +154,12 @@
             <div>
                 @if($selectedStudentId)
                     <a href="{{ route('laporan.pdf.student', ['student' => $selectedStudentId]) }}" target="_blank" class="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-brand-strong hover:bg-brand text-white text-sm font-semibold rounded-lg shadow-sm transition-colors">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                        </svg>
+                        <x-icon name="file-pdf" size="17" />
                         Unduh Rapor Siswa
                     </a>
                 @else
                     <button type="button" disabled class="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-gray-100 text-gray-400 text-sm font-semibold rounded-lg cursor-not-allowed">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                        </svg>
+                        <x-icon name="file-pdf" size="17" />
                         Pilih siswa terlebih dahulu
                     </button>
                 @endif
