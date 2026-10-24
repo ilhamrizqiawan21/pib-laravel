@@ -145,6 +145,7 @@ Legenda prioritas mengikuti PRD (P0 wajib 1.0).
 - [x] **T-801 Fixture DB lama** — selesai 2026-10-22. Bukti: tests/Fixtures/generate.php, tests/Fixtures/legacy-sample.sqlite (3 kelas, 30 siswa, 9 materi kurikulum berbobot beragam, variasi nilai lengkap, sebagian, dan kosong).
 - [x] **T-802 `pib:import-legacy`** (P0) — selesai 2026-10-22. Bukti: tests/Feature/Import/LegacyImportTest.php (4 tes), app/Services/LegacyImporter.php, app/Console/Commands/ImportLegacyCommand.php, composer check ✔ (224 tes, Larastan 0 error).
   Spesifikasi SCHEMA.md: ID dipertahankan, pemetaan tabel lama ke skema baru, penyesuaian snake_case settings, akun LOCAL_ONLY dinonaktifkan, proteksi --force dengan snapshot otomatis pra-impor, opsi --dry-run.
+  Tindak lanjut 2026-10-24: impor SQLite dari Downloads ke MySQL `pib` lulus simulasi dan verifikasi pasca-impor (126 siswa, 21 materi, 404 nilai, agregat nilai per siswa cocok, 0 orphan). Importir kini menormalkan waktu ISO UTC/metadata kosong dan mempertahankan admin tujuan saat ID pengguna bertabrakan. Bukti: `LegacyImportTest` (6 tes), `composer check` (255 tes, Larastan 0 error), snapshot pra-impor MySQL.
 - [x] **T-803 Uji paritas** (P0) — selesai 2026-10-22. Bukti: tests/Feature/Parity/LegacyParityTest.php (2 tes), composer check ✔ (226 tes, Larastan 0 error).
   Untuk setiap 30 siswa, hasil `RecapService` (assessed, total nilai, rata-rata berbobot) 100% IDENTIK dengan query SQL asli pada DB lama; buku kerja Excel memuat angka paritas yang sama persis.
 
