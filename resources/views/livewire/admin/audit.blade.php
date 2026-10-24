@@ -65,7 +65,7 @@
                 <tbody class="divide-y divide-gray-100 font-normal">
                     @forelse($logs as $log)
                         <tr class="hover:bg-gray-50/50 transition-colors">
-                            <td class="px-4 py-3 text-xs text-gray-500 whitespace-nowrap">
+                            <td class="audit-timestamp px-4 py-3 text-xs text-gray-500 whitespace-nowrap">
                                 <div>{{ $log->created_at?->translatedFormat('d M Y') }}</div>
                                 <div class="font-mono text-[11px] text-gray-400">{{ $log->created_at?->format('H:i:s') }}</div>
                             </td>

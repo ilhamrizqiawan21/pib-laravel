@@ -238,7 +238,7 @@
                                     </td>
                                     <td class="py-3 px-4">
                                         <!-- Stepper Kesalahan -->
-                                        <div class="flex items-center rounded-lg border border-line bg-surface overflow-hidden shadow-2xs w-36">
+                                        <div class="materi-score-control flex items-center rounded-lg border border-line bg-surface overflow-hidden shadow-2xs w-36">
                                             <button
                                                 type="button"
                                                 @click="step(st, -1)"
@@ -280,7 +280,7 @@
                                         <span class="text-base font-extrabold text-ink" x-text="'= ' + getRowMeta(st).scoreDisplay"></span>
                                     </td>
                                     <td class="py-3 px-4 text-center">
-                                        <div class="flex items-center justify-center gap-2">
+                                        <div class="materi-row-actions flex flex-wrap items-center justify-center gap-2">
                                             <!-- Tombol 90 -->
                                             <button
                                                 type="button"

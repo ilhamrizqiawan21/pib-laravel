@@ -316,6 +316,27 @@ main textarea {
         display: block;
         text-align: center;
     }
+
+    /* Aksi tabel admin tetap berada di dalam kartu pada layar sempit. */
+    main table:not([data-scroll-table]) tbody td .user-actions,
+    main table:not([data-scroll-table]) tbody td .materi-row-actions {
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        max-width: 100%;
+        row-gap: 0.25rem;
+    }
+
+    main table:not([data-scroll-table]) tbody td .user-actions {
+        width: 100%;
+    }
+
+    .materi-score-control {
+        max-width: 100%;
+    }
+
+    .audit-timestamp {
+        white-space: normal;
+    }
 }
 
 @media (prefers-reduced-motion: reduce) {

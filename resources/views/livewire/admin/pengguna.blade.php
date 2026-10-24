@@ -85,7 +85,7 @@
                                 @endif
                             </td>
                             <td class="px-4 py-3 text-right">
-                                <div class="inline-flex items-center gap-2">
+                                <div class="user-actions inline-flex items-center gap-2">
                                     <!-- Ubah Peran -->
                                     @if($user->role === \App\Enums\Role::Admin)
                                         <button type="button" wire:click="changeRole({{ $user->id }}, 'teacher')" class="text-xs text-gray-600 hover:text-pib-600 underline">Jadikan Guru</button>
