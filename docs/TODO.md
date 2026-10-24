@@ -162,6 +162,8 @@ Legenda prioritas mengikuti PRD (P0 wajib 1.0).
 
   Tindak lanjut audit alur/UI 2026-10-24: metadata nilai dipertahankan dan dapat diedit di kedua mode penilaian; filter Rekap/Laporan konsisten; matriks mengikuti filter; antrean draft dan perpindahan kelas tahan respons terlambat; Setoran ponsel memprioritaskan editor; pengosongan nilai meminta konfirmasi. Bukti lokal: `composer check` (251 tes, Larastan 0), tes JS Node, build Vite, dan verifikasi browser 360×800. Verifikasi CI/server target tetap diperlukan sebelum T-905 dicentang.
 
+  Implementasi `docs/mockups/modern-ui.html` 2026-10-24: token warna/kartu dan kerangka navigasi diterapkan; Beranda memakai hero penilaian, empat statistik, prioritas kelas, serta aktivitas dengan data aplikasi. Checklist penyiapan tetap tersedia. Bukti lokal: `composer check` (253 tes, Larastan 0), build Vite, tes JS Node, dan browser desktop/ponsel. Verifikasi CI/server target tetap diperlukan sebelum T-905 dicentang.
+
 ---
 
 ## Parkiran (P2, jangan dikerjakan tanpa persetujuan)

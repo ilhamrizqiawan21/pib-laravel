@@ -71,24 +71,24 @@
             :inert="!mobileDrawerOpen && !desktop"
             class="fixed inset-y-0 left-0 z-50 flex flex-col bg-surface border-r border-line transition-all duration-200 lg:static"
             :class="{
-                'w-[252px]': !sidebarCollapsed,
-                'lg:w-[68px] w-[252px]': sidebarCollapsed,
+                'w-[248px]': !sidebarCollapsed,
+                'lg:w-[68px] w-[248px]': sidebarCollapsed,
                 'translate-x-0': mobileDrawerOpen,
                 '-translate-x-full lg:translate-x-0': !mobileDrawerOpen,
             }"
         >
             <!-- Sidebar Header / Logo -->
-            <div class="h-[68px] flex items-center justify-between px-4 border-b border-line shrink-0">
+            <div class="h-[72px] flex items-center justify-between px-5 shrink-0">
                 <a href="/dashboard" class="flex items-center gap-2.5 overflow-hidden">
-                    <div class="w-9 h-9 rounded-xl bg-brand-strong text-white flex items-center justify-center shrink-0 shadow-xs font-bold text-sm tracking-wider">
-                        PIB
+                    <div class="w-10 h-10 rounded-[13px] bg-brand-strong text-white flex items-center justify-center shrink-0 shadow-md font-extrabold text-xl">
+                        P
                     </div>
                     <div
                         class="flex flex-col whitespace-nowrap transition-opacity duration-150"
                         :class="sidebarCollapsed ? 'lg:hidden' : 'block'"
                     >
-                        <span class="font-semibold text-sm text-ink leading-tight">PIB Penilaian</span>
-                        <span class="text-[11px] text-muted">Praktik Ibadah</span>
+                        <span class="font-bold text-[15px] text-ink leading-tight tracking-tight">PIB Penilaian</span>
+                        <span class="text-[11px] text-muted">Praktik Ibadah Siswa</span>
                     </div>
                 </a>
 
@@ -104,8 +104,12 @@
                 </button>
             </div>
 
+            @php
+                $activeAcademicYear = app(\App\Services\AcademicYearService::class)->active();
+            @endphp
+
             <!-- Menu Groups -->
-            <div class="flex-1 overflow-y-auto px-3 py-4 space-y-6">
+            <div class="flex-1 overflow-y-auto px-3 py-3 space-y-2">
                 <!-- Group: Kerja Harian -->
                 <div>
                     <div
@@ -230,6 +234,13 @@
                     </ul>
                 </div>
 
+                <div>
+                    <div class="px-2.5 mb-2 text-[10px] font-semibold uppercase tracking-wider text-muted/80" :class="sidebarCollapsed ? 'lg:sr-only' : 'block'">Pengaturan</div>
+                    <a href="{{ route('akun') }}" @if(request()->is('akun*')) aria-current="page" @endif class="flex items-center gap-3 px-2.5 py-2 rounded-lg text-sm font-medium transition-colors {{ request()->is('akun*') ? 'bg-brand-soft text-brand-strong' : 'text-muted hover:bg-canvas hover:text-ink' }}" title="Akun">
+                        <x-icon name="user-cog" size="18" /><span :class="sidebarCollapsed ? 'lg:hidden' : 'inline'">Akun</span>
+                    </a>
+                </div>
+
                 <!-- Group: Admin (Khusus Admin) -->
                 @can('admin')
                     <div>
@@ -267,6 +278,14 @@
                 @endcan
             </div>
 
+            @if ($activeAcademicYear)
+                <div class="mx-3 mb-2 rounded-[14px] border border-line bg-[#fbfdfc] p-3.5" :class="sidebarCollapsed ? 'lg:hidden' : 'block'">
+                    <div class="text-xs font-bold text-ink">Periode aktif</div>
+                    <p class="mt-1.5 text-[11px] leading-relaxed text-muted">{{ $activeAcademicYear->label() }}</p>
+                    <a href="{{ route('sekolah') }}" class="mt-2 inline-block text-[11px] font-bold text-brand-strong hover:underline">Kelola periode &rarr;</a>
+                </div>
+            @endif
+
             <!-- Sidebar Footer (Desktop collapse toggle) -->
             <div class="hidden lg:flex items-center justify-between p-3 border-t border-line shrink-0">
                 <button
@@ -284,7 +303,7 @@
         <!-- Main Wrapper -->
         <div class="flex-1 flex flex-col min-w-0 overflow-y-auto" :inert="mobileDrawerOpen && !desktop">
             <!-- Topbar (68px, Sticky Glass) -->
-            <header class="sticky top-0 z-30 h-[68px] bg-white/85 backdrop-blur-md border-b border-line px-4 md:px-8 flex items-center justify-between shrink-0">
+            <header class="sticky top-0 z-30 h-[68px] bg-white/85 backdrop-blur-md border-b border-line px-4 md:px-9 flex items-center justify-between shrink-0">
                 <div class="flex items-center gap-3 min-w-0">
                     <button
                         x-ref="openDrawer"
@@ -298,19 +317,20 @@
                         <span class="sr-only">Buka menu</span>
                     </button>
 
-                    <div class="flex items-center gap-2 truncate">
+                    <div class="flex items-center gap-2.5 truncate">
                         @php
                             $currentSchoolName = app(\App\Repositories\SettingsRepository::class)->schoolName();
-                            $activeAcademicYear = app(\App\Services\AcademicYearService::class)->active();
                         @endphp
-                        <span class="font-medium text-sm text-ink truncate">{{ $currentSchoolName ?: 'PIB Penilaian' }}</span>
-                        <span class="hidden sm:inline text-line">/</span>
-                        <span class="hidden sm:inline text-xs text-muted truncate">{{ $activeAcademicYear ? $activeAcademicYear->label() : 'Periode Aktif' }}</span>
+                        <span class="hidden h-7 w-7 items-center justify-center rounded-lg bg-canvas text-brand-strong sm:flex"><x-icon name="school" size="16" /></span>
+                        <span class="font-semibold text-xs text-ink truncate">{{ $currentSchoolName ?: 'PIB Penilaian' }}</span>
                     </div>
                 </div>
 
                 <!-- Right Topbar Items -->
-                <div class="flex items-center gap-4 shrink-0">
+                <div class="flex items-center gap-3 shrink-0">
+                    @if ($activeAcademicYear)
+                        <a href="{{ route('sekolah') }}" class="hidden rounded-lg border border-line bg-surface px-3 py-2 text-xs font-semibold text-ink hover:border-brand sm:inline-flex">{{ $activeAcademicYear->label() }}</a>
+                    @endif
                     <!-- Global Draft Indicator -->
                     <div
                         x-data="draftIndicatorComponent()"
@@ -341,10 +361,10 @@
                                 aria-controls="menu-pengguna"
                                 aria-label="Menu akun pengguna"
                             >
-                                <span class="w-8 h-8 rounded-full bg-brand-soft text-brand-strong font-semibold flex items-center justify-center text-xs">
+                                <span class="w-9 h-9 rounded-full bg-[#f0dcca] text-[#825f43] font-bold flex items-center justify-center text-xs">
                                     {{ substr(auth()->user()->name ?? 'U', 0, 1) }}
                                 </span>
-                                <span class="hidden md:inline font-medium text-xs">{{ auth()->user()->name ?? 'Pengguna' }}</span>
+                                <span class="hidden text-left md:block"><span class="block font-semibold text-xs">{{ auth()->user()->name ?? 'Pengguna' }}</span><span class="block text-[10px] text-muted">{{ auth()->user()?->isAdmin() ? 'Admin' : 'Guru' }}</span></span>
                                 <x-icon name="chevron-down" size="14" class="text-muted" />
                             </button>
 
@@ -383,7 +403,7 @@
             </header>
 
             <!-- Main Content Landmark -->
-            <main id="konten" class="flex-1 p-4 md:px-9 md:py-8.5 max-w-[1320px] w-full mx-auto focus:outline-none" tabindex="-1">
+            <main id="konten" class="flex-1 p-4 md:px-9 md:py-8.5 max-w-[1390px] w-full mx-auto focus:outline-none" tabindex="-1">
                 {{ $slot }}
             </main>
         </div>
