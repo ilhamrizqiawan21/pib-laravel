@@ -28,6 +28,20 @@ test('pengguna dapat membuka halaman siswa dan melihat tabel siswa', function ()
         ->assertSee('1001');
 });
 
+test('pagination siswa memakai navigasi berbahasa indonesia dengan gaya PIB', function () {
+    $user = User::factory()->create();
+    $year = AcademicYear::factory()->create(['is_active' => true]);
+    $class = SchoolClass::factory()->create(['academic_year_id' => $year->id]);
+    Student::factory()->count(26)->create(['school_class_id' => $class->id]);
+
+    Livewire::actingAs($user)
+        ->test(Siswa::class)
+        ->assertSee('Navigasi halaman')
+        ->assertSee('Menampilkan')
+        ->assertSee('bg-brand-strong', false)
+        ->assertSee('Halaman berikutnya');
+});
+
 test('pengguna dapat menambah siswa baru lewat UI', function () {
     $user = User::factory()->create();
     $class = SchoolClass::factory()->create();
